@@ -10,7 +10,7 @@ git clone https://github.com/Naophis/QuantaAlter.git
 ## Editor
 * Visual Studio Code
 
-## FlashWriter
+## Writer
 * Renesas Flash Programmer
   * Baudrate: 1228800 [bps]
 
