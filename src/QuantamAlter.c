@@ -4,48 +4,48 @@
 #include <string.h>
 #include "machine.h"
 #include "mathf.h"
-#include "defines.h"
-#include "Table.h"
+#include "config/defines.h"
+#include "config/Table.h"
 
-#include "Structor.h"
+#include "config/Structor.h"
 
-#include "init.h"
+#include "config/init.h"
 #include "serial.h"
 #include "spi.h"
 #include "Music.h"
 
-#include "ParamDef.h"
+#include "config/ParamDef.h"
 #include "sensor.h"
 
-#include "ParamDef.h"
-#include "ParamsController.h"
+#include "config/ParamDef.h"
+#include "config/ParamsController.h"
 #include "Util.h"
 #include "PhysicalBasement.h"
 
-#include "Run.h"
-#include "WallOff.h"
-#include "WallOff2.h"
-#include "Map.h"
-#include "Search.h"
-#include "VectorSearch.h"
-#include "VectorPath.h"
+#include "motion/Run.h"
+#include "motion/WallOff.h"
+#include "motion/WallOff2.h"
+#include "search/Map.h"
+#include "search/Search.h"
+#include "search/VectorSearch.h"
+#include "search/VectorPath.h"
 #include "Path.h"
-#include "RealRun.h"
+#include "motion/RealRun.h"
 
 #include "flash/r_flash_rx_config.h"
 #include "flash/r_flash_rx_if.h"
-#include "flash.h"
+#include "flash/flash.h"
 
-#include "Adachi.h"
-#include "cirkit.h"
+#include "search/Adachi.h"
+#include "search/cirkit.h"
 
-#include "ParamImporter.h"
+#include "config/ParamImporter.h"
 
-#include "Setting.h"
-#include "Mram.h"
+#include "config/Setting.h"
+//#include "Mram.h"
 
 #include "OperationSystem.h"
-#include "SerialMapper.h"
+#include "config/SerialMapper.h"
 
 volatile void buzzer()
 {
