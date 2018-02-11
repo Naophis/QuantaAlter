@@ -1,5 +1,7 @@
 # Quanta Alter
 
+<img src="MachineData/img/machine.png" title="QuantaAlter" width=450px height=auto;>
+
 ## Getting started
 ```
 git clone https://github.com/Naophis/QuantaAlter.git
