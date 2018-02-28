@@ -250,7 +250,7 @@ char dutyLimit, velocityLimit;
 void failCheck(float Dr, float Dl) {
 	char checkR = 0;
 	char checkL = 0;
-	if (RF_SEN1.now > conflictOrder || LF_SEN1.now > conflictOrder) {
+	if (Front_SEN.now > conflictOrder) {
 		senCheck++;
 	} else {
 		senCheck = 0;
@@ -348,7 +348,7 @@ float exchangeBlockDistance(float dist) {
 }
 
 void printAdData() {
-	myprintf("%d %d %d %d %d %d %d\r\n", LF, LS, RS, RF, BATTERY);
+	myprintf("%d %d %d %d %d %d %d\r\n", LF, LS45, RS45, FRONT_AD, BATTERY);
 }
 char checkStablly();
 float check_sen_error(void);
@@ -369,12 +369,15 @@ void printSensor() {
 //				LS_SEN2.now, RS_SEN2.now, LS_SEN1.now, RS_SEN1.now, LF_SEN1.now,
 //				RF_SEN1.now);
 		myprintf(
-				"{\"battery\":%f,\"gyro\":%f,\"LS1\":%d,\"RS1\":%d,\"LF1\":%d,\"RF1\":%d,\"LS2\":%d,\"RS2\":%d,\"BATT\":%d}\r\n",
-				battery, settleGyro, (int) LS_SEN1.now, (int) RS_SEN1.now,
-				(int) LF_SEN1.now, (int) RF_SEN1.now, (int) LS_SEN2.now,
-				(int) RS_SEN2.now, BATTERY
-
-				);
+				"{\"battery\":%f,\"gyro\":%f,\"LS1\":%d,\"RS1\":%d,\"LF1\":%d,\"RF1\":%d,\"LS2\":%d,\"RS2\":%d,",
+				battery, settleGyro, (int) LS_SEN45.now, (int) RS_SEN45.now,
+				(int) 0, (int) Front_SEN.now, (int) LS_SEN2.now,
+				(int) RS_SEN2.now);
+		myprintf(
+				"\"LS1_2\":%d,\"RS1_2\":%d,\"LF1_2\":%d,\"RF1_2\":%d,\"LS2_2\":%d,\"RS2_2\":%d,\"BATT\":%d}\r\n",
+				(int) LS_SEN45.dist, (int) RS_SEN45.dist, (int) 0,
+				(int) Front_SEN.dist, (int) LS_SEN2.dist, (int) RS_SEN2.dist,
+				BATTERY);
 		cmt_wait(50);
 		if (!Swich) {
 			break;
@@ -395,8 +398,8 @@ void printSensor2() {
 		myprintf("battery=%f V\r\n", battery);
 		myprintf("Gyro=%f %f\r\n", settleGyro, G.ref);
 //		myprintf("	 %f %f\r\n", LS_SEN2.now, RS_SEN2.now);
-		myprintf("	%f %f\r\n", LS_SEN1.now, RS_SEN1.now);
-		myprintf("%f %f\r\n", LF_SEN1.now, RF_SEN1.now);
+		myprintf("	%f %f\r\n", LS_SEN45.now, RS_SEN45.now);
+		myprintf("%f %f\r\n", 0, Front_SEN.now);
 		//		float error = 0;
 //		error -= LS_SEN1.now - LS_SEN1.ref;
 //		error += RS_SEN1.now - RS_SEN1.ref;
@@ -425,7 +428,7 @@ char motionCheck() {
 	sensingMode = SearchMode;
 	ledOn = 1;
 	while (1) {
-		if (LF_SEN1.now > CHECK_ORDER_LEFT || RF_SEN1.now > CHECK_ORDER_RIGHT) {
+		if (Front_SEN.now > CHECK_ORDER_RIGHT) {
 			LED1 = 1;
 			cmt_wait(100);
 			LED1 = 0;
@@ -491,8 +494,8 @@ void gyroZeroCheck(char bool) {
 }
 long er, el;
 void keepZeroPoint() {
-//	motionCheck();
-//	cmt_wait(500);
+	motionCheck();
+	cmt_wait(500);
 	gyroZeroCheck(true);
 	readGyroParam();
 	readVelocityGain();
@@ -509,8 +512,8 @@ void keepZeroPoint() {
 		myprintf("%c[0;0H", ESC); /* 戦闘戻す*/
 		myprintf("battery=%f V\r\n", battery);
 		myprintf("Gyro=%f\r\n", settleGyro);
-		myprintf("	%f %f\r\n", LS_SEN1.now, RS_SEN1.now);
-		myprintf("%f 		%f\r\n", LF_SEN1.now, RF_SEN1.now);
+		myprintf("	%f %f\r\n", LS_SEN45.now, RS_SEN45.now);
+		myprintf("%f 		%f\r\n", 0, Front_SEN.now);
 		myprintf("Duty:	%f	%f\r\n", Duty_l, Duty_r);
 		myprintf("Velocity:	%f	%f\r\n", V_Enc.l, V_Enc.r);
 		myprintf("angle:	%f\r\n", ang * 180 / PI);
@@ -550,8 +553,8 @@ void keepZeroPoint2() {
 		myprintf("%c[0;0H", ESC); /* 戦闘戻す*/
 		myprintf("battery=%f V\r\n", battery);
 		myprintf("Gyro=%f\r\n", settleGyro);
-		myprintf("	%f %f\r\n", LS_SEN1.now, RS_SEN1.now);
-		myprintf("%f 		%f\r\n", LF_SEN1.now, RF_SEN1.now);
+		myprintf("	%f %f\r\n", LS_SEN45.now, RS_SEN45.now);
+		myprintf("%f 		%f\r\n", 0, Front_SEN.now);
 		myprintf("Duty:	%f	%f\r\n", Duty_l, Duty_r);
 		myprintf("Velocity:	%f	%f\r\n", V_Enc.l, V_Enc.r);
 		myprintf("angle:	%f\r\n", ang * 180 / PI);

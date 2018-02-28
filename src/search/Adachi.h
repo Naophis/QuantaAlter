@@ -868,7 +868,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
 				backFlg = 0;
 				break;
 			case Back:
-				if (RF_SEN1.now > wallhosei) {
+				if (Front_SEN.now > wallhosei) {
 					gyroKeepFlg = 1;
 					realRun3(velocity, 3500, 3500, 100, 25);
 					mtu_stop();
@@ -1150,7 +1150,7 @@ char Adachi3(int GoalX, int GoalY, char Zen, char isFull) {
 			backFlg = 0;
 			break;
 		case Back:
-			if (RF_SEN1.now > wallhosei) {
+			if (Front_SEN.now > wallhosei) {
 				gyroKeepFlg = 1;
 				realRun3(velocity, 3500, 3500, 100, 25);
 				mtu_stop();
@@ -1260,9 +1260,9 @@ void lefthand() {
 	float v = 500;
 	sensingMode = SearchMode;
 	while (1) {
-		char left = LS_SEN1.now > L_WALL_EXIST;
-		char right = RS_SEN1.now > R_WALL_EXIST;
-		char front = LF_SEN1.now > LF_WALL_EXIST || RF_SEN1.now > RF_WALL_EXIST;
+		char left = LS_SEN45.now > L_WALL_EXIST;
+		char right = RS_SEN45.now > R_WALL_EXIST;
+		char front = Front_SEN.now > FRONT_WALL_EXIST;
 //		myprintf("%d	%d	%d\r\n", left, front, right);
 		if (left == 0) {
 			slalom3(L, Normal, v, v, 0);
@@ -1271,7 +1271,7 @@ void lefthand() {
 		} else if (right == 0) {
 			slalom3(R, Normal, v, v, 0);
 		} else {
-			if (RF_SEN1.now > RF_WALL) {
+			if (Front_SEN.now > RF_WALL) {
 				gyroKeepFlg = 1;
 				realRun3(v, 3500, 3500, 90, 25);
 				mtu_stop();

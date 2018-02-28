@@ -20,16 +20,15 @@ void initLED() {
 	PORTB.PDR.BIT.B6 = 1;
 	PORTB.PDR.BIT.B7 = 1;
 	PORTB.PDR.BIT.B5 = 1;
-	PORT5.PDR.BIT.B2 = 1;
+	PORT2.PDR.BIT.B3 = 1;
 }
 
 void initSensorLED() {
-	PORTE.PDR.BIT.B1 = 1;
-	PORTD.PDR.BIT.B7 = 1;
-	PORT2.PDR.BIT.B7 = 1;
-	PORT2.PDR.BIT.B5 = 1;
-	PORT2.PDR.BIT.B4 = 1;
-	PORT2.PDR.BIT.B3 = 1;
+	PORTE.PDR.BIT.B0 = 1; //Right45
+	PORTE.PDR.BIT.B1 = 1; //Right
+	PORT2.PDR.BIT.B5 = 1; //Left45
+	PORT2.PDR.BIT.B4 = 1; //Left
+	PORTD.PDR.BIT.B6 = 1; //Front
 }
 
 void initMotorDriverRotate() {
@@ -42,8 +41,7 @@ void initMotorDriverRotate() {
 	PORTA.PDR.BIT.B5 = 1;	// vacume
 	PORTA.PDR.BIT.B2 = 1;	// pwm
 	PORTE.PDR.BIT.B3 = 1;	// pwm
-	PORTC.PDR.BIT.B6 = 1;	// Buzzer
-
+	PORTD.PDR.BIT.B7 = 1;	//Buzzer
 }
 
 void initS12AD() {
@@ -258,7 +256,7 @@ void init_Mtu4_2() {
 	MTU4.TCR.BIT.TPSC = 0;
 	MTU4.TCR.BIT.CCLR = 2;				// TGRBコンペアマッチでTCNTクリア
 	MTU4.TIER.BIT.TGIEA = 1;				// TGRAの割り込み許可
-	MTU4.TGRA = (int) (_PCLKA / MTU_CYCLE) - 3000 - 1;// TGRB - TGRA = 発光時間 3840= 40us
+	MTU4.TGRA = (int) (_PCLKA / MTU_CYCLE) - 3000 - 1;	// TGRB - TGRA
 	MTU4.TIER.BIT.TGIEB = 1;				// TGRBの割り込み許可
 	MTU4.TGRB = (int) (_PCLKA / MTU_CYCLE) - 1;	// 96MHz 1/96M =0.0104166us 0.0104166*19200=0.2ms
 	//割り込み許可
@@ -303,9 +301,8 @@ void init_Mtu4() {
 	MTU.TSTRA.BIT.CST4 = 1;				//MTU0のカウントスタート p460
 	SYSTEM.PRCR.WORD = 0xA500; // Protect off
 
-
 	SYSTEM.PRCR.WORD = 0xA503; // Protect of//f
-	/*	P257でベクタテーブルの説明	*///
+	/*	P257でベクタテーブルの説明	*/
 //	MSTP (MTU6) = 0;
 //	MTU6.TCR.BIT.TPSC = 0;
 //	MTU6.TCR.BIT.CCLR = 1;				// TGRBコンペアマッチでTCNTクリ//ア
@@ -320,7 +317,6 @@ void init_Mtu4() {
 //	ICU.SLIAR213.BYTE = 0x16U;
 //	IEN(PERIA, INTA213) = 1;
 //	IPR(PERIA, INTA213) = 7;
-
 	SYSTEM.PRCR.WORD = 0xA500; // Protect off
 }
 
@@ -338,17 +334,24 @@ void startVacume() {
 	GPT.GTSTR.BIT.CST2 = 1;
 	cmt_wait(1000);
 }
+void calcdist() {
+	RS_SEN45.dist = 445 - 52.12 * logf(RS_SEN45.now);
+	LS_SEN45.dist = 468 - 57.5 * logf(LS_SEN45.now);
+	Front_SEN.dist = 737 - 82.58 * logf(Front_SEN.now);
+	RS_SEN2.dist = 694 - 82.25 * logf(RS_SEN2.now);
+	LS_SEN2.dist = 798 - 95.27 * logf(LS_SEN2.now);
+}
 void getSensorData() {
 
-	if (RS_SEN1.on > RS_SEN1.off) {
-		RS_SEN1.now = 0.1 * (RS_SEN1.on - RS_SEN1.off) + 0.9 * RS_SEN1.old;
+	if (RS_SEN45.on > RS_SEN45.off) {
+		RS_SEN45.now = 0.1 * (RS_SEN45.on - RS_SEN45.off) + 0.9 * RS_SEN45.old;
 	} else {
-		RS_SEN1.now = 0;
+		RS_SEN45.now = 0;
 	}
-	if (LS_SEN1.on > LS_SEN1.off) {
-		LS_SEN1.now = 0.1 * (LS_SEN1.on - LS_SEN1.off) + 0.9 * LS_SEN1.old;
+	if (LS_SEN45.on > LS_SEN45.off) {
+		LS_SEN45.now = 0.1 * (LS_SEN45.on - LS_SEN45.off) + 0.9 * LS_SEN45.old;
 	} else {
-		LS_SEN1.now = 0;
+		LS_SEN45.now = 0;
 	}
 
 	if (RS_SEN2.on > RS_SEN2.off) {
@@ -362,16 +365,18 @@ void getSensorData() {
 		LS_SEN2.now = 0;
 	}
 
-	if (RF_SEN1.on > RF_SEN1.off) {
-		RF_SEN1.now = 0.1 * (RF_SEN1.on - RF_SEN1.off) + 0.9 * RF_SEN1.old;
+	if (Front_SEN.on > Front_SEN.off) {
+		Front_SEN.now = 0.1 * (Front_SEN.on - Front_SEN.off)
+				+ 0.9 * Front_SEN.old;
 	} else {
-		RF_SEN1.now = 0;
+		Front_SEN.now = 0;
 	}
-	if (LF_SEN1.on > LF_SEN1.off) {
-		LF_SEN1.now = 0.1 * (LF_SEN1.on - LF_SEN1.off) + 0.9 * LF_SEN1.old;
-	} else {
-		LF_SEN1.now = 0;
-	}
+	calcdist();
+//	if (LF_SEN1.on > LF_SEN1.off) {
+//		LF_SEN1.now = 0.1 * (LF_SEN1.on - LF_SEN1.off) + 0.9 * LF_SEN1.old;
+//	} else {
+//		LF_SEN1.now = 0;
+//	}
 
 }
 #endif /* INIT_H_ */

@@ -8,8 +8,8 @@
 #ifndef WALLOFF_H_
 #define WALLOFF_H_
 
-#define SEN_R RS_SEN1.now
-#define SEN_L LS_SEN1.now
+#define SEN_R RS_SEN45.now
+#define SEN_L LS_SEN45.now
 #define SEN_R2 RS_SEN2.now
 #define SEN_L2 LS_SEN2.now
 

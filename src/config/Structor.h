@@ -34,8 +34,11 @@ typedef struct {			//センサ情報用
 	int exitst;
 	int exitstCount;
 	int vanishCount;
+
+	float dist;	//距離[mm]
+
 } t_sensor;
-volatile t_sensor LS_SEN1, LF_SEN1, RS_SEN1, RF_SEN1, G, LS_SEN2, RS_SEN2;
+volatile t_sensor LS_SEN45, RS_SEN45, Front_SEN, G, LS_SEN2, RS_SEN2;
 
 volatile char sen_r[5];
 volatile char sen_l[5];
@@ -43,7 +46,7 @@ volatile char sen_r2[5];
 volatile char sen_l2[5];
 volatile float sen_log_r[5];
 volatile float sen_log_l[5];
-volatile float sen_log_fr[5];
+volatile float sen_log_front[5];
 volatile float sen_log_fl[5];
 volatile float sen_log_r2[5];
 volatile float sen_log_l2[5];

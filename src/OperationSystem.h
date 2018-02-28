@@ -19,8 +19,8 @@ void sensourCheck() {
 //	mtu_start();
 	V_now = 0;
 	while (Swich == 1) {
-		myprintf("%d	%d	%d	%d	%d\n", (int) LS_SEN1.now, (int) LF_SEN1.now,
-				(int) RF_SEN1.now, (int) RS_SEN1.now, (int) (Se.error_now));
+		myprintf("%d	%d	%d	%d	%d\n", (int) LS_SEN45.now, (int) 0,
+				(int) Front_SEN.now, (int) RS_SEN45.now, (int) (Se.error_now));
 		cmt_wait(100);
 //		SCI_SCI_printf("%d %d	%d	%d\n", MTU2.TCNT, MTU1.TCNT, (int) V_Enc.l,
 //				(int) V_Enc.r);
@@ -402,6 +402,8 @@ void sla3(float vMax) {
 
 	inputNaiperTurnAll1500();
 
+	setPrms(Large, 90, 115.0, 9.875, 45.0, 0, 0, 0.062286376953125, 4, 1900);
+	setPrms3(Large, 15.0, 0);
 	save();
 
 //	running2(maxVelocity, accele, 200, 1);
@@ -412,8 +414,8 @@ void sla3(float vMax) {
 	cc = 1;
 	logs = 0;
 
-	wallOff(RorL);
-	slalom3(RorL, Orval, vMax, vMax, 0);
+//	wallOff(RorL);
+	slalom3(RorL, Large, vMax, vMax, 0);
 //	wallOff(RorL == R ? L : R);
 //	slalom3(RorL == R ? L : R, Dia90, vMax, vMax, 0);
 
@@ -592,7 +594,7 @@ void testRoll(char r) {
 	r = eigherRightLeft() == Right ? R : L;
 	gyroZeroCheck(true);
 
-	for (a = 0; a < 5 * 1; a++) {
+	for (a = 0; a < 1 * 1; a++) {
 		cmt_wait(150);
 		cc = 1;
 //		gyroRoll(L, 180, 60, 80);
@@ -702,9 +704,9 @@ void testVacume() {
 void testVacume2(int duty) {
 	gyroZeroCheck(true);
 	cmt_wait(500);
-	mtu_start();
-	readVelocityGain();
-	resetGyroParam();
+//	mtu_start();
+//	readVelocityGain();
+//	resetGyroParam();
 	startVacume2(duty);
 //	cmt_wait(15000);
 	for (int i = 0; i < 200; i++) {
@@ -869,11 +871,11 @@ char selectGoal() {
 	while (1) {
 		if (MTU1.TCNT < goal7) {
 			LED1 = 1;
-			LED6 = 0;
+//			LED6 = 0;
 			goal = 7;
 		} else if (MTU1.TCNT < goal8) {
 			LED1 = 0;
-			LED6 = 1;
+//			LED6 = 1;
 			goal = 8;
 		}
 		if (MTU1.TCNT > OVERFLOW) {
@@ -1072,7 +1074,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 			oneUp(100);
 		}
 	} else if (mode == MapMemory) {
-		testVacume2(10);
+		testVacume2(50);
 	} else if (mode == VacumeTest) {
 		printSensor();
 	} else if (mode == Mentenance) {
@@ -1080,7 +1082,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 	}
 	mtu_stop2();
 //	TRANSAM = false;
-	LED6 = false;
+//	LED6 = false;
 	LED1 = false;
 	return 0;
 }
@@ -1213,8 +1215,8 @@ void frontCtrlTest2() {
 		myprintf("%c[0;0H", ESC); /* 戦闘戻す*/
 		myprintf("battery=%f V\r\n", battery);
 		myprintf("Gyro=%f\r\n", settleGyro);
-		myprintf("	%f %f\r\n", LS_SEN1.now, RS_SEN1.now);
-		myprintf("%f 		%f\r\n", LF_SEN1.now, RF_SEN1.now);
+		myprintf("	%f %f\r\n", LS_SEN45.now, RS_SEN45.now);
+		myprintf("%f 		%f\r\n", 0, Front_SEN.now);
 		myprintf("Duty:	%f	%f\r\n", Duty_l, Duty_r);
 		myprintf("Velocity:	%f	%f\r\n", V_Enc.l, V_Enc.r);
 		myprintf("angle:	%f\r\n", ang * 180 / PI);
@@ -1256,9 +1258,14 @@ void operation() {
 		goalX = 7;
 		goalY = 7;
 	}
-
-//	printSensor();
-
+	enableSciUpdate = true;
+	while (PushBottom)
+		;
+//	motionCheck();
+//	mtu_start();
+//	while (PushRight)
+//		;
+	printSensor();
 	if (!PushTop) {
 
 		enableSciUpdate = true;
@@ -1284,7 +1291,7 @@ void operation() {
 //		testWallOff(500);
 //	testWallOffSeach(500);
 //		testNormalSlalom(1000);
-//		sla3(2000);
+//		sla3(1900);
 //	inputData2();
 //	testVacume2(90);
 //	testWallOff();

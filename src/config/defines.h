@@ -17,27 +17,21 @@ volatile int tpu_count = 0;
 #define M_CYCLE 550
 #define FAN_CYCLE 500
 
-#define RF S12AD.ADDR1	//P41
-#define RS2 S12AD.ADDR2	//P42
-#define RS S12AD.ADDR3	//P43
-#define LS S12AD.ADDR4	//P44
-#define LS2 S12AD.ADDR5	//P45
+#define FRONT_AD S12AD.ADDR3 //front P43
+#define RS2 S12AD.ADDR5	 //P45
+#define RS45 S12AD.ADDR4 //P44
+#define LS45 S12AD.ADDR1 //P41
+#define LS2 S12AD.ADDR2	//P42
+
 #define LF S12AD.ADDR6	//P46
 #define BATTERY S12AD.ADDR7	//P47
-
-//#define LED1 PORT1.PODR.BIT.B2
-//#define LED2 PORT1.PODR.BIT.B3
-//#define LED3 PORT1.PODR.BIT.B4
-//#define LED4 PORT1.PODR.BIT.B5
-#define LED5 PORT1.PODR.BIT.B6
-#define LED6 PORT1.PODR.BIT.B7
 
 #define LED1 PORTA.PODR.BIT.B7
 #define LED2 PORTB.PODR.BIT.B5
 #define LED3 PORTB.PODR.BIT.B6
 #define LED4 PORTB.PODR.BIT.B7
 #define LED_RIGHT PORTE.PODR.BIT.B2
-#define LED_LEFT PORT5.PODR.BIT.B2
+#define LED_LEFT PORT2.PODR.BIT.B3
 
 float settleGyro2, settleGyroOld, settleGyro;
 
@@ -50,7 +44,7 @@ char fanStart2 = false;
 //#define FAN_AMP2 10.50
 //#define FAN_AMP 10.50
 #define FAN_AMP2 8.0
-#define FAN_AMP 11.0	//11.35
+#define FAN_AMP 8.0	//11.35
 //#define FAN_AMP 11.0	//11.35
 const float PI = 3.141592653589793;
 
@@ -202,16 +196,16 @@ void led(char a, char b, char c, char d) {
 	LED2 = b > 0;
 	LED3 = c > 0;
 	LED4 = d > 0;
-	LED5 = false;
-	LED6 = false;
+	LED_RIGHT = false;
+	LED_LEFT = false;
 }
 void LED(char i) {
 	LED1 = i & 0x01;
 	LED2 = i & 0x02;
 	LED3 = i & 0x04;
 	LED4 = false;
-	LED5 = false;
-	LED6 = false;
+	LED_RIGHT = false;
+	LED_LEFT = false;
 }
 void F_SEN_LED() {
 	PORTC.PODR.BIT.B3 = 1;

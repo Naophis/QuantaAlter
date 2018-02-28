@@ -20,7 +20,7 @@ void changeMode(int isApec) {
 
 	R_WALL_EXIST = 180; 		//探索時壁判定
 	L_WALL_EXIST = 180;		 //探索時壁判定
-	RF_WALL_EXIST = 150;		 //探索時壁判定
+	FRONT_WALL_EXIST = 150;		 //探索時壁判定
 	LF_WALL_EXIST = 150; 		//探索時壁判定
 
 	FRONT_CTRL_R = 292;		 //前壁補正
@@ -49,14 +49,14 @@ void changeMode(int isApec) {
 	existLeftWall3 = 150;			//壁切れの予備
 
 	// 直線中央値
-	RS_SEN1.ref = 345;
-	LS_SEN1.ref = 404;
+	RS_SEN45.ref = 345;
+	LS_SEN45.ref = 404;
 	// 斜め中央値　壁ナシ
-	RF_SEN1.ref = 55;
-	LF_SEN1.ref = 100;
+	Front_SEN.ref = 55;
+//	LF_SEN1.ref = 100;
 	// 斜め中央値　壁あり
-	RF_SEN1.ref2 = 55;
-	LF_SEN1.ref2 = 180;
+	Front_SEN.ref2 = 55;
+//	LF_SEN1.ref2 = 180;
 
 //	existRightWall2 = 400;	//壁切れの予備 斜め 不要
 //	existLeftWall2 = 400;		//壁切れの予備 斜め 不要

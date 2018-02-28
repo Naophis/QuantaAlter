@@ -52,7 +52,7 @@ void enc_to_vel(void) {
 	Velocity.error_old += Velocity.error_now;
 
 	vr = -(float) (PI * TIRE * enc_r * CMT_CYCLE / GEAR / 4096.0);
-	vl = (float) (PI * TIRE * enc_l * CMT_CYCLE / GEAR / 4096.0);
+	vl = -(float) (PI * TIRE * enc_l * CMT_CYCLE / GEAR / 4096.0);
 
 	V_Enc.r = vr; // vr * 0.1 + vr2 * 0.9;
 	V_Enc.l = vl; // vl * 0.1 + vl2 * 0.9;
@@ -80,29 +80,29 @@ int checkStr = 0;
 float check_sen_error(void) {
 	int error = 0;
 	char check = 0;
-	if (ABS(RS_SEN1.now - RS_SEN1.old) < KIREME_R) {
-		if (RS_SEN1.now > R_WALL) {
-			if (RF_SEN1.now < FRONT_OUT_R) {
-				error += RS_SEN1.now - RS_SEN1.ref;
+	if (ABS(RS_SEN45.now - RS_SEN45.old) < KIREME_R) {
+		if (RS_SEN45.now > R_WALL) {
+			if (Front_SEN.now < FRONT_OUT_R) {
+				error += RS_SEN45.now - RS_SEN45.ref;
 				check++;
 			}
 		}
 	}
-	if (ABS(LS_SEN1.now - LS_SEN1.old) < KIREME_L) {
-		if (LS_SEN1.now > L_WALL) {
-			if (LF_SEN1.now < FRONT_OUT_L) {
-				error -= LS_SEN1.now - LS_SEN1.ref;
-				check++;
-			}
-		}
-	} else {
-		if (LS_SEN1.now > (L_WALL + orderup_l)) {
-			error -= LS_SEN1.now - LS_SEN1.ref;
-			check++;
-		}
-	}
-	RS_SEN1.old = RS_SEN1.now;
-	LS_SEN1.old = LS_SEN1.now;
+//	if (ABS(LS_SEN45.now - LS_SEN45.old) < KIREME_L) {
+//		if (LS_SEN45.now > L_WALL) {
+//			if (LF_SEN1.now < FRONT_OUT_L) {
+//				error -= LS_SEN45.now - LS_SEN45.ref;
+//				check++;
+//			}
+//		}
+//	} else {
+//		if (LS_SEN45.now > (L_WALL + orderup_l)) {
+//			error -= LS_SEN45.now - LS_SEN45.ref;
+//			check++;
+//		}
+//	}
+	RS_SEN45.old = RS_SEN45.now;
+	LS_SEN45.old = LS_SEN45.now;
 	if (check == 0) {
 		Se.error_old = 0;
 	} else {
@@ -139,28 +139,28 @@ float check_sen_error(void) {
 float check_sen_error2(void) {
 	int error = 0;
 	char check = 0;
-	if (ABS(RS_SEN1.now - RS_SEN1.old) < KIREME_R) {
-		if (RS_SEN1.now > R_WALL) {
-			if (RF_SEN1.now < FRONT_OUT_R) {
+	if (ABS(RS_SEN45.now - RS_SEN45.old) < KIREME_R) {
+		if (RS_SEN45.now > R_WALL) {
+			if (Front_SEN.now < FRONT_OUT_R) {
 				check++;
 			}
 		}
 	} else {
-		if (RS_SEN1.now > (R_WALL + orderup_r)) {
+		if (RS_SEN45.now > (R_WALL + orderup_r)) {
 			check++;
 		}
 	}
-	if (ABS(LS_SEN1.now - LS_SEN1.old) < KIREME_L) {
-		if (LS_SEN1.now > L_WALL) {
-			if (LF_SEN1.now < FRONT_OUT_L) {
-				check++;
-			}
-		}
-	} else {
-		if (LS_SEN1.now > (L_WALL + orderup_l)) {
-			check++;
-		}
-	}
+//	if (ABS(LS_SEN45.now - LS_SEN45.old) < KIREME_L) {
+//		if (LS_SEN45.now > L_WALL) {
+//			if (LF_SEN1.now < FRONT_OUT_L) {
+//				check++;
+//			}
+//		}
+//	} else {
+//		if (LS_SEN45.now > (L_WALL + orderup_l)) {
+//			check++;
+//		}
+//	}
 	return check;
 }
 #define KIREME_R_BACK 100
@@ -168,9 +168,9 @@ float check_sen_error2(void) {
 float check_sen_error_back(void) {
 	int error = 0;
 	char check = 0;
-	if (ABS(RS_SEN1.now - RS_SEN1.old) < KIREME_R_BACK) {
-		if (RS_SEN1.now > R_WALL) {
-			error += RS_SEN1.ref - RS_SEN1.now;
+	if (ABS(RS_SEN45.now - RS_SEN45.old) < KIREME_R_BACK) {
+		if (RS_SEN45.now > R_WALL) {
+			error += RS_SEN45.ref - RS_SEN45.now;
 			check++;
 		}
 	}
@@ -180,8 +180,8 @@ float check_sen_error_back(void) {
 //			check++;
 //		}
 //	}
-	RS_SEN1.old = RS_SEN1.now;
-	LS_SEN1.old = LS_SEN1.now;
+	RS_SEN45.old = RS_SEN45.now;
+	LS_SEN45.old = LS_SEN45.now;
 	if (check == 0) {
 		Se.error_old = 0;
 	} else {
@@ -235,18 +235,18 @@ int check_sen_error_dia_side(void) {
 //	}
 
 	if (peekSideR != 0 && !isIncrease(R)) {
-		error += peekSideR - RS_SEN1.ref2;
+		error += peekSideR - RS_SEN45.ref2;
 		check++;
 		peekSideR = 0;
 	}
 	if (peekSideL != 0 && !isIncrease(L)) {
-		error -= peekSideL - LS_SEN1.ref2;
+		error -= peekSideL - LS_SEN45.ref2;
 		check++;
 		peekSideL = 0;
 	}
 
-	RS_SEN1.old = RS_SEN1.now;
-	LS_SEN1.old = LS_SEN1.now;
+	RS_SEN45.old = RS_SEN45.now;
+	LS_SEN45.old = LS_SEN45.now;
 
 	if (check == 0) {
 		Se2.error_old = 0;
@@ -278,13 +278,13 @@ float LF_WALL_FrontCTRL = 450; //斜め時 姿勢制御閾値(壁ナシ）
 
 float check_sen_error_dia_FrontCtrl() {
 	int error = 0;
-	if (RF_SEN1.now > RF_WALL_FrontCTRL && RF_SEN1.now < 4500) {
-		error -= RF_SEN1.now - RF_SEN1.ref3;
+	if (Front_SEN.now > RF_WALL_FrontCTRL && Front_SEN.now < 4500) {
+		error -= Front_SEN.now - Front_SEN.ref3;
 	} else {
 		SeFrnt.error_old = 0;
 	}
-	if (LF_SEN1.now > LF_WALL_FrontCTRL && LF_SEN1.now < 4500) {
-		error -= LF_SEN1.now - LF_SEN1.ref3;
+	if (Front_SEN.now > RF_WALL_FrontCTRL) {
+//		error -= LF_SEN1.now - LF_SEN1.ref3;
 	} else {
 		SeFrntL.error_old = 0;
 	}
@@ -298,13 +298,13 @@ float check_sen_error_dia_FrontCtrl() {
 
 float check_sen_error_dia_FrontCtrl2() {
 	int error = 0;
-	if (RF_SEN1.now > RF_WALL_FrontCTRL && RF_SEN1.now < 4500) {
-		error -= RF_SEN1.now - RF_SEN1.ref3;
+	if (Front_SEN.now > RF_WALL_FrontCTRL && Front_SEN.now < 4500) {
+		error -= Front_SEN.now - Front_SEN.ref3;
 	}
 
-	if (LF_SEN1.now > LF_WALL_FrontCTRL && LF_SEN1.now < 4500) {
-		error += LF_SEN1.now - LF_SEN1.ref3;
-	}
+//	if (LF_SEN1.now > LF_WALL_FrontCTRL && LF_SEN1.now < 4500) {
+//		error += LF_SEN1.now - LF_SEN1.ref3;
+//	}
 
 	if (error == 0) {
 		SeFrntAngle.error_old = 0;
@@ -324,22 +324,22 @@ float LF_WALL = 210;  //斜め時 姿勢制御閾値(壁アリ）
 int check_sen_error_dia(void) {
 	int error = 0;
 	char check = 0;
-	if (ABS(RF_SEN1.now - RF_SEN1.old) < KIREME_R_DIA) {
-		if (RF_SEN1.now > RF_WALL) {
-			error += RF_SEN1.now - RF_SEN1.ref;
+	if (ABS(Front_SEN.now - Front_SEN.old) < KIREME_R_DIA) {
+		if (Front_SEN.now > RF_WALL) {
+			error += Front_SEN.now - Front_SEN.ref;
 			check++;
 		}
 	}
 
-	if (ABS(LF_SEN1.now - LF_SEN1.old) < KIREME_L_DIA) {
-		if (LF_SEN1.now > LF_WALL1) {
-			error -= LF_SEN1.now - LF_SEN1.ref;
-			check++;
-		}
-	}
+//	if (ABS(LF_SEN1.now - LF_SEN1.old) < KIREME_L_DIA) {
+//		if (LF_SEN1.now > LF_WALL1) {
+//			error -= LF_SEN1.now - LF_SEN1.ref;
+//			check++;
+//		}
+//	}
 
-	RF_SEN1.old = RF_SEN1.now;
-	LF_SEN1.old = LF_SEN1.now;
+	Front_SEN.old = Front_SEN.now;
+//	LF_SEN1.old = LF_SEN1.now;
 
 	if (check == 0) {
 		Se.error_old = 0;
@@ -425,17 +425,17 @@ float checkDuty(float duty) {
 	return duty;
 }
 void changeRotation(float duty, char RorL) {
-	if (RorL == R) {
-		if (duty > 0.0) {
-			CW_L();
-		} else {
-			CCW_L();
-		}
-	} else if (RorL == L) {
+	if (RorL == L) {
 		if (duty > 0.0) {
 			CW_R();
 		} else {
 			CCW_R();
+		}
+	} else if (RorL == R) {
+		if (duty > 0.0) {
+			CCW_L();
+		} else {
+			CW_L();
 		}
 	}
 }
@@ -454,6 +454,7 @@ float feadforward_para(char RorL) {
 }
 
 float FF_calc(char RorL) {
+	return 0;
 	float rpm = getRpm(RorL);
 	float resist_str = friction_str ? Resist * friction / Km : 0;
 	float resist_roll = friction_roll ? Resist * friction2 / Km : 0;
@@ -524,45 +525,11 @@ void dutyCalcuration2(void) {
 	dutyR = (ffL + FB_straight_duty + FB_pararell_duty) / battery * 100;
 	dutyL = (ffR + FB_straight_duty - FB_pararell_duty) / battery * 100;
 
-	if (frontWallCtrl == 1) {
-		SeFrnt.error_now = check_sen_error_dia_FrontCtrl();
+	SeFrnt.error_old = 0;
+	SeFrntL.error_old = 0;
 
-		SeFrntAngle.error_now = check_sen_error_dia_FrontCtrl2();
-
-		float fb1 = FrontCtrl.Kp * SeFrnt.error_now
-				+ FrontCtrl.Ki * SeFrnt.error_old;
-//		float fb2 = FrontCtrlAngle.Kp * SeFrntAngle.error_now
-//				+ FrontCtrlAngle.Ki * SeFrntAngle.error_old;
-
-		V_now = fb1;
-//		W_now = fb1;
-
-		if (V_now > 250) {
-			V_now = 250;
-		} else if (V_now < -250) {
-			V_now = -250;
-		}
-
-//		if (W_now > 1) {
-//			W_now = 1;
-//		} else if (W_now < -1) {
-//			W_now = -1;
-//		}
-
-		dutyR = FB_straight_duty + C.g;
-		dutyL = FB_straight_duty - C.g;
-
-		SeFrnt.error_old += SeFrnt.error_now;
-		SeFrntAngle.error_old += SeFrntAngle.error_now;
-	} else {
-		SeFrnt.error_old = 0;
-		SeFrntL.error_old = 0;
-	}
-
-//	Duty_r = (ffL + FB_straight_duty + FB_pararell_duty) / battery * 100;
-//	Duty_l = (ffR + FB_straight_duty - FB_pararell_duty) / battery * 100;
-
-//	dutyR = dutyL = 60;
+//	dutyR = 15;
+//	dutyL = -15;
 	Duty_r = dutyR;
 	Duty_l = dutyL;
 	changeRotation(dutyR, R);	//R_CW/CCW
@@ -574,24 +541,20 @@ void dutyCalcuration2(void) {
 
 	gra_r = (long) (dutyR * M_CYCLE / 100.0);
 	gra_l = (long) (dutyL * M_CYCLE / 100.0);
+
 	if (enablePWM) {
-		GPT0.GTCCRA = gra_l;
-		GPT0.GTCCRC = gra_l;
-		GPT1.GTCCRA = gra_r;
-		GPT1.GTCCRC = gra_r;
+		GPT0.GTCCRA = GPT0.GTCCRC = gra_l;
+		GPT1.GTCCRA = GPT1.GTCCRC = gra_r;
 	} else {
-		GPT0.GTCCRA = 0;
-		GPT0.GTCCRC = 0;
-		GPT1.GTCCRA = 0;
-		GPT1.GTCCRC = 0;
+		GPT0.GTCCRA = GPT0.GTCCRC = GPT1.GTCCRA = GPT1.GTCCRC = 0;
 	}
 
 }
 
 //物理量ベース計算
 void Physical_Basement(void) {
-	enc_l = MTU1.TCNT - 30000;
-	enc_r = MTU2.TCNT - 30000;
+	enc_r = MTU1.TCNT - 30000;
+	enc_l = MTU2.TCNT - 30000;
 	if (os_escape) {
 		MTU2.TCNT = MTU1.TCNT = 30000;
 	}

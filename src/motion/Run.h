@@ -47,28 +47,28 @@ float existLeftWall3 = 150;  //壁切れの予備
 
 char checkUp(char RorL) {
 	if (RorL == R) {
-		return (RS_SEN1.now > existRightWall) && (sen_log_r[0] > sen_log_r[1])
+		return (RS_SEN45.now > existRightWall) && (sen_log_r[0] > sen_log_r[1])
 				&& (sen_log_r[1] > sen_log_r[2]);
 	} else {
-		return (LS_SEN1.now > existLeftWall) && (sen_log_l[0] > sen_log_l[1])
+		return (LS_SEN45.now > existLeftWall) && (sen_log_l[0] > sen_log_l[1])
 				&& (sen_log_l[1] > sen_log_l[2]);
 	}
 }
 char checkDown(char RorL) {
 	if (RorL == R) {
-		return (RS_SEN1.now > existRightWall) && (sen_log_r[0] < sen_log_r[1])
+		return (RS_SEN45.now > existRightWall) && (sen_log_r[0] < sen_log_r[1])
 				&& (sen_log_r[1] < sen_log_r[2]);
 	} else {
-		return (LS_SEN1.now > existLeftWall) && (sen_log_l[0] < sen_log_l[1])
+		return (LS_SEN45.now > existLeftWall) && (sen_log_l[0] < sen_log_l[1])
 				&& (sen_log_l[1] < sen_log_l[2]);
 	}
 }
 char checkDown3(char RorL) {
 	if (RorL == R) {
-		return (RS_SEN1.now > existRightWall) && (sen_log_r[0] < sen_log_r[1])
+		return (RS_SEN45.now > existRightWall) && (sen_log_r[0] < sen_log_r[1])
 				&& (sen_log_r[1] < sen_log_r[2]);
 	} else {
-		return (LS_SEN1.now > existLeftWall) && (sen_log_l[0] < sen_log_l[1])
+		return (LS_SEN45.now > existLeftWall) && (sen_log_l[0] < sen_log_l[1])
 				&& (sen_log_l[1] < sen_log_l[2]);
 	}
 }
@@ -103,22 +103,22 @@ float existLeftWall2 = 400;  //壁切れの予備 斜め
 
 char checkUp2(char RorL) {
 	if (RorL == R) {
-		return (RS_SEN1.now > existRightWall2) && (sen_log_r[0] > sen_log_r[1])
+		return (RS_SEN45.now > existRightWall2) && (sen_log_r[0] > sen_log_r[1])
 				&& (sen_log_r[1] > sen_log_r[2]);
 	} else {
-		return (LS_SEN1.now > existLeftWall2) && (sen_log_l[0] > sen_log_l[1])
+		return (LS_SEN45.now > existLeftWall2) && (sen_log_l[0] > sen_log_l[1])
 				&& (sen_log_l[1] > sen_log_l[2]);
 	}
 }
 char checkDown2(char RorL) {
 //	return false;
 	if (RorL == R) {
-		return (RS_SEN1.now > existRightWall2) && (sen_log_r[0] < sen_log_r[1])
+		return (RS_SEN45.now > existRightWall2) && (sen_log_r[0] < sen_log_r[1])
 				&& (sen_log_r[1] < sen_log_r[2])
 				&& (sen_log_r[2] < sen_log_r[3])
 				&& (sen_log_r[3] < sen_log_r[4]);
 	} else {
-		return (LS_SEN1.now > existLeftWall2) && (sen_log_l[0] < sen_log_l[1])
+		return (LS_SEN45.now > existLeftWall2) && (sen_log_l[0] < sen_log_l[1])
 				&& (sen_log_l[1] < sen_log_l[2])
 				&& (sen_log_l[2] < sen_log_l[3])
 				&& (sen_log_l[3] < sen_log_l[4]);
@@ -457,9 +457,9 @@ float RF_WALL_EXIST2 = 320; //前壁補正　開始
 float LF_WALL_EXIST2 = 320;   //前壁補正　開始
 char frontCtrl() {
 	char tmp = sensingMode;
-	if (LF_SEN1.now > LF_WALL_EXIST2 || RF_SEN1.now > RF_WALL_EXIST2) {
+	if (Front_SEN.now > RF_WALL_EXIST2) {
 		sensingMode = SearchMode;
-		while (RF_SEN1.now < FRONT_CTRL_R && LF_SEN1.now < FRONT_CTRL_L)
+		while (Front_SEN.now < FRONT_CTRL_R)
 			;
 		sensingMode = tmp;
 	}
@@ -469,15 +469,15 @@ float FRONT_CTRL_R4 = 1670;   //前壁補正
 float FRONT_CTRL_L4 = 1530;	//前壁補正
 char frontCtrl4() {
 	char tmp = sensingMode;
-	while (RF_SEN1.now < FRONT_CTRL_R4 && LF_SEN1.now < FRONT_CTRL_L4)
+	while (Front_SEN.now < FRONT_CTRL_R4)
 		;
 	return 1;
 }
 char frontCtrl3() {
 	char tmp = sensingMode;
-	if (LF_SEN1.now > LF_WALL_EXIST2 && RF_SEN1.now > RF_WALL_EXIST2) {
+	if (Front_SEN.now > RF_WALL_EXIST2) {
 		sensingMode = SearchMode;
-		while (RF_SEN1.now < FRONT_CTRL_R && LF_SEN1.now < FRONT_CTRL_L)
+		while (Front_SEN.now < FRONT_CTRL_R)
 			;
 		sensingMode = tmp;
 	}
@@ -488,10 +488,9 @@ char frontCtrl3() {
 char frontCtrl2() {
 	char tmp = sensingMode;
 	distance = 0;
-	if (LF_SEN1.now > 0 && RF_SEN1.now > 0 && distance < 100) {
+	if (Front_SEN.now > 0 && distance < 100) {
 		sensingMode = SearchMode;
-		while (RF_SEN1.now < FRONT_CTRL_R2 && LF_SEN1.now < FRONT_CTRL_L2
-				&& distance < 100)
+		while (Front_SEN.now < FRONT_CTRL_R2 && distance < 100)
 			;
 		sensingMode = tmp;
 	}
@@ -900,9 +899,9 @@ void front(float vmax, float ACC, float dist, char control) {
 char checkStablly() {
 	char flg = false;
 	if (dia == 1) {
-		flg = RF_SEN1.now > R_over_front || LF_SEN1.now > L_over_front;
+		flg = Front_SEN.now > R_over_front;
 	} else {
-		flg = RS_SEN1.now > R_over_side || LS_SEN1.now > L_over_side;
+		flg = RS_SEN45.now > R_over_side || LS_SEN45.now > L_over_side;
 		flg = false;
 	}
 	if (flg == true) {
@@ -948,10 +947,10 @@ char orignalRun(float v1, float v2, float ac, float diac, float dist) {
 	cc = 1;
 	while (ABS(distance) < ABS(dist)) {
 		if (startDecrease(R)) {
-			peekSideR = RS_SEN1.now;
+			peekSideR = RS_SEN45.now;
 		}
 		if (startDecrease(L)) {
-			peekSideL = LS_SEN1.now;
+			peekSideL = LS_SEN45.now;
 		}
 		d2 = ABS((V_now + v2) * (V_now - v2) / (2.0 * diac));
 		switch (sequence) {
@@ -1169,8 +1168,8 @@ char running2(float vmax, float ACC, float dist, char control) {
 	V_max = vmax;
 //	G.th = gyroTh_R;
 	runFlg = 1;
-	char bool2 = RS_SEN1.now > R_WALL3; // checkSensorOff(R, false);
-	char bool3 = LS_SEN1.now > L_WALL3; // checkSensorOff(L, false);
+	char bool2 = RS_SEN45.now > R_WALL3; // checkSensorOff(R, false);
+	char bool3 = LS_SEN45.now > L_WALL3; // checkSensorOff(L, false);
 	char bool = bool2 | bool3;
 
 	if (check_sen_error2() > 0) {

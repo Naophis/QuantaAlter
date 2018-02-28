@@ -7,13 +7,13 @@
 
 #ifndef SENSOR_H_
 #define SENSOR_H_
+
 void sensor_led_off() {
-	PORTE.PODR.BIT.B1 = 0;
-	PORTD.PODR.BIT.B7 = 0;
-	PORT2.PODR.BIT.B7 = 0;
-	PORT2.PODR.BIT.B5 = 0;
-	PORT2.PODR.BIT.B4 = 0;
-	PORT2.PODR.BIT.B3 = 0;
+	PORTE.PODR.BIT.B0 = 0;	//righ45
+	PORTE.PODR.BIT.B1 = 0;	//right
+	PORT2.PODR.BIT.B5 = 0;	//left45
+	PORT2.PODR.BIT.B4 = 0;	//left
+	PORTD.PODR.BIT.B6 = 0;	// fornt
 }
 void getBattery();
 void sensing_battery() {
@@ -24,14 +24,13 @@ void sensing_battery() {
 	getBattery();
 }
 void sensing_in_off() {
-	S12AD.ADANSA0.BIT.ANSA0 = 0x7E; //battery
+	S12AD.ADANSA0.BIT.ANSA0 = 0x7E;
 	S12AD.ADCSR.BIT.ADST = 1;
 	while (S12AD.ADCSR.BIT.ADST)
 		;
-	RF_SEN1.off = RF;
-	RS_SEN1.off = RS;
-	LS_SEN1.off = LS;
-	LF_SEN1.off = LF;
+	Front_SEN.off = FRONT_AD;
+	RS_SEN45.off = RS45;
+	LS_SEN45.off = LS45;
 	RS_SEN2.off = RS2;
 	LS_SEN2.off = LS2;
 }
@@ -46,21 +45,20 @@ void sensing_side2() {
 }
 
 void sensing_side() {
-	S12AD.ADANSA0.BIT.ANSA0 = 0x18;
+	S12AD.ADANSA0.BIT.ANSA0 = 0x12;
 	S12AD.ADCSR.BIT.ADST = 1;
 	while (S12AD.ADCSR.BIT.ADST)
 		;
-	LS_SEN1.on = LS;
-	RS_SEN1.on = RS;
+	LS_SEN45.on = LS45;
+	RS_SEN45.on = RS45;
 }
 
 void sensing_front() {
-	S12AD.ADANSA0.BIT.ANSA0 = 0x42;
+	S12AD.ADANSA0.BIT.ANSA0 = 0x08;
 	S12AD.ADCSR.BIT.ADST = 1;
 	while (S12AD.ADCSR.BIT.ADST)
 		;
-	LF_SEN1.on = LF;
-	RF_SEN1.on = RF;
+	Front_SEN.on = FRONT_AD;
 }
 
 char isIncrease(char RorL) {
@@ -117,7 +115,7 @@ char isIncreaseFront(char RorL) {
 	if (RorL == R) {
 		char flag = true;
 		for (char i = 0; i < 3; i++) {
-			if (sen_log_fr[i] < sen_log_fr[i + 1]) {
+			if (sen_log_front[i] < sen_log_front[i + 1]) {
 				flag = false;
 			}
 		}

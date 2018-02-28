@@ -752,27 +752,27 @@ volatile void updateWall(int x, int y, int dir) {
 
 float R_WALL_EXIST = 330;  //探索時壁判定
 float L_WALL_EXIST = 400;  //探索時壁判定
-float RF_WALL_EXIST = 400; //探索時壁判定
+float FRONT_WALL_EXIST = 400; //探索時壁判定
 float LF_WALL_EXIST = 360; //探索時壁判定
 
 volatile void wallJudge2(short dir, short X, short Y) {
 	char wallN = 0, wallE = 0, wallW = 0, wallS = 0;
 	if (dir == North) {
-		wallW = LS_SEN1.now > L_WALL_EXIST;
-		wallE = RS_SEN1.now > R_WALL_EXIST;
-		wallN = LF_SEN1.now > LF_WALL_EXIST || RF_SEN1.now > RF_WALL_EXIST;
+		wallW = LS_SEN45.now > L_WALL_EXIST;
+		wallE = RS_SEN45.now > R_WALL_EXIST;
+		wallN = Front_SEN.now > FRONT_WALL_EXIST;
 	} else if (dir == East) {
-		wallN = LS_SEN1.now > L_WALL_EXIST;
-		wallS = RS_SEN1.now > R_WALL_EXIST;
-		wallE = LF_SEN1.now > LF_WALL_EXIST || RF_SEN1.now > RF_WALL_EXIST;
+		wallN = LS_SEN45.now > L_WALL_EXIST;
+		wallS = RS_SEN45.now > R_WALL_EXIST;
+		wallE = Front_SEN.now > FRONT_WALL_EXIST;
 	} else if (dir == West) {
-		wallS = LS_SEN1.now > L_WALL_EXIST;
-		wallN = RS_SEN1.now > R_WALL_EXIST;
-		wallW = LF_SEN1.now > LF_WALL_EXIST || RF_SEN1.now > RF_WALL_EXIST;
+		wallS = LS_SEN45.now > L_WALL_EXIST;
+		wallN = RS_SEN45.now > R_WALL_EXIST;
+		wallW = Front_SEN.now > FRONT_WALL_EXIST;
 	} else if (dir == South) {
-		wallE = LS_SEN1.now > L_WALL_EXIST;
-		wallW = RS_SEN1.now > R_WALL_EXIST;
-		wallS = LF_SEN1.now > LF_WALL_EXIST || RF_SEN1.now > RF_WALL_EXIST;
+		wallE = LS_SEN45.now > L_WALL_EXIST;
+		wallW = RS_SEN45.now > R_WALL_EXIST;
+		wallS = Front_SEN.now > FRONT_WALL_EXIST;
 	}
 	step(X, Y, North, wallN);
 	step(X, Y + 1, South, wallN);
