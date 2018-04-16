@@ -82,6 +82,27 @@ char isIncrease(char RorL) {
 	return false;
 }
 
+char isDecrease(char RorL) {
+	if (RorL == R) {
+		char flag = true;
+		for (char i = 0; i < 5; i++) {
+			if (sen_log_r[i] > sen_log_r[i + 1]) {
+				flag = false;
+			}
+		}
+		return flag;
+	} else {
+		char flag = true;
+		for (char i = 0; i < 5; i++) {
+			if (sen_log_l[i] > sen_log_l[i + 1]) {
+				flag = false;
+			}
+		}
+		return flag;
+	}
+	return false;
+}
+
 char startDecrease(char RorL) {
 	if (RorL == R) {
 		char flag = true;

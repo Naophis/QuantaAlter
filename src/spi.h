@@ -37,7 +37,7 @@ void spi1MbpsMode() {
 	RSPI1.SPBR = 5;
 	RSPI1.SPCMD0.BIT.BRDV = 3;
 }
-volatile char setupMpu6500() {
+short setupMpu6500() {
 //	return true;
 	mpu = false;
 	cmt_wait(200);

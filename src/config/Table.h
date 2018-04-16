@@ -8,6 +8,8 @@
 #ifndef TABLE_H_
 #define TABLE_H_
 
+volatile char isDebug = true;
+
 #define Normal 0
 #define Large 1
 #define Orval 2

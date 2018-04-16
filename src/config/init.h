@@ -334,10 +334,25 @@ void startVacume() {
 	GPT.GTSTR.BIT.CST2 = 1;
 	cmt_wait(1000);
 }
+
+float getDiaDistR() {
+	return 189 - 17 * logf(RS_SEN45.now);
+}
+
+float getDiaDistL() {
+	return 189 - 17 * logf(LS_SEN45.now);
+	if (LS_SEN45.now < 1500) {
+		return 575 - 66.76 * logf(1500);
+	}
+	return 575 - 66.76 * logf(LS_SEN45.now);
+}
+
 void calcdist() {
-	RS_SEN45.dist = 445 - 52.12 * logf(RS_SEN45.now);
-	LS_SEN45.dist = 468 - 57.5 * logf(LS_SEN45.now);
+	RS_SEN45.dist = 189 - 17 * logf(RS_SEN45.now);
+	LS_SEN45.dist = 575 - 66.76 * logf(LS_SEN45.now);
+
 	Front_SEN.dist = 737 - 82.58 * logf(Front_SEN.now);
+
 	RS_SEN2.dist = 694 - 82.25 * logf(RS_SEN2.now);
 	LS_SEN2.dist = 798 - 95.27 * logf(LS_SEN2.now);
 }

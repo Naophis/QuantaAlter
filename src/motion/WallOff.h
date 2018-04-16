@@ -8,41 +8,35 @@
 #ifndef WALLOFF_H_
 #define WALLOFF_H_
 
-#define SEN_R RS_SEN45.now
-#define SEN_L LS_SEN45.now
-#define SEN_R2 RS_SEN2.now
-#define SEN_L2 LS_SEN2.now
-
-char wallOff(char RorL);
-char wallOff_D(char RorL);
+char wallOff(char RorL, char ctrl);
+char wallOff_D(char RorL, char ctrl);
 volatile int wall_off_limit = 40;
 volatile int wall_off_limit_d = 40;
 
-float R_WALL_OFF = 220;	//壁切れ　閾値
-float L_WALL_OFF = 580;	//壁切れ　閾値
-
 void walloff1(char RorL) {
 	if (RorL == R) {
-		while (SEN_R < R_WALL_OFF && distance <= wall_off_limit) {
+		while (SEN_R < R_WALL_OFF && distance <= wall_off_limit
+				&& SEN_FRONT < FRONT_WALL_ON) {
 			if (!fail) {
 				positionControlValueFlg = 0;
 				break;
 			}
 		}
-		while (SEN_R > R_WALL_OFF) {
+		while (SEN_R > R_WALL_OFF /*&& SEN_FRONT < FRONT_WALL_ON*/) {
 			if (!fail) {
 				positionControlValueFlg = 0;
 				break;
 			}
 		}
 	} else {
-		while (SEN_L < L_WALL_OFF && distance <= wall_off_limit) {
+		while (SEN_L < L_WALL_OFF && distance <= wall_off_limit
+				&& SEN_FRONT < FRONT_WALL_ON) {
 			if (!fail) {
 				positionControlValueFlg = 0;
 				break;
 			}
 		}
-		while (SEN_L > L_WALL_OFF) {
+		while (SEN_L > L_WALL_OFF /*&& SEN_FRONT < FRONT_WALL_ON*/) {
 			if (!fail) {
 				positionControlValueFlg = 0;
 				break;
@@ -51,8 +45,6 @@ void walloff1(char RorL) {
 	}
 }
 
-float R_WALL_OFF2 = 270;	//壁切れ　閾値
-float L_WALL_OFF2 = 650;	//壁切れ　閾値
 void walloff2(char RorL) {
 	if (RorL == R) {
 		while (SEN_R > R_WALL_OFF2) {
@@ -71,18 +63,25 @@ void walloff2(char RorL) {
 	}
 }
 
-float existRightWall4 = 330;  //壁切れの予備
-float existLeftWall4 = 310;   //壁切れの予備
+float existRightWall4 = 6000;  //壁切れの予備
+float existLeftWall4 = 6000;   //壁切れの予備
 
-char wallOff(char RorL) {
+char wallOff(char RorL, char ctrl) {
+	globalState = WALL_OFF;
+	cc = 1;
+	if (globalSkipFront) {
+		return true;
+	}
+
 	if (dia == 1) {
-		return wallOff_D(RorL);
+		return wallOff_D(RorL, ctrl);
 	}
 	sensingMode = AtackStraight;
-	positionControlValueFlg = 1;
+	positionControlValueFlg = ctrl;
 	ang = 0;
 	angle = 0;
 	distance = 0;
+
 	if (RorL == R) {
 		if (SEN_R < existRightWall4) {
 			cmtMusic(C4_, 250);
@@ -99,37 +98,39 @@ char wallOff(char RorL) {
 		}
 	}
 	positionControlValueFlg = 0;
+	cc = 0;
 	return 1;
 }
-
-float R_WALL_OFF_D = 570;  //壁切れ　閾値　斜め用
-float L_WALL_OFF_D = 1000; //壁切れ　閾値　斜め用
 
 //float R_WALL_OFF_D = 270;  //壁切れ　閾値　斜め用
 //float L_WALL_OFF_D = 430; //壁切れ　閾値　斜め用
 
 void walloff3(char RorL) {
 	if (RorL == R) {
-		while (SEN_R < R_WALL_OFF_D && distance <= wall_off_limit_d) {
+		while (SEN_R < R_WALL_OFF_D && distance <= wall_off_limit_d
+				&& SEN_L < DIA_N_LEFT_WALL && SEN_FRONT < DIA_FRONT_WALL_ORDER) {
 			if (!fail) {
 				positionControlValueFlg = 0;
 				break;
 			}
 		}
-		while (SEN_R > R_WALL_OFF_D) {
+		while (SEN_R > R_WALL_OFF_D /*&& SEN_L < DIA_N_LEFT_WALL
+				&& SEN_FRONT < DIA_FRONT_WALL_ORDER*/) {
 			if (!fail) {
 				positionControlValueFlg = 0;
 				break;
 			}
 		}
 	} else {
-		while (SEN_L < L_WALL_OFF_D && distance <= wall_off_limit_d) {
+		while (SEN_L < L_WALL_OFF_D && distance <= wall_off_limit_d
+				&& SEN_R < DIA_N_RIGHT_WALL && SEN_FRONT < DIA_FRONT_WALL_ORDER) {
 			if (!fail) {
 				positionControlValueFlg = 0;
 				break;
 			}
 		}
-		while (SEN_L > L_WALL_OFF_D) {
+		while (SEN_L > L_WALL_OFF_D /*&& SEN_R < DIA_N_RIGHT_WALL
+				&& SEN_FRONT < DIA_FRONT_WALL_ORDER*/) {
 			if (!fail) {
 				positionControlValueFlg = 0;
 				break;
@@ -137,9 +138,6 @@ void walloff3(char RorL) {
 		}
 	}
 }
-
-float R_WALL_OFF_D2 = 485;  //壁切れ　閾値　斜め用
-float L_WALL_OFF_D2 = 740; //壁切れ　閾値　斜め用
 
 void walloff4(char RorL) {
 	if (RorL == R) {
@@ -159,9 +157,7 @@ void walloff4(char RorL) {
 	}
 }
 
-float existRightWall5 = 10000;  //壁切れの予備
-float existLeftWall5 = 10000;   //壁切れの予備
-char wallOff_D(char RorL) {
+char wallOff_D(char RorL, char ctrl) {
 //	positionControlValueFlg = 1;
 	ang = 0;
 	angle = 0;

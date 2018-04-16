@@ -14,7 +14,7 @@ float enc_r, enc_l;
 long er, el;
 float vr, vl;
 float vr2, vl2;
-#define logSize  20
+#define logSize  200
 float logR[logSize];
 float logL[logSize];
 
@@ -24,6 +24,69 @@ void clearLogs() {
 		logL[i] = 0;
 	}
 }
+float peekRight = 0;
+float peekLeft = 0;
+float lastPeekR = 0;
+float lastPeekL = 0;
+float peekRight2 = 0;
+float peekLeft2 = 0;
+float lastPeekR2 = 0;
+float lastPeekL2 = 0;
+
+float peekOrderR = 1800;
+float peekOrderL = 1100;
+void pushLatestSensor(float r, float l) {
+	if (r > peekOrderR) {
+		if (peekRight < r) {
+			peekRight = r;
+		}
+	} else {
+		if (lastPeekR == 0 && peekRight > peekOrderR) {
+			lastPeekR = peekRight;
+			lastPeekR2 = 0;
+		}
+		peekRight = 0;
+	}
+	if (l > peekOrderL) {
+		if (peekLeft < l) {
+			peekLeft = l;
+		}
+	} else {
+		if (lastPeekL == 0 && peekLeft > peekOrderL) {
+			lastPeekL = peekLeft;
+			lastPeekL2 = 0;
+		}
+		peekLeft = 0;
+	}
+}
+
+float peekOrderR2 = 1400;
+float peekOrderL2 = 1000;
+void pushLatestSensor2(float r, float l) {
+	if (r > peekOrderR2) {
+		if (peekRight2 < r) {
+			peekRight2 = r;
+		}
+	} else {
+		if (lastPeekR2 == 0 && peekRight2 > peekOrderR2) {
+			lastPeekR2 = peekRight2;
+			lastPeekR = 0;
+		}
+		peekRight2 = 0;
+	}
+	if (l > peekOrderL2) {
+		if (peekLeft2 < l) {
+			peekLeft2 = l;
+		}
+	} else {
+		if (lastPeekL2 == 0 && peekLeft2 > peekOrderL2) {
+			lastPeekL2 = peekLeft2;
+			lastPeekL = 0;
+		}
+		peekLeft2 = 0;
+	}
+}
+
 void pushLog(float r, float l) {
 	for (char i = 0; i < logSize - 1; i++) {
 		logR[i + 1] = logR[i];
@@ -32,6 +95,13 @@ void pushLog(float r, float l) {
 	logR[0] = r;
 	logL[0] = l;
 }
+
+void searchPeek() {
+	for (int i = 0; i < logSize; i++) {
+
+	}
+}
+
 float getAverageR() {
 	float sum = 0;
 	for (char i = 0; i < logSize; i++) {
@@ -67,62 +137,40 @@ void enc_to_vel(void) {
 	Velocity.error_now = V_now - (V_Enc.r + V_Enc.l) / 2;
 	distance += ABS(V_Enc.r + V_Enc.l) * dt / 2;
 }
-#define KIREME_R 11 //11/12
-#define KIREME_L 11
+#define KIREME_R 9 //11/12
+#define KIREME_L 9
 #define KIREME_R2 10
 #define KIREME_L2 10
-unsigned int R_WALL = 500; //#define R_WALL 4000	//サーキット用
-unsigned int L_WALL = 650;	//制御壁閾値
-float FRONT_OUT_R = 1100;	//袋小路時前センサー閾値
-float FRONT_OUT_L = 1100;	//袋小路時前センサー閾値
+unsigned int R_WALL = 820; //820; //#define R_WALL 4000	//サーキット用
+unsigned int L_WALL = 600; //600;	//制御壁閾値
+volatile float FRONT_OUT = 2250;	//袋小路時前センサー閾値
 
 int checkStr = 0;
 float check_sen_error(void) {
-	int error = 0;
+	float error = 0;
 	char check = 0;
-	if (ABS(RS_SEN45.now - RS_SEN45.old) < KIREME_R) {
-		if (RS_SEN45.now > R_WALL) {
-			if (Front_SEN.now < FRONT_OUT_R) {
+	if (Front_SEN.now < FRONT_OUT) {
+		if (ABS(RS_SEN45.now - RS_SEN45.old) < KIREME_R) {
+			if (RS_SEN45.now > R_WALL) {
 				error += RS_SEN45.now - RS_SEN45.ref;
 				check++;
 			}
 		}
+		if (ABS(LS_SEN45.now - LS_SEN45.old) < KIREME_L) {
+			if (LS_SEN45.now > L_WALL) {
+				error -= LS_SEN45.now - LS_SEN45.ref;
+				check++;
+			}
+		}
 	}
-//	if (ABS(LS_SEN45.now - LS_SEN45.old) < KIREME_L) {
-//		if (LS_SEN45.now > L_WALL) {
-//			if (LF_SEN1.now < FRONT_OUT_L) {
-//				error -= LS_SEN45.now - LS_SEN45.ref;
-//				check++;
-//			}
-//		}
-//	} else {
-//		if (LS_SEN45.now > (L_WALL + orderup_l)) {
-//			error -= LS_SEN45.now - LS_SEN45.ref;
-//			check++;
-//		}
-//	}
-	RS_SEN45.old = RS_SEN45.now;
-	LS_SEN45.old = LS_SEN45.now;
 	if (check == 0) {
-		Se.error_old = 0;
+		Se.error_old = Se.before = Se.error_delta = 0;
 	} else {
-//		Angle.error_old = 0;
-		Gy.error_old = 0;
+		if (!TRANSAM) {
+			Gy.error_old = 0;
+		}
 		angle = 0;
 		ang = 0;
-//		if (ABS(error) > W_ENCORDER_LIMIT) {
-//			W_enc.error_old = 0;
-//			Gy.error_old = 0;
-//		}
-//		if (ABS(Se.error_now) > 7) {
-//			Gy.error_old = 0;
-//		}
-	}
-
-	if (check == 2) {
-//		Gy.error_old = 0;
-//		angle = 0;
-//		ang = 0;
 	}
 
 	if (check != 0) {
@@ -136,12 +184,11 @@ float check_sen_error(void) {
 	}
 	return 2 * error;
 }
-float check_sen_error2(void) {
-	int error = 0;
+void resetAngleError(void) {
 	char check = 0;
 	if (ABS(RS_SEN45.now - RS_SEN45.old) < KIREME_R) {
 		if (RS_SEN45.now > R_WALL) {
-			if (Front_SEN.now < FRONT_OUT_R) {
+			if (Front_SEN.now < FRONT_OUT) {
 				check++;
 			}
 		}
@@ -150,57 +197,23 @@ float check_sen_error2(void) {
 			check++;
 		}
 	}
-//	if (ABS(LS_SEN45.now - LS_SEN45.old) < KIREME_L) {
-//		if (LS_SEN45.now > L_WALL) {
-//			if (LF_SEN1.now < FRONT_OUT_L) {
-//				check++;
-//			}
-//		}
-//	} else {
-//		if (LS_SEN45.now > (L_WALL + orderup_l)) {
-//			check++;
-//		}
-//	}
-	return check;
-}
-#define KIREME_R_BACK 100
-#define KIREME_L_BACK 100
-float check_sen_error_back(void) {
-	int error = 0;
-	char check = 0;
-	if (ABS(RS_SEN45.now - RS_SEN45.old) < KIREME_R_BACK) {
-		if (RS_SEN45.now > R_WALL) {
-			error += RS_SEN45.ref - RS_SEN45.now;
+	if (ABS(LS_SEN45.now - LS_SEN45.old) < KIREME_L) {
+		if (LS_SEN45.now > L_WALL) {
+			if (Front_SEN.now < FRONT_OUT) {
+				check++;
+			}
+		}
+	} else {
+		if (LS_SEN45.now > (L_WALL + orderup_l)) {
 			check++;
 		}
 	}
-//	if (ABS(LS_SEN1.now - LS_SEN1.old) < KIREME_L_BACK) {
-//		if (LS_SEN1.now > L_WALL) {
-//			error -= LS_SEN1.now - LS_SEN1.ref;
-//			check++;
-//		}
-//	}
-	RS_SEN45.old = RS_SEN45.now;
-	LS_SEN45.old = LS_SEN45.now;
-	if (check == 0) {
-		Se.error_old = 0;
-	} else {
-		Angle.error_old = 0;
+	if (check > 0) {
 		Gy.error_old = 0;
 		angle = 0;
 		ang = 0;
 	}
 
-	if (check != 0) {
-		errorFlg = 1;
-		globalError = error;
-	} else {
-		errorFlg = 0;
-	}
-	if (check == 2) {
-		return error;
-	}
-	return 2 * error;
 }
 int gyroReset = 0;
 
@@ -208,61 +221,64 @@ volatile char isControl = 0;
 volatile int errorOld_dia = 0;
 volatile int errorOld_dia_side = 0;
 
-int check_sen_error_dia_side(void) {
-	int error = 0;
+float check_sen_error_dia_side(void) {
+	float error = 0;
 	char check = 0;
-//	if (ABS(RS_SEN1.now - RS_SEN1.old) < KIREME_R_DIA_SIDE) {
-//		if (RS_SEN1.now > RS_WALL2 && isIncrease(R)) {
-//			error += RS_SEN1.now - RS_SEN1.ref2;
-//			check++;
-//		}
-//	} else {
-//		if (RS_SEN1.now > (RS_WALL2 + orderup_r) && isIncrease(R)) {
-//			error += RS_SEN1.now - RS_SEN1.ref2;
-//			check++;
-//		}
+//
+//	if (lastPeekR > R_WALL_DIA) {
+//		error += lastPeekR - RS_SEN45.ref2;
+//		check++;
+//	} else if (lastPeekR2 > R_WALL_DIA2) {
+//		error += lastPeekR2 - RS_SEN2.ref2;
+//		check++;
 //	}
-//	if (ABS(LS_SEN1.now - LS_SEN1.old) < KIREME_L_DIA_SIDE) {
-//		if (LS_SEN1.now > LS_WALL2 && isIncrease(L)) {
-//			error -= LS_SEN1.now - LS_SEN1.ref2;
-//			check++;
-//		}
-//	} else {
-//		if (LS_SEN1.now > (LS_WALL2 + orderup_l) && isIncrease(L)) {
-//			error -= LS_SEN1.now - LS_SEN1.ref2;
-//			check++;
-//		}
+//	if (lastPeekL > L_WALL_DIA) {
+//		error -= lastPeekL - LS_SEN45.ref2;
+//		check++;
+//	} else if (lastPeekL2 > L_WALL_DIA2) {
+//		error -= lastPeekL2 - LS_SEN2.ref2;
+//		check++;
 //	}
 
-	if (peekSideR != 0 && !isIncrease(R)) {
-		error += peekSideR - RS_SEN45.ref2;
+	if (RS_SEN45.now > R_WALL_DIA && lastPeekR < R_WALL_DIA) {
+		error += RS_SEN45.now - RS_SEN45.ref2;
 		check++;
-		peekSideR = 0;
-	}
-	if (peekSideL != 0 && !isIncrease(L)) {
-		error -= peekSideL - LS_SEN45.ref2;
+	} else if (lastPeekR > R_WALL_DIA) {
+		error += lastPeekR - RS_SEN45.ref2;
 		check++;
-		peekSideL = 0;
+	} else if (RS_SEN2.now > R_WALL_DIA && lastPeekR2 < R_WALL_DIA2) {
+		error += RS_SEN2.now - RS_SEN2.ref2;
+	} else if (lastPeekR2 > R_WALL_DIA2) {
+		error += lastPeekR2 - RS_SEN2.ref2;
+		check++;
 	}
 
-	RS_SEN45.old = RS_SEN45.now;
-	LS_SEN45.old = LS_SEN45.now;
+	if (LS_SEN45.now > L_WALL_DIA && lastPeekL < L_WALL_DIA) {
+		error -= LS_SEN45.now - LS_SEN45.ref2;
+		check++;
+	} else if (lastPeekL > L_WALL_DIA) {
+		error -= lastPeekL - LS_SEN45.ref2;
+		check++;
+	} else if (LS_SEN2.now > L_WALL_DIA2 && lastPeekL2 < L_WALL_DIA2) {
+		error -= LS_SEN2.now - LS_SEN2.ref2;
+		check++;
+	} else if (lastPeekL2 > L_WALL_DIA2) {
+		error -= lastPeekL2 - LS_SEN2.ref2;
+		check++;
+	}
 
 	if (check == 0) {
-		Se2.error_old = 0;
-		error = errorOld_dia_side;
+		Se2.error_old = Se2.before = Se2.error_delta = 0;
+//		error = errorOld_dia_side;
 	} else {
-
+//		Gy.error_old = 0;
 	}
 	isControl = false;
 
 	if (check != 0) {
 		errorFlg = 1;
-		errorOld_dia_side = error;
+//		errorOld_dia_side = error;
 	} else {
-//		Gy.error_old = 0;
-//		angle = 0;
-//		ang = 0;
 		errorFlg = 0;
 	}
 
@@ -276,41 +292,6 @@ int check_sen_error_dia_side(void) {
 float RF_WALL_FrontCTRL = 520; //斜め時 姿勢制御閾値(壁ナシ）
 float LF_WALL_FrontCTRL = 450; //斜め時 姿勢制御閾値(壁ナシ）
 
-float check_sen_error_dia_FrontCtrl() {
-	int error = 0;
-	if (Front_SEN.now > RF_WALL_FrontCTRL && Front_SEN.now < 4500) {
-		error -= Front_SEN.now - Front_SEN.ref3;
-	} else {
-		SeFrnt.error_old = 0;
-	}
-	if (Front_SEN.now > RF_WALL_FrontCTRL) {
-//		error -= LF_SEN1.now - LF_SEN1.ref3;
-	} else {
-		SeFrntL.error_old = 0;
-	}
-	if (error == 0) {
-		Gy.error_old = 0;
-		SeFrnt.error_old = 0;
-		SeFrntL.error_old = 0;
-	}
-	return error;
-}
-
-float check_sen_error_dia_FrontCtrl2() {
-	int error = 0;
-	if (Front_SEN.now > RF_WALL_FrontCTRL && Front_SEN.now < 4500) {
-		error -= Front_SEN.now - Front_SEN.ref3;
-	}
-
-//	if (LF_SEN1.now > LF_WALL_FrontCTRL && LF_SEN1.now < 4500) {
-//		error += LF_SEN1.now - LF_SEN1.ref3;
-//	}
-
-	if (error == 0) {
-		SeFrntAngle.error_old = 0;
-	}
-	return error;
-}
 float R_WALL_dia = 400;	//斜め時 横壁のアリ判定
 float L_WALL_dia = 400;	//斜め時 横壁のアリ判定
 
@@ -321,98 +302,54 @@ float LF_WALL1 = 220; //斜め時 姿勢制御閾値(壁ナシ）
 float RF_WALL = 175; //斜め時 姿勢制御閾値(壁アリ）
 float LF_WALL = 210;  //斜め時 姿勢制御閾値(壁アリ）
 
-int check_sen_error_dia(void) {
-	int error = 0;
-	char check = 0;
-	if (ABS(Front_SEN.now - Front_SEN.old) < KIREME_R_DIA) {
-		if (Front_SEN.now > RF_WALL) {
-			error += Front_SEN.now - Front_SEN.ref;
-			check++;
-		}
-	}
-
-//	if (ABS(LF_SEN1.now - LF_SEN1.old) < KIREME_L_DIA) {
-//		if (LF_SEN1.now > LF_WALL1) {
-//			error -= LF_SEN1.now - LF_SEN1.ref;
-//			check++;
-//		}
-//	}
-
-	Front_SEN.old = Front_SEN.now;
-//	LF_SEN1.old = LF_SEN1.now;
-
-	if (check == 0) {
-		Se.error_old = 0;
-//		error = errorOld_dia;
-	} else {
-//		Gy.error_old = 0;
-//		angle = 0;
-//		ang = 0;
-	}
-	isControl = false;
-
-	if (check != 0) {
-		errorFlg = 1;
-//		globalError = error;
-	} else {
-		errorFlg = 0;
-	}
-
-//	errorOld_dia = error;
-
-	if (check == 2) {
-		return error;
-	}
-	return 2 * error;
-}
-
 float D1 = 0.0001;
 float k1 = 76.25;
 float k2 = 10370;
 float P = 100;
 void errorVelocity(void) {
 	C.s2 = 0;
+	C.s = 0;
 
 	if (positionControlValueFlg == 1) {
 		if (dia == 0) {
 			Se.error_now = check_sen_error();
-			Se.error_delta = Se.error_now - Se.before;
+			if (Se.before != 0) {
+				Se.error_delta = Se.error_now - Se.before;
+			} else {
+				Se.error_delta = 0;
+			}
 			C.s = Sen.Kp * Se.error_now + Sen.Ki * Se.error_old
 					+ Sen.Kd * Se.error_delta;
 			Se.before = Se.error_now;
+			Se.error_old += Se.error_now;
 		} else if (dia == 1) {
-			Se.error_now = check_sen_error_dia();
-			Se.error_delta = Se.error_now - Se.before;
-			if (Se.error_now != 0) {
-				C.s = Sen_Dia.Kp * Se.error_now + Sen_Dia.Ki * Se.error_old
-						+ Sen_Dia.Kd * Se.error_delta;
-			}
-			Se.before = Se.error_now;
-
 			Se2.error_now = check_sen_error_dia_side();
-			C.s2 = 0;
-			if (Se2.error_now != 0) {
-				C.s2 = Sen_Dia_Side.Kp * Se2.error_now
-						+ Sen_Dia_Side.Ki * Se2.error_old
-						+ Sen_Dia_Side.Kd * Se2.error_delta;
+			if (Se2.before != 0) {
+				Se2.error_delta = Se2.error_now - Se2.before;
+			} else {
+				Se2.error_delta = 0;
 			}
-		}
-	} else if (positionControlValueFlg == 2) {
-		if (dia == 0) {
-			Se.error_now = check_sen_error_back();
-			C.s = (Backs.Kp * Se.error_now + Backs.Ki * Se.error_old
-					+ Backs.Kd * Se.error_delta);
+			C.s = Sen_Dia_Side.Kp * Se2.error_now
+					+ Sen_Dia_Side.Ki * Se2.error_old
+					+ Sen_Dia_Side.Kd * Se2.error_delta;
+			Se2.before = Se2.error_now;
+			Se2.error_old += Se2.error_now;
 		}
 	} else {
-		Se.error_delta = 0;
-		Se.error_old = 0;
+		Se.error_delta = Se.error_old = Se.before = 0;
+		Se2.error_delta = Se2.error_old = Se2.before = 0;
 		C.s = 0;
 	}
 	Gy.error_now = (W_now - settleGyro);
 	Gy.error_old += Gy.error_now;
-	Gy.error_delta = Gy.error_now - Gy.before;
+	if (Gy.before != 0) {
+		Gy.error_delta = Gy.error_now - Gy.before;
+	} else {
+		Gy.error_delta = 0;
+	}
 
 	Gy.before = Gy.error_now;
+
 	C.g = Gyro.Kp * Gy.error_now + Gyro.Ki * Gy.error_old
 			+ Gyro.Kd * Gy.error_delta;
 }
@@ -454,20 +391,18 @@ float feadforward_para(char RorL) {
 }
 
 float FF_calc(char RorL) {
-	return 0;
 	float rpm = getRpm(RorL);
 	float resist_str = friction_str ? Resist * friction / Km : 0;
 	float resist_roll = friction_roll ? Resist * friction2 / Km : 0;
 
-	if (V_now < 10) {
+	if (V_now != 0) {
 		resist_str = 0;
 	}
-	if (W_now < 1) {
+	if (W_now != 0) {
 		resist_roll = 0;
 	}
-
 	if (RorL == R) {
-		if (rotate_r == true) {
+		if (rotate_r) {
 			return ((feadforward(RorL) + feadforward_para(RorL)) / 2
 					+ ABS(Ke * rpm) + resist_str + resist_roll);
 		} else {
@@ -475,7 +410,7 @@ float FF_calc(char RorL) {
 					- ABS(Ke * rpm) - resist_str - resist_roll);
 		}
 	} else {
-		if (rotate_l == true) {
+		if (rotate_l) {
 			return ((feadforward(RorL) + feadforward_para(RorL)) / 2
 					+ ABS(Ke * rpm) + resist_str + resist_roll);
 		} else {
@@ -528,8 +463,8 @@ void dutyCalcuration2(void) {
 	SeFrnt.error_old = 0;
 	SeFrntL.error_old = 0;
 
-//	dutyR = 15;
-//	dutyL = -15;
+//	dutyL = 15;
+//	dutyR = -15;
 	Duty_r = dutyR;
 	Duty_l = dutyL;
 	changeRotation(dutyR, R);	//R_CW/CCW

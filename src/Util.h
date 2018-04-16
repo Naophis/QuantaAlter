@@ -35,7 +35,6 @@ char eigherRightLeft() {
 char updown() {
 	volatile signed char mode = SEARCH;
 	os_escape = 0;
-	int interval = 25;
 	while (1) {
 		char swTop = !PushTop;
 		char swBottom = !PushBottom;
@@ -168,6 +167,7 @@ void resetAllData() {
 	alpha = 0;
 	fail = 1;
 	dia = 0;
+	globalSkipFront = false;
 	Velocity.error_now = 0;
 	Velocity.error_old = 0;
 	Velocity.error_delta = 0;
@@ -194,7 +194,7 @@ void resetAllData() {
 void clearLogs();
 void mtu_start() {
 	ledOn = 1;
-	cmt_wait(10);
+	cmt_wait(5);
 	resetAllData();
 	GPT0.GTCCRA = GPT0.GTCCRC = GPT1.GTCCRA = GPT1.GTCCRC = 0;
 	enablePWM = true;
@@ -217,6 +217,7 @@ void mtu_stop() {
 	ledOn = 0;
 }
 void mtu_stop2() {
+	globalState = NONE;
 	V_now = 0;
 	W_now = 0;
 	acc = 0;
@@ -237,10 +238,10 @@ void mtu_stop2() {
 }
 char failOutR = 0, failOutL = 0;
 #define order 200
-#define vOrder 50
+#define vOrder 100
 #define wOrder 1
 char senCheck = 0;
-#define conflictOrder 2000
+#define conflictOrder 3000
 #define TIME_LIMIT 100
 char failR2, failL2;
 char dutyLimit, velocityLimit;
@@ -248,6 +249,7 @@ char dutyLimit, velocityLimit;
 #define ERROR_LIMIT 1000
 //char sw;
 void failCheck(float Dr, float Dl) {
+//	return;
 	char checkR = 0;
 	char checkL = 0;
 	if (Front_SEN.now > conflictOrder) {
@@ -267,14 +269,6 @@ void failCheck(float Dr, float Dl) {
 		velocityLimit = 0;
 		dutyLimit = 0;
 	}
-	if (ABS(C.g) > 100) {
-//		fail = 0;
-	}
-//	if (G.ref > 0) {
-//		if (ABS(ang - angle) > PI * 30 / 180) {
-//			fail = 0;
-//		}
-//	}
 	if (failOutR >= TIME_LIMIT) {
 		fail = 0;
 	}
@@ -283,17 +277,10 @@ void failCheck(float Dr, float Dl) {
 		fail = 0;
 	}
 
-//	if (sw >= 100) {
-//		fail = 0;
-//	}
-
-//	if (!fail) {
-//		TPU0.TGRB = 0;
-//	}
 }
 
 void batteryCheck() {
-	cmt_wait(1000);
+	cmt_wait(250);
 
 	if (battery > 10) {
 		if (battery < 11.5) {
@@ -353,6 +340,7 @@ void printAdData() {
 char checkStablly();
 float check_sen_error(void);
 void gyroZeroCheck(char bool);
+char skipPrint = false;
 void printSensor() {
 	ledOn = 1;
 	sensingMode = AtackDia;
@@ -361,23 +349,20 @@ void printSensor() {
 	gyroZeroCheck(true);
 //	dia = 1;
 	ang = 0;
+	enableSciUpdate = true;
 	while (1) {
-
-//		myprintf("%c[2J%c[0;0H", ESC, ESC); /* 画面消去 */
-//		myprintf("battery=%f V\r\nGyro=%f\t%f\r\n", battery, settleGyro, G.ref);
-//		myprintf("\t\t%f\t%f\r\n\t%f\t\t\t%f\r\n%f\t\t\t\t\t%f\r\n",
-//				LS_SEN2.now, RS_SEN2.now, LS_SEN1.now, RS_SEN1.now, LF_SEN1.now,
-//				RF_SEN1.now);
-		myprintf(
-				"{\"battery\":%f,\"gyro\":%f,\"LS1\":%d,\"RS1\":%d,\"LF1\":%d,\"RF1\":%d,\"LS2\":%d,\"RS2\":%d,",
-				battery, settleGyro, (int) LS_SEN45.now, (int) RS_SEN45.now,
-				(int) 0, (int) Front_SEN.now, (int) LS_SEN2.now,
-				(int) RS_SEN2.now);
-		myprintf(
-				"\"LS1_2\":%d,\"RS1_2\":%d,\"LF1_2\":%d,\"RF1_2\":%d,\"LS2_2\":%d,\"RS2_2\":%d,\"BATT\":%d}\r\n",
-				(int) LS_SEN45.dist, (int) RS_SEN45.dist, (int) 0,
-				(int) Front_SEN.dist, (int) LS_SEN2.dist, (int) RS_SEN2.dist,
-				BATTERY);
+		if (!skipPrint) {
+			myprintf(
+					"{\"battery\":%f,\"gyro\":%f,\"LS1\":%d,\"RS1\":%d,\"LF1\":%d,\"RF1\":%d,\"LS2\":%d,\"RS2\":%d,",
+					battery, settleGyro, (int) LS_SEN45.now, (int) RS_SEN45.now,
+					(int) 0, (int) Front_SEN.now, (int) LS_SEN2.now,
+					(int) RS_SEN2.now);
+			myprintf(
+					"\"LS1_2\":%d,\"RS1_2\":%d,\"LF1_2\":%d,\"RF1_2\":%d,\"LS2_2\":%d,\"RS2_2\":%d,\"BATT\":%d}\r\n",
+					(int) LS_SEN45.dist, (int) RS_SEN45.dist, (int) 0,
+					(int) Front_SEN.dist, (int) LS_SEN2.dist,
+					(int) RS_SEN2.dist, BATTERY);
+		}
 		cmt_wait(50);
 		if (!Swich) {
 			break;
@@ -421,8 +406,8 @@ void checkIsoukeisu() {
 				(int) (ang * 180 / PI));
 	}
 }
-#define CHECK_ORDER_RIGHT 800
-#define CHECK_ORDER_LEFT 800
+#define CHECK_ORDER_RIGHT 1200
+#define CHECK_ORDER_LEFT 1200
 char motionCheck() {
 	int tmp = sensingMode;
 	sensingMode = SearchMode;
@@ -454,7 +439,7 @@ char motionCheck() {
 
 float getZeroPoint() {
 	float tempData = 0;
-	int limit = 256;
+	int limit = 128;
 	float result = 0;
 	mpu = false;
 	for (int i = 0; i < limit; i++) {
@@ -493,15 +478,19 @@ void gyroZeroCheck(char bool) {
 	G.ref = tmpData;
 }
 long er, el;
+
+char realRun(float max, float ac, float diac, float dist, float sla);
 void keepZeroPoint() {
 	motionCheck();
 	cmt_wait(500);
-	gyroZeroCheck(true);
+	gyroZeroCheck(false);
 	readGyroParam();
 	readVelocityGain();
 //	resetGyroParam();
 	mtu_start();
 //	positionControlValueFlg = 1;
+//	V_now = 100;
+//	realRun(100, 2000, 2000, 180.0 * 5, 100);
 	ang = 0;
 	angle = 0;
 
@@ -671,15 +660,15 @@ int direction(int Dir, int SLRB) {
 	}
 	return Dir;
 }
+void waitforprint() {
+	for (int i = 0; 1024; i++)
+		;
+}
+
 void logOutPut() {
 	while (Swich == 1)
 		;
-//	myprintf("%c[2J", ESC); /* 画面消去 */
-//	myprintf("%c[0;0H", ESC); /* 戦闘戻す*/
 	for (c = 0; c < L_Length; c++) {
-		if (c > 500 && log5[c] == 0) {
-//			break;
-		}
 		myprintf("%d %f %f %f", log1[c], logs2[c], log3[c], log4[c]);
 		cmt_wait(1);
 		myprintf(" %f %f %f %f", log5[c], log6[c], log7[c], log8[c]);
@@ -688,9 +677,13 @@ void logOutPut() {
 		cmt_wait(1);
 		myprintf(" %f %f %f %f %f %f", log13[c], log14[c], log15[c], log16[c],
 				log17[c], log18[c]);
+		cmt_wait(1);
 		myprintf(" %f %f %f %f %f %f", log19[c], log20[c], log21[c], log22[c],
 				log23[c], log24[c]);
-		myprintf(" %f %f %f\r\n", log25[c], log26[c], log27[c]);
+		cmt_wait(1);
+		myprintf(" %f %f %f %f %f", log25[c], log26[c], log27[c],
+				log28[c] * 100, log29[c]);
+		myprintf(" %f %f %f %f\r\n", log30[c], log31[c], log32[c], log33[c]);
 	}
 }
 
@@ -838,7 +831,7 @@ float turnVelocity(char a) {
 	if (a != Finish) {
 		return v_sla[a];
 	}
-	return 2000;
+	return 1500;
 }
 float turnVelocitySlow(char a) {
 	if (a != Finish) {

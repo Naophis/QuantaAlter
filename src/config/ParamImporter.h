@@ -44,14 +44,6 @@ char writeParam(int key, float val) {
 		targetAddr = BASE_PARAM_KEY1;
 		offset = 0;
 	}
-//	if (16 <= key && key <= 31) {
-//		targetAddr = BASE_PARAM_KEY2;
-//		offset = 16;
-//	}
-//	if (32 <= key && key <= 47) {
-//		targetAddr = BASE_PARAM_KEY3;
-//		offset = 32;
-//	}
 	for (int i = 0; i < 16; i++) {
 		array[i] = getDataFlashData(targetAddr, key - offset);
 	}

@@ -94,6 +94,7 @@ typedef struct {
 	float velocity;
 	float frontLeft1;
 	float frontLeft2;
+	float firstFront;
 } t_radiusData;
 volatile t_radiusData pNormal, pLarge, pOrval, pD45, pD135, pD90, pKojima;
 

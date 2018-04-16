@@ -23,7 +23,7 @@ typedef struct {
 	int length;
 	char buffer[MAX_BUFFER];
 } s_key;
-volatile s_key keys, values;
+s_key keys, values;
 
 void pushKey(char key) {
 	if (keys.length < MAX_BUFFER) {
@@ -73,6 +73,7 @@ void detectChar() {
 	if (!enableSciUpdate) {
 		return;
 	}
+	skipPrint = true;
 	switch (recieveData) {
 	case '{':
 		recieveMode = KEY;
@@ -89,6 +90,7 @@ void detectChar() {
 		applyRecieveData(recieveMode, recieveData);
 		break;
 	}
+	skipPrint = false;
 }
 
 void setA(long key, long id, float val) {
@@ -101,7 +103,7 @@ void setA(long key, long id, float val) {
 				backup[i] = val;
 			}
 		}
-		flash_err_t ret = R_FLASH_Erase(address, 1);
+		flash_err_t ret = R_FLASH_Erase((flash_block_address_t) address, 1);
 		flash_err_t ret2 = R_FLASH_Write((uint32_t) backup, key,
 				sizeof(backup));
 		myprintf("%d	%d\r\n", ret, ret2);

@@ -75,6 +75,8 @@ void mtu6B() {
 	LED4 = 1;
 	PORTD.PODR.BIT.B7 = 1;
 }
+volatile char rightTrend = 0;
+volatile char leftTrend = 0;
 volatile void cmt() {
 	timer++;
 	time++;
@@ -99,37 +101,56 @@ volatile void cmt() {
 	if (singing) {
 		buzzer();
 	}
-
+	if (dia == 1) {
+		pushLatestSensor(RS_SEN45.now, LS_SEN45.now);
+		pushLatestSensor2(RS_SEN2.now, LS_SEN2.now);
+	} else {
+		peekRight = 0;
+		peekLeft = 0;
+		lastPeekR = 0;
+		lastPeekL = 0;
+		peekRight2 = 0;
+		peekLeft2 = 0;
+		lastPeekR2 = 0;
+		lastPeekL2 = 0;
+		Se2.error_old = Se2.before = Se2.error_delta = 0;
+	}
 	Physical_Basement();
 	if (logs < L_Length && cc == 1) {
-		if ((time % 3) == 0) {
+		if ((time % 4) == 0) {
 			log1[logs] = (int) (V_now);
 			logs2[logs] = ((Wo * Wo - W_now * W_now) / (2.0 * alpha));
 			log3[logs] = (V_Enc.r + V_Enc.l) / 2;
-			log4[logs] = (ang * 180 / PI);
+			log4[logs] = (ang * 180 / PI); //ジャイロ
 			log5[logs] = Duty_l * 100;
 			log6[logs] = Duty_r * 100;
 			log7[logs] = (battery);
 			log8[logs] = (LS_SEN45.now);
 			log9[logs] = (RS_SEN45.now);
-			logs10[logs] = (0);
+			logs10[logs] = Se.error_now;
 			log11[logs] = (Front_SEN.now);
 			log12[logs] = (settleGyro);
 			log13[logs] = (W_now);
-			log14[logs] = (angle * 180 / PI);
+			log14[logs] = (angle * 180 / PI); //理論値
 			log15[logs] = (V_Enc.r);
 			log16[logs] = (V_Enc.l);
 			log17[logs] = (float) (alpha);
-			log18[logs] = (float) (MTU1.TCNT);
+			log18[logs] = peekRight; //lastPeekR;
 			log19[logs] = (feadforward_para(L));
 			log20[logs] = (feadforward_para(R));
-			log21[logs] = Ke * getRpm(L);
-			log22[logs] = Ke * getRpm(R);
-			log23[logs] = FF_calc(L);
-			log24[logs] = FF_calc(R);
+			log21[logs] = (LS_SEN2.now);
+			log22[logs] = (RS_SEN2.now);
+			log23[logs] = peekRight2;
+			log24[logs] = peekLeft2;
 			log25[logs] = C.g;
 			log26[logs] = C.s;
-			log27[logs] = C.s2;
+			log27[logs] = peekLeft;
+			log28[logs] = globalState;
+			log29[logs] = Se2.error_now;
+			log30[logs] = lastPeekL;
+			log31[logs] = lastPeekR;
+			log32[logs] = lastPeekL2;
+			log33[logs] = lastPeekR2;
 			logs++;
 		}
 	}
@@ -181,8 +202,6 @@ void getBattery() {
 	batteryOld = battery;
 }
 int gyros[4];
-unsigned int R_WALL4 = 50;
-unsigned int L_WALL4 = 180;
 
 void mtu4_B() {
 	switch (tpu_count) {
@@ -200,23 +219,16 @@ void mtu4_B() {
 		break;
 	case 4:
 		if (fanStart) {
-
-			GPT2.GTCCRA = GPT2.GTCCRC = (int) (FAN_AMP / battery * FAN_CYCLE);
-//			if (fanMode == FastRun) {
-//				if ((FAN_AMP / battery) <= FAN_CYCLE) {
-//					GPT2.GTCCRA = GPT2.GTCCRC = (int) (FAN_AMP / battery
-//							* FAN_CYCLE);
-//				} else {
-//					GPT2.GTCCRA = GPT2.GTCCRC = FAN_CYCLE;
-//				}
-//			} else {
-//				if ((FAN_AMP / battery) <= FAN_CYCLE) {
-//					GPT2.GTCCRA = GPT2.GTCCRC = (int) (FAN_AMP2 / battery
-//							* FAN_CYCLE);
-//				} else {
-//					GPT2.GTCCRA = GPT2.GTCCRC = FAN_CYCLE;
-//				}
-//			}
+			if (fanMode == TestRun) {
+				GPT2.GTCCRA = (int) (myVacumeDuty / battery * FAN_CYCLE);
+				GPT2.GTCCRC = (int) (myVacumeDuty / battery * FAN_CYCLE);
+			} else if (fanMode == FastRun) {
+				GPT2.GTCCRA = (int) (FAN_AMP / battery * FAN_CYCLE);
+				GPT2.GTCCRC = (int) (FAN_AMP / battery * FAN_CYCLE);
+			} else {
+				GPT2.GTCCRA = (int) (FAN_AMP2 / battery * FAN_CYCLE);
+				GPT2.GTCCRC = (int) (FAN_AMP2 / battery * FAN_CYCLE);
+			}
 		} else {
 			GPT2.GTCCRA = GPT2.GTCCRC = 0;
 		}
@@ -241,55 +253,22 @@ void mtu4_B() {
 
 		tpu_count = 0;
 
-		sen_log_r[4] = sen_log_r[3];
-		sen_log_r[3] = sen_log_r[2];
-		sen_log_r[2] = sen_log_r[1];
-		sen_log_r[1] = sen_log_r[0];
-
-		sen_log_l[4] = sen_log_l[3];
-		sen_log_l[3] = sen_log_l[2];
-		sen_log_l[2] = sen_log_l[1];
-		sen_log_l[1] = sen_log_l[0];
-
+		for (char i = 4; i > 0; i--) {
+			sen_log_r[i] = sen_log_r[i - 1];
+			sen_log_l[i] = sen_log_l[i - 1];
+			sen_log_front[i] = sen_log_front[i - 1];
+			sen_r[i] = sen_r[i - 1];
+			sen_l[i] = sen_l[i - 1];
+			sen_r2[i] = sen_r2[i - 1];
+			sen_l2[i] = sen_l2[i - 1];
+		}
 		sen_log_r[0] = RS_SEN45.now;
 		sen_log_l[0] = LS_SEN45.now;
-
-		sen_log_front[4] = sen_log_front[3];
-		sen_log_front[3] = sen_log_front[2];
-		sen_log_front[2] = sen_log_front[1];
-		sen_log_front[1] = sen_log_front[0];
-
-//		sen_log_fl[4] = sen_log_fl[3];
-//		sen_log_fl[3] = sen_log_fl[2];
-//		sen_log_fl[2] = sen_log_fl[1];
-//		sen_log_fl[1] = sen_log_fl[0];
-
+		sen_r[0] = RS_SEN45.now > running_wall_off_r;
+		sen_l[0] = LS_SEN45.now > running_wall_off_l;
+		sen_r2[0] = RS_SEN2.now > search_wall_off_r;
+		sen_l2[0] = LS_SEN2.now > search_wall_off_l;
 		sen_log_front[0] = Front_SEN.now;
-//		sen_log_fl[0] = LF_SEN1.now;
-
-		sen_r[4] = sen_r[3];
-		sen_r[3] = sen_r[2];
-		sen_r[2] = sen_r[1];
-		sen_r[1] = sen_r[0];
-		sen_r[0] = RS_SEN45.now > R_WALL3;
-
-		sen_l[4] = sen_l[3];
-		sen_l[3] = sen_l[2];
-		sen_l[2] = sen_l[1];
-		sen_l[1] = sen_l[0];
-		sen_l[0] = LS_SEN45.now > L_WALL3;
-
-		//		sen_r2[4] = sen_r2[3];
-		//		sen_r2[3] = sen_r2[2];
-		//		sen_r2[2] = sen_r2[1];
-		//		sen_r2[1] = sen_r2[0];
-		//		sen_r2[0] = RS_SEN2.now > R_WALL4;
-		//
-		//		sen_l2[4] = sen_l2[3];
-		//		sen_l2[3] = sen_l2[2];
-		//		sen_l2[2] = sen_l2[1];
-		//		sen_l2[1] = sen_l2[0];
-		//		sen_l2[0] = LS_SEN2.now > L_WALL4;
 		break;
 	}
 	sensor_led_off();
@@ -338,7 +317,7 @@ void printErrorEnum() {
 
 void main(void) {
 	initRX64M();
-//	batteryCheck();
+	batteryCheck();
 	setupCmt = true;
 	enableMPU = true;
 	os_escape = true;

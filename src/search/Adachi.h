@@ -658,22 +658,26 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
 	char goaled = false;
 	int p = 0;
 	float velocity = 1000;
+	float velocity2 = 1500;
+	float acc = 5000;
+	float diac = 12000;
 	sensingMode = SearchMode;
 	map[0][0] |= 0xf0;
 	updateDist(GoalX, GoalY, 0, isFull);
 //	back(-100, -2000, 60, 0);
 	gyroZeroCheck(true);
-	startVacume2(70);
+	if (velocity >= 1000) {
+		startVacume2(70);
+	}
 	mtu_start();
 
-//	running(500, 2000, 90.0 + 56, 1);
-	running2(velocity, 4000, 90.0 + 56, 1);
+	runForWallOff(velocity, acc, 90.0 + 56, 1);
 
 	next_dir = direction(now_dir, Straight);
 	while (true) {
 		now_dir = next_dir;
 		if (known == false) {
-			wallJudge2(now_dir, x, y);
+			wallJudge4(now_dir, x, y);
 			map[x][y] |= 0xf0;
 			time = 0;
 			updateDist(GoalX, GoalY, 0, isFull);
@@ -837,7 +841,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
 
 //				Sen.Kp = 0.015;
 //				Sen.Ki = 0.0025;
-				check = runForKnownPath(1500, 5000, 3000);
+				check = runForKnownPath(velocity2, acc, diac);
 //				Sen.Kp = 0.01;
 //				Sen.Ki = 0.001;
 //				Sen.Kp = 0.01;
@@ -856,24 +860,24 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
 			lastMotion = nextMotion;
 			switch (nextMotion) {
 			case Straight:
-				check = running2(velocity, 0, 180.0, 1);
+				check = runForWallOff(velocity, 0, 180.0, 1);
 				backFlg = 0;
 				break;
 			case Right:
-				check = slalom3(R, Normal, velocity, velocity, 0);
+				check = slalom(R, Normal, velocity, velocity, 0);
 				backFlg = 0;
 				break;
 			case Left:
-				check = slalom3(L, Normal, velocity, velocity, 0);
+				check = slalom(L, Normal, velocity, velocity, 0);
 				backFlg = 0;
 				break;
 			case Back:
 				if (Front_SEN.now > wallhosei) {
 					gyroKeepFlg = 1;
-					realRun3(velocity, 3500, 3500, 100, 25);
+					realRun(velocity, acc, diac, 100, 100);
 					mtu_stop();
-					gyroRoll(L, 180, 120, 180);
-					back(-200, -2000, 50, 1);
+					gyroRoll(L, 180, 60, 100);
+//					back(-300, -diac, 50, 1);
 					if (isStepped(firstGoalX, firstGoalY)) {
 						if (nextMotion == Back && !lock
 								&& !(isStepped(GoalX, GoalY)
@@ -896,12 +900,12 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
 						gyroZeroCheck(false);
 					}
 					mtu_start();
-					check = running2(velocity, 4000, 145/*115 90.0 + 56*/, 1);
+					check = runForWallOff(velocity, acc, 115, 1);
 					gyroKeepFlg = 0;
 				} else {
-					realRun3(velocity, 3500, 3500, 115, 25);
+					realRun(velocity, acc, diac, 115, 25);
 					mtu_stop();
-					gyroRoll(L, 180, 120, 180);
+					gyroRoll(L, 180, 60, 80);
 					if (isStepped(firstGoalX, firstGoalY)) {
 						if (nextMotion == Back && !lock
 								&& !(isStepped(GoalX, GoalY)
@@ -924,7 +928,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
 //					}
 					gyroZeroCheck(false);
 					mtu_start();
-					check = running2(velocity, 4000, 115.0, 1);
+					check = runForWallOff(velocity, acc, 115.0, 1);
 				}
 				backFlg++;
 				break;
@@ -940,33 +944,14 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
 			return false;
 		}
 	}
-	realRun3(velocity, 3500, 3500, 90, 50);
+	realRun(velocity, acc, diac, 90, 50);
 
-	if (!dia) {
-		frontCtrl2();
-	}
-//	frontCtrl4();
 	mtu_stop();
-//	gyroRoll(L, 180, 60, 80);
-//	back(-300, -500, 100, 0);
-//	cmt_wait(50);
 	if (saveFcuBlock(FLASH_DF_BLOCK_4)) {
 		oneUp(100);
 	} else {
 //		coin(100);
 	}
-//	if (now_dir == North) {
-//		now_dir = South;
-//	} else if (now_dir == East) {
-//		now_dir = West;
-//	} else if (now_dir == West) {
-//		now_dir = East;
-//	} else if (now_dir == South) {
-//		now_dir = North;
-//	}
-//	if (Zen == Kata) {
-//		return false;
-//	}
 	return true;
 }
 char Adachi3(int GoalX, int GoalY, char Zen, char isFull) {
@@ -996,7 +981,7 @@ char Adachi3(int GoalX, int GoalY, char Zen, char isFull) {
 
 //	running(500, 2000, 90.0 + 56, 1);
 
-	running2(velocity, 3000, 90.0 + 56, 1);
+	runForWallOff(velocity, 3000, 90.0 + 56, 1);
 
 	next_dir = direction(now_dir, Straight);
 	while (true) {
@@ -1138,21 +1123,21 @@ char Adachi3(int GoalX, int GoalY, char Zen, char isFull) {
 		lastMotion = nextMotion;
 		switch (nextMotion) {
 		case Straight:
-			check = running2(velocity, 0, 180.0, 1);
+			check = runForWallOff(velocity, 0, 180.0, 1);
 			backFlg = 0;
 			break;
 		case Right:
-			check = slalom3(R, Normal, velocity, velocity, 0);
+			check = slalom(R, Normal, velocity, velocity, 0);
 			backFlg = 0;
 			break;
 		case Left:
-			check = slalom3(L, Normal, velocity, velocity, 0);
+			check = slalom(L, Normal, velocity, velocity, 0);
 			backFlg = 0;
 			break;
 		case Back:
 			if (Front_SEN.now > wallhosei) {
 				gyroKeepFlg = 1;
-				realRun3(velocity, 3500, 3500, 100, 25);
+				realRun(velocity, 3500, 3500, 100, 25);
 				mtu_stop();
 				gyroRoll(L, 180, 60, 80);
 				back(-200, -2000, 30, 1);
@@ -1178,10 +1163,10 @@ char Adachi3(int GoalX, int GoalY, char Zen, char isFull) {
 					tmpSave = true;
 				}
 				mtu_start();
-				check = running2(velocity, 4000, 145/*115 90.0 + 56*/, 1);
+				check = runForWallOff(velocity, 4000, 145/*115 90.0 + 56*/, 1);
 				gyroKeepFlg = 0;
 			} else {
-				realRun3(velocity, 1500, 1500, 120, 25);
+				realRun(velocity, 1500, 1500, 120, 25);
 				mtu_stop();
 				gyroRoll(L, 180, 60, 80);
 				if (isStepped(firstGoalX, firstGoalY)) {
@@ -1205,7 +1190,7 @@ char Adachi3(int GoalX, int GoalY, char Zen, char isFull) {
 //						tmpSave = true;
 				}
 				mtu_start();
-				check = running2(velocity, 4000, 145/*115 90.0 + 56*/, 1);
+				check = runForWallOff(velocity, 4000, 145/*115 90.0 + 56*/, 1);
 			}
 			backFlg++;
 			break;
@@ -1221,11 +1206,11 @@ char Adachi3(int GoalX, int GoalY, char Zen, char isFull) {
 			return false;
 		}
 	}
-	realRun3(velocity, 1500, 1500, 100, 50);
+	realRun(velocity, 1500, 1500, 100, 50);
 
-	if (!dia) {
-		frontCtrl2();
-	}
+//	if (!dia) {
+//		frontCtrl2();
+//	}
 	frontCtrl3();
 	mtu_stop();
 	gyroRoll(L, 180, 60, 80);
@@ -1265,28 +1250,28 @@ void lefthand() {
 		char front = Front_SEN.now > FRONT_WALL_EXIST;
 //		myprintf("%d	%d	%d\r\n", left, front, right);
 		if (left == 0) {
-			slalom3(L, Normal, v, v, 0);
+			slalom(L, Normal, v, v, 0);
 		} else if (front == 0) {
-			running2(500, 2000, 180 * 1, 1);
+			runForWallOff(500, 2000, 180 * 1, 1);
 		} else if (right == 0) {
-			slalom3(R, Normal, v, v, 0);
+			slalom(R, Normal, v, v, 0);
 		} else {
 			if (Front_SEN.now > RF_WALL) {
 				gyroKeepFlg = 1;
-				realRun3(v, 3500, 3500, 90, 25);
+				realRun(v, 3500, 3500, 90, 25);
 				mtu_stop();
 				gyroRoll(R, 180, 40, 160);
 				back(-100, -2000, 58, 0);
 				cmt_wait(100);
 				mtu_start();
-				running2(500, 2000, 90.0 + 56, 1);
+				runForWallOff(500, 2000, 90.0 + 56, 1);
 				gyroKeepFlg = 0;
 			} else {
-				realRun3(500, 3500, 3500, 90, 25);
+				realRun(500, 3500, 3500, 90, 25);
 				mtu_stop();
 				gyroRoll(R, 180, 40, 160);
 				mtu_start();
-				running2(500, 2000, 90.0, 1);
+				runForWallOff(500, 2000, 90.0, 1);
 			}
 		}
 	}

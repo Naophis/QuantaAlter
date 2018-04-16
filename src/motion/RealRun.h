@@ -10,55 +10,52 @@
 
 void cirquit();
 char realRun(float max, float ac, float diac, float dist, float sla) {
-	if (dia == 0) {
-		sensingMode = AtackStraight;
-	} else {
-		sensingMode = AtackDia;
-	}
-	return orignalRun(max, sla, ac, diac, dist);
+	globalState = STRAIGHT;
+	sensingMode = (dia == 0) ? AtackStraight : AtackDia;
+
+	return (dia == 1) ?
+			orignalRunDia(max, sla, ac, diac, dist) :
+			orignalRun(max, sla, ac, diac, dist);
+
 }
 
 char runForPath(float max, float ac, float diac) {
 	int i = 0;
 	float dist = 0;
-	float slaVelocity = 0;
+	float slaVel = 0;
 	char RorL = 0;
 	char turnVarys = 0;
-	float slaVelocity2 = 0;
+	float slaVel2 = 0;
 	char turnVarys2 = 0;
-	char check = 0;
+	char res = 1;
 	float slalomDist = 0;
 	char oldTurnVary = 0;
 	char top = false;
+
 	dia = 0;
 	tempVmax = max;
 	getAllPram2();
 	cmt_wait(100);
-//	back(-100, -1000, 50, 0);
 	gyroZeroCheck(true);
 	if (pLarge.velocity >= 1200) {
 		TRANSAM = true;
-//		LED_R = true;
-//		LED_L = true;
 		startVacume2(70);
 	}
 	turnVarys = turnVary(path_t[0]);
-	slaVelocity = turnVelocity(turnVarys);
-//	getAllPram();
+	slaVel = turnVelocity(turnVarys);
 	mtu_start();
 	logs = 0;
 	time = 0;
 	cc = 1;
 	logs = 0;
+
 	for (i = 0; i < pathLength; i++) {
 		if (i == 0) {
 			wall_off_limit = 125000;
 			wall_off_limit_d = 125000;
 			dist = 0.5 * (path_s[i] - 1) - 1;
 		} else {
-			wall_off_limit = 30;
-			wall_off_limit_d = 25;
-
+			wall_off_limit = wall_off_limit_d = 250;
 			dist = 0.5 * path_s[i] - 1;
 		}
 		if (dist <= 0) {
@@ -71,63 +68,65 @@ char runForPath(float max, float ac, float diac) {
 		if (dist > 0 && !top) {
 			getAllPram();
 			top = true;
+			res = 1;
 		}
 		turnVarys = turnVary(path_t[i]);
-		slaVelocity = turnVelocity(turnVarys);
+		slaVel = turnVelocity(turnVarys);
 		RorL = turnRoL(path_t[i]);
-//		myprintf("%d	%f	%f\r\n", i, dist, slaVelocity);
-		if (dist > 0 || i == 0) {
-			if (dia == 0) {
-				if (i == 0) {
-					check = realRun(max, ac, diac, (dist) * 180 + 41,
-							slaVelocity);
-				} else {
-					check = realRun(max, ac, diac, dist * 180 + slalomDist,
-							slaVelocity);
-				}
+
+		if (i == 0) {
+			if (dist > 0) {
+				float tmpDist = (dist) * 180 + 41;
+				res = realRun(max, ac, diac, tmpDist, slaVel);
 			} else {
-				if (oldTurnVary == Dia135 || oldTurnVary == Dia90) {
-//					slalomDist -= 20;
-				}
-				check = realRun(max, ac * 0.8, diac * 0.8,
-						dist * ROOT2 * 180 + slalomDist, slaVelocity);
+				float tmpDist = getFirstFront(turnVarys) + 41;
+				res = realRun(max, ac, diac, tmpDist, slaVel);
+				globalSkipFront = true;
+			}
+		} else if (dist > 0 || i == 0) {
+			if (dia == 0) {
+				float tmpDist = dist * 180 + slalomDist;
+				res = realRun(max, ac, diac, tmpDist, slaVel);
+			} else {
+				float tmpDist = dist * ROOT2 * 180 + slalomDist;
+				res = realRun(2500, ac * 0.40, diac * 0.75, tmpDist, slaVel);
 			}
 		}
-		if (!check) {
-			mtu_stop();
+		if (!res) {
+			mtu_stop2();
 			fastMode = 0;
 			return 0;
 		}
 		if (path_t[i] == 255) {
 			break;
 		}
-		if (wallOff(RorL) == 1) {
+		if (wallOff(RorL, true)) {
 			if (dist == 0) {
 				turnVarys2 = turnVary(path_t[i + 1]);
-				slaVelocity2 = turnVelocity(turnVarys2);
-				if (slaVelocity2 == slaVelocity) {
-					check = slalom3(RorL, turnVarys, slaVelocity, slaVelocity2,
-							ac * 0.8);
-				} else if (slaVelocity2 > slaVelocity) {
-					check = slalom3(RorL, turnVarys, slaVelocity, slaVelocity2,
-							ac * 0.8);
-				} else if (slaVelocity2 < slaVelocity) {
-					check = slalom3(RorL, turnVarys, slaVelocity, slaVelocity2,
-							-diac * 0.8);
+				slaVel2 = turnVelocity(turnVarys2);
+				if (slaVel2 == slaVel) {
+					res = slalom(RorL, turnVarys, slaVel, slaVel2, ac * 0.8);
+				} else if (slaVel2 > slaVel) {
+					res = slalom(RorL, turnVarys, slaVel, slaVel2, ac * 0.8);
+				} else if (slaVel2 < slaVel) {
+					res = slalom(RorL, turnVarys, slaVel, slaVel2, -diac * 0.8);
 				}
 			} else {
-				check = slalom3(RorL, turnVarys, slaVelocity, slaVelocity, 0);
+				res = slalom(RorL, turnVarys, slaVel, slaVel, 0);
 			}
 		} else {
-			mtu_stop();
+			mtu_stop2();
 			fastMode = 0;
 			return 0;
 		}
-		if (!check) {
-			mtu_stop();
+		globalSkipFront = false;
+
+		if (!res) {
+			mtu_stop2();
 			fastMode = 0;
 			return 0;
 		}
+
 	}
 	cc = 0;
 
@@ -138,7 +137,6 @@ char runForPath(float max, float ac, float diac) {
 	}
 
 	mtu_stop2();
-//	logOutPut();
 	fastMode = 0;
 	return 1;
 }
@@ -217,17 +215,17 @@ char runForPath_v2(float max, float ac, float diac) {
 			turnVarys2 = turnVary(path_t[i + 1]);
 			slaVelocity2 = turnVelocity(turnVarys2);
 			if (slaVelocity2 == slaVelocity) {
-				check = slalom3(RorL, turnVarys, slaVelocity, slaVelocity2,
+				check = slalom(RorL, turnVarys, slaVelocity, slaVelocity2,
 						ac * 0.8);
 			} else if (slaVelocity2 > slaVelocity) {
-				check = slalom3(RorL, turnVarys, slaVelocity, slaVelocity2,
+				check = slalom(RorL, turnVarys, slaVelocity, slaVelocity2,
 						ac * 0.8);
 			} else if (slaVelocity2 < slaVelocity) {
-				check = slalom3(RorL, turnVarys, slaVelocity, slaVelocity2,
+				check = slalom(RorL, turnVarys, slaVelocity, slaVelocity2,
 						-diac * 0.8);
 			}
 		} else {
-			check = slalom3(RorL, turnVarys, slaVelocity, slaVelocity, 0);
+			check = slalom(RorL, turnVarys, slaVelocity, slaVelocity, 0);
 		}
 		if (!check) {
 			mtu_stop();
@@ -291,7 +289,7 @@ char runForKnownPath(float max, float ac, float diac) {
 							check = realRun(max, ac, diac, dist * 180 - 90,
 									slaVelocity);
 						}
-						check = running2(slaVelocity, ac, 90, 1);
+						check = runForWallOff(slaVelocity, ac, 90, 1);
 						tmp = false;
 					} else {
 						check = realRun(max, ac, diac, dist * 180, slaVelocity);
@@ -300,7 +298,7 @@ char runForKnownPath(float max, float ac, float diac) {
 					if (dist >= 1) {
 						check = realRun(max, ac, diac, dist * 180 - 90,
 								slaVelocity);
-						check = running2(slaVelocity, ac, 90, 1);
+						check = runForWallOff(slaVelocity, ac, 90, 1);
 					} else {
 						check = realRun(max, ac, diac, dist * 180, slaVelocity);
 					}
@@ -318,22 +316,22 @@ char runForKnownPath(float max, float ac, float diac) {
 		if (path_t[i] == 255 || path_t[i] == 0) {
 			break;
 		}
-		if (path_t[i] == 1 || path_t[i] == 2 || wallOff(RorL) == 1) {
+		if (path_t[i] == 1 || path_t[i] == 2 || wallOff(RorL, dist > 0) == 1) {
 			if (dist == 0) {
 				turnVarys2 = turnVary(path_t[i + 1]);
 				slaVelocity2 = turnVelocitySlow(turnVarys2);
 				if (slaVelocity2 == slaVelocity) {
-					check = slalom3(RorL, turnVarys, slaVelocity, slaVelocity2,
+					check = slalom(RorL, turnVarys, slaVelocity, slaVelocity2,
 							ac * 0.8);
 				} else if (slaVelocity2 > slaVelocity) {
-					check = slalom3(RorL, turnVarys, slaVelocity, slaVelocity2,
+					check = slalom(RorL, turnVarys, slaVelocity, slaVelocity2,
 							ac * 0.8);
 				} else if (slaVelocity2 < slaVelocity) {
-					check = slalom3(RorL, turnVarys, slaVelocity, slaVelocity2,
+					check = slalom(RorL, turnVarys, slaVelocity, slaVelocity2,
 							-diac * 0.8);
 				}
 			} else {
-				check = slalom3(RorL, turnVarys, slaVelocity, slaVelocity, 0);
+				check = slalom(RorL, turnVarys, slaVelocity, slaVelocity, 0);
 			}
 		} else {
 			mtu_stop();
@@ -348,39 +346,5 @@ char runForKnownPath(float max, float ac, float diac) {
 	}
 	fastMode = 0;
 	return 1;
-}
-char realRun3(float max, float ac, float diac, float dist, float sla) {
-	float M = 0;
-	float M2 = 0;
-	float max2 = sla;
-	sensingMode = SearchMode;
-	for (max2 = sla; M + M2 < dist; max2 += 50) {
-		M = (max2 + V_now) * (max2 - V_now) / (2.0f * ac);
-		M2 = (max2 + sla) * (max2 - sla) / (2.0f * diac);
-	}
-	for (max2 = max2 - 50; M + M2 < dist; max2 += 5) {
-		M = (max2 + V_now) * (max2 - V_now) / (2.0f * ac);
-		M2 = (max2 + sla) * (max2 - sla) / (2.0f * diac);
-	}
-	for (max2 = max2 - 5; M + M2 < dist; max2 += 1) {
-		M = (max2 + V_now) * (max2 - V_now) / (2.0f * ac);
-		M2 = (max2 + sla) * (max2 - sla) / (2.0f * diac);
-	}
-	if (max2 > max) {
-		max2 = max;
-	}
-	gyroOn = 1;
-	M2 = (max2 + sla) * (max2 - sla) / (2.0f * diac);
-	M = dist - M2;
-	if (running(max2, ac, M, 1)) {
-		if (running(sla, -diac, M2, 1)) {
-			gyroOn = 0;
-			return 1;
-		} else {
-			gyroOn = 0;
-			return 0;
-		}
-	}
-	return 0;
 }
 #endif /* REALRUN_H_ */

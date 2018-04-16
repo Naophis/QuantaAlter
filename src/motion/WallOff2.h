@@ -71,7 +71,7 @@ float existLeftWall4_v2 = 500;   //壁切れの予備
 
 char wallOff_v2(char RorL) {
 	if (dia == 1) {
-		return wallOff_D(RorL);
+		return wallOff_D(RorL, false);
 	}
 	sensingMode = AtackStraight;
 	positionControlValueFlg = 1;

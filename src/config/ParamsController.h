@@ -40,6 +40,22 @@ void inputParameters2(char type, float frontLeft, float frontLeft2) {
 		break;
 	}
 }
+void setFirstFrontDistance(char type, float firstFront) {
+	switch (type) {
+	case Large:
+		pLarge.firstFront = firstFront;
+		break;
+	case Orval:
+		pOrval.firstFront = firstFront;
+		break;
+	case Dia45:
+		pD45.firstFront = firstFront;
+		break;
+	case Dia135:
+		pD135.firstFront = firstFront;
+		break;
+	}
+}
 void inputParameters(char type, float targetAngle, float radius, float front1,
 		float back1, float front2, float back2, float time, float n, float v) {
 	switch (type) {
@@ -136,8 +152,9 @@ void setPrms2(char type, float targetAngle, float radius, float front1,
 	inputParameters(type, targetAngle, radius, front1, back1, front2, back2,
 			time, n, v);
 }
-void setPrms3(char type, float front1, float front2) {
+void setPrms3(char type, float front1, float front2, float firstFront) {
 	inputParameters2(type, front1, front2);
+	setFirstFrontDistance(type, firstFront);
 }
 void getPrm(char type) {
 	float targetAngle = vs[type][0];
@@ -151,10 +168,12 @@ void getPrm(char type) {
 	float v = vs[type][8];
 	float frontleft1 = vs[type][9];
 	float frontleft2 = vs[type][10];
+	float firstFront = vs[type][11];
 	v_sla[type] = v;
 	inputParameters(type, targetAngle, radius, front1, back1, front2, back2,
 			time, n, v);
 	inputParameters2(type, frontleft1, frontleft2);
+	setFirstFrontDistance(type, firstFront);
 }
 void showParam(char type) {
 	float targetAngle = vs[type][0];
@@ -210,11 +229,13 @@ void getPrm2(char type) {
 	float v = vs2[type][8];
 	float frontleft1 = vs2[type][9];
 	float frontleft2 = vs2[type][10];
+	float firstFront = vs2[type][11];
 	v_sla[type] = v;
 //	myprintf("%d	%f\r\n", type, v);
 	inputParameters(type, targetAngle, radius, front1, back1, front2, back2,
 			time, n, v);
 	inputParameters2(type, frontleft1, frontleft2);
+	setFirstFrontDistance(type, firstFront);
 }
 void getAllPram() {
 	getPrm(Normal);
@@ -257,6 +278,7 @@ void save() {
 	vs[Large][8] = pLarge.velocity;
 	vs[Large][9] = pLarge.frontLeft1;
 	vs[Large][10] = pLarge.frontLeft2;
+	vs[Large][11] = pLarge.firstFront;
 
 	vs[Orval][0] = pOrval.targetAngle;
 	vs[Orval][1] = pOrval.radius;
@@ -267,6 +289,7 @@ void save() {
 	vs[Orval][8] = pOrval.velocity;
 	vs[Orval][9] = pOrval.frontLeft1;
 	vs[Orval][10] = pOrval.frontLeft2;
+	vs[Orval][11] = pOrval.firstFront;
 
 	vs[Dia45][0] = pD45.targetAngle;
 	vs[Dia45][1] = pD45.radius;
@@ -279,6 +302,7 @@ void save() {
 	vs[Dia45][8] = pD45.velocity;
 	vs[Dia45][9] = pD45.frontLeft1;
 	vs[Dia45][10] = pD45.frontLeft2;
+	vs[Dia45][11] = pD45.firstFront;
 
 	vs[Dia135][0] = pD135.targetAngle;
 	vs[Dia135][1] = pD135.radius;
@@ -291,6 +315,7 @@ void save() {
 	vs[Dia135][8] = pD135.velocity;
 	vs[Dia135][9] = pD135.frontLeft1;
 	vs[Dia135][10] = pD135.frontLeft2;
+	vs[Dia135][11] = pD135.firstFront;
 
 	vs[Dia90][0] = pD90.targetAngle;
 	vs[Dia90][1] = pD90.radius;
@@ -314,7 +339,7 @@ void save() {
 
 	for (int i = 0; i <= Kojima; i++) {
 		myprintf("%d", i);
-		for (int j = 0; j < 11; j++) {
+		for (int j = 0; j < 12; j++) {
 			myprintf("	%f", vs[i][j]);
 		}
 		myprintf("\r\n");
@@ -340,6 +365,7 @@ void save2() {
 	vs2[Large][8] = pLarge.velocity;
 	vs2[Large][9] = pLarge.frontLeft1;
 	vs2[Large][10] = pLarge.frontLeft2;
+	vs2[Large][11] = pLarge.firstFront;
 
 	vs2[Orval][0] = pOrval.targetAngle;
 	vs2[Orval][1] = pOrval.radius;
@@ -350,6 +376,7 @@ void save2() {
 	vs2[Orval][8] = pOrval.velocity;
 	vs2[Orval][9] = pOrval.frontLeft1;
 	vs2[Orval][10] = pOrval.frontLeft2;
+	vs2[Orval][11] = pOrval.firstFront;
 
 	vs2[Dia45][0] = pD45.targetAngle;
 	vs2[Dia45][1] = pD45.radius;
@@ -362,6 +389,7 @@ void save2() {
 	vs2[Dia45][8] = pD45.velocity;
 	vs2[Dia45][9] = pD45.frontLeft1;
 	vs2[Dia45][10] = pD45.frontLeft2;
+	vs2[Dia45][11] = pD45.firstFront;
 
 	vs2[Dia135][0] = pD135.targetAngle;
 	vs2[Dia135][1] = pD135.radius;
@@ -374,6 +402,7 @@ void save2() {
 	vs2[Dia135][8] = pD135.velocity;
 	vs2[Dia135][9] = pD135.frontLeft1;
 	vs2[Dia135][10] = pD135.frontLeft2;
+	vs2[Dia135][11] = pD135.firstFront;
 
 	vs2[Dia90][0] = pD90.targetAngle;
 	vs2[Dia90][1] = pD90.radius;
@@ -397,7 +426,7 @@ void save2() {
 
 	for (int i = 0; i <= Kojima; i++) {
 		myprintf("%d", i);
-		for (int j = 0; j < 11; j++) {
+		for (int j = 0; j < 12; j++) {
 			myprintf("	%f", vs2[i][j]);
 		}
 		myprintf("\r\n");
@@ -536,7 +565,7 @@ float getBackDistance_v2(char type, char RorL) {
 	}
 	return 0;
 }
-float getBackDistance(char type, char RorL) {
+float getBackDist(char type, char RorL) {
 	switch (type) {
 	case Normal:
 		if (RorL == L) {
@@ -628,4 +657,24 @@ float getRadius(char type) {
 	}
 	return 0;
 }
+float getFirstFront(char type) {
+	switch (type) {
+	case Normal:
+		return pNormal.firstFront;
+	case Large:
+		return pLarge.firstFront;
+	case Orval:
+		return pOrval.firstFront;
+	case Dia45:
+		return pD45.firstFront;
+	case Dia135:
+		return pD135.firstFront;
+	case Dia90:
+		return pD90.firstFront;
+	case Kojima:
+		return pKojima.firstFront;
+	}
+	return 0;
+}
+
 #endif /* PARAMSCONTROLLER_H_ */

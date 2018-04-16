@@ -21,12 +21,12 @@ void changeMode(int isApec) {
 	R_WALL_EXIST = 180; 		//探索時壁判定
 	L_WALL_EXIST = 180;		 //探索時壁判定
 	FRONT_WALL_EXIST = 150;		 //探索時壁判定
-	LF_WALL_EXIST = 150; 		//探索時壁判定
+//	LF_WALL_EXIST = 150; 		//探索時壁判定
 
-	FRONT_CTRL_R = 292;		 //前壁補正
-	FRONT_CTRL_L = 244; 		//前壁補正
+	FRONT_CTRL_1 = 292;		 //前壁補正
+//	FRONT_CTRL_L = 244; 		//前壁補正
 	RF_WALL_EXIST2 = 110; 	//前壁補正　開始
-	LF_WALL_EXIST2 = 110; 	//前壁補正　開始
+//	LF_WALL_EXIST2 = 110; 	//前壁補正　開始
 
 	RF_WALL = 250;				//斜め時 姿勢制御閾値(壁アリ）
 	LF_WALL = 20;				//斜め時 姿勢制御閾値(壁アリ）
@@ -41,8 +41,8 @@ void changeMode(int isApec) {
 	R_WALL_OFF_D = 880;		//壁切れ　閾値　斜め用
 	L_WALL_OFF_D = 880;		//壁切れ　閾値　斜め用
 
-	FRONT_OUT_R = 650;		//袋小路時前センサー閾値
-	FRONT_OUT_L = 700;		//袋小路時前センサー閾値
+	FRONT_OUT = 1000;		//袋小路時前センサー閾値
+//	FRONT_OUT_L = 700;		//袋小路時前センサー閾値
 	existRightWall = 100;		//壁切れの予備
 	existLeftWall = 100;			//壁切れの予備
 	existRightWall3 = 150;		//壁切れの予備

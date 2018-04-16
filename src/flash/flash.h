@@ -41,7 +41,7 @@ char eraseFlashAddr(uint32_t flash_addr) {
 //	uint8_t brank;
 	flash_res_t result;
 	R_FLASH_BlankCheck((uint32_t) flash_addr, 4, &result);
-	uint8_t ret = R_FLASH_Erase(flash_addr, 4);
+	uint8_t ret = R_FLASH_Erase((flash_block_address_t) flash_addr, 4);
 	if (ret != 0) {
 //		bool1 = true;
 	}
@@ -54,15 +54,14 @@ char eraseFlashAddr(uint32_t flash_addr) {
  */
 char eraseFlashBrock(uint32_t brock) {
 //	eraseFlashAddr(brock);
-	uint8_t ret = R_FLASH_Erase(brock, 4);
+	uint8_t ret = R_FLASH_Erase((flash_block_address_t) brock, 4);
 	return ret;
 }
 /**
  * 全部ブロック削除
  */
 void eraseAllFlashBlock() {
-
-	uint8_t ret = R_FLASH_Erase(FLASH_DF_BLOCK_0, 128);
+	uint8_t ret = (uint8_t) R_FLASH_Erase(FLASH_DF_BLOCK_4, 4);
 	myprintf("result all flash erase", ret);
 }
 

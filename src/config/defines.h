@@ -43,16 +43,17 @@ char fanStart = false;
 char fanStart2 = false;
 //#define FAN_AMP2 10.50
 //#define FAN_AMP 10.50
-#define FAN_AMP2 8.0
-#define FAN_AMP 8.0	//11.35
+#define FAN_AMP2 5.0f
+#define FAN_AMP 8.0f	//11.35
+volatile float myVacumeDuty = FAN_AMP;
 //#define FAN_AMP 11.0	//11.35
 const float PI = 3.141592653589793;
 
-#define TRANSAM PORT1.PODR.BIT.B5
+char TRANSAM = false;
 double dt = 0.001 / 4;
 #define ABS(IN) ((IN) < 0 ? - (IN) : (IN))
 #define Vo 0.0f				//初速度
-#define Wo 0.15f			//初期角速度
+#define Wo 0.5f			//初期角速度
 #define W_max 25.0f
 //#define W_max 5.5f
 volatile double W_now = 0;
@@ -191,6 +192,21 @@ unsigned char checkMap[16][16];
 unsigned char checkTurningPoint = false;
 char checkPoint = false;
 #define MAX 1023
+
+char globalSkipFront = false;
+
+void ledHex(int v) {
+	char a = (v & 0x01);
+	char b = (v & 0x02);
+	char c = (v & 0x04);
+	char d = (v & 0x08);
+	LED1 = a > 0;
+	LED2 = b > 0;
+	LED3 = c > 0;
+	LED4 = d > 0;
+	LED_RIGHT = false;
+	LED_LEFT = false;
+}
 void led(char a, char b, char c, char d) {
 	LED1 = a > 0;
 	LED2 = b > 0;
@@ -238,8 +254,8 @@ volatile char mpu = false;
 int g_nIdx1Read;
 int g_nIdx1Write;
 
-volatile float vs[10][11];
-volatile float vs2[10][11];
+volatile float vs[10][12];
+volatile float vs2[10][12];
 
 volatile float tmpDiac;
 volatile float targetVelocity;
@@ -304,6 +320,12 @@ volatile float log24[L_Length];
 volatile float log25[L_Length];
 volatile float log26[L_Length];
 volatile float log27[L_Length];
+volatile float log28[L_Length];
+volatile float log29[L_Length];
+volatile float log30[L_Length];
+volatile float log31[L_Length];
+volatile float log32[L_Length];
+volatile float log33[L_Length];
 
 #define Cycle 24000000.0f
 #define MTU_CYCLE 16000.0f	//4khz
@@ -316,8 +338,9 @@ volatile float log27[L_Length];
 
 #define FastRun 0
 #define SearchRun 1
+#define TestRun 2
 
-volatile fanMode = SearchRun;
+volatile char fanMode = SearchRun;
 
 volatile char rotate_r = true;
 volatile char rotate_l = true;
@@ -329,5 +352,31 @@ volatile char RecvDat, ComFlag;
 volatile char enableSciUpdate = false;
 
 volatile char swTop, swBottom, swLeft, swRight, swCenter;
+
+volatile char globalState = 0;
+#define NONE 0
+#define STRAIGHT 1
+#define PIVOT 2
+#define SLA_TURN 3
+#define SLA_BEFORE 4
+#define SLA_AFTER 5
+#define WALL_OFF 6
+#define FRONT_ctrl 7
+#define PARAREL 8
+#define DIA_STRAIGHT 9
+
+#define SEN_R RS_SEN45.now
+#define SEN_L LS_SEN45.now
+#define SEN_R2 RS_SEN2.now
+#define SEN_L2 LS_SEN2.now
+#define SEN_FRONT Front_SEN.now
+
+float R_WALL_EXIST2 = 1600;  //探索時壁判定
+float L_WALL_EXIST2 = 1500;  //探索時壁判定
+float FRONT_WALL_EXIST2 = 740; //探索時壁判定
+
+float R_WALL_EXIST3 = 420;  //探索時壁判定
+float L_WALL_EXIST3 = 300;  //探索時壁判定
+float FRONT_WALL_EXIST3 = 300; //探索時壁判定
 
 #endif /* DEFINES_H_ */
