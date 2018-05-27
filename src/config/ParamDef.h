@@ -22,11 +22,11 @@ float Lm = 0.001f;
 float friction = 0.00125f;
 float friction2 = 0.001925f;
 
-unsigned int running_wall_off_r = 500;
-unsigned int running_wall_off_l = 500;
+float running_wall_off_r = 500;
+float running_wall_off_l = 500;
 
-unsigned int search_wall_off_r = 1500;
-unsigned int search_wall_off_l = 1400;
+float search_wall_off_r = 1500;
+float search_wall_off_l = 1400;
 
 #define W_ENCORDER_LIMIT 100
 #define W_ENCORDER_LIMIT2 10
@@ -102,6 +102,8 @@ float L_WALL_DIA2 = 1500;
 
 float R_WALL_DIA3 = 1900;
 float L_WALL_DIA3 = 1500;
+
+float FRONT_CTRL_1 = 1275;   //前壁補正
 
 void importFromDataFlash() {
 	TIRE = *(float *) 1049216;
@@ -222,6 +224,8 @@ void importFromDataFlash() {
 	myprintf("search_wall_off_l	%f	%d\r\n", search_wall_off_l, 1049716);
 	search_wall_off_r = *(float *) 1049720;
 	myprintf("search_wall_off_r	%f	%d\r\n", search_wall_off_r, 1049720);
+	FRONT_CTRL_1 = *(float *) 1049724;
+	myprintf("FRONT_CTRL_1	%f	%d\r\n", FRONT_CTRL_1, 1049724);
 
 	R_WALL_OFF = *(float *) 1049856;
 	myprintf("R_WALL_OFF	%f	%d\r\n", R_WALL_OFF, 1049856);

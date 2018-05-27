@@ -36,7 +36,7 @@ char runForPath(float max, float ac, float diac) {
 	tempVmax = max;
 	getAllPram2();
 	cmt_wait(100);
-	gyroZeroCheck(true);
+	gyroZeroCheck(false);
 	if (pLarge.velocity >= 1200) {
 		TRANSAM = true;
 		startVacume2(70);
@@ -89,7 +89,7 @@ char runForPath(float max, float ac, float diac) {
 				res = realRun(max, ac, diac, tmpDist, slaVel);
 			} else {
 				float tmpDist = dist * ROOT2 * 180 + slalomDist;
-				res = realRun(2500, ac * 0.40, diac * 0.75, tmpDist, slaVel);
+				res = realRun(max * 0.7, ac * 0.5, diac * 0.8, tmpDist, slaVel);
 			}
 		}
 		if (!res) {
@@ -127,6 +127,7 @@ char runForPath(float max, float ac, float diac) {
 			return 0;
 		}
 
+		gyroErrResetEnable = false;
 	}
 	cc = 0;
 

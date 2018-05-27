@@ -21,6 +21,7 @@ void initLED() {
 	PORTB.PDR.BIT.B7 = 1;
 	PORTB.PDR.BIT.B5 = 1;
 	PORT2.PDR.BIT.B3 = 1;
+
 }
 
 void initSensorLED() {
@@ -41,6 +42,7 @@ void initMotorDriverRotate() {
 	PORTA.PDR.BIT.B5 = 1;	// vacume
 	PORTA.PDR.BIT.B2 = 1;	// pwm
 	PORTE.PDR.BIT.B3 = 1;	// pwm
+
 	PORTD.PDR.BIT.B7 = 1;	//Buzzer
 }
 
@@ -301,22 +303,27 @@ void init_Mtu4() {
 	MTU.TSTRA.BIT.CST4 = 1;				//MTU0のカウントスタート p460
 	SYSTEM.PRCR.WORD = 0xA500; // Protect off
 
+}
+
+void init_Mtu6() {
 	SYSTEM.PRCR.WORD = 0xA503; // Protect of//f
-	/*	P257でベクタテーブルの説明	*/
-//	MSTP (MTU6) = 0;
-//	MTU6.TCR.BIT.TPSC = 0;
-//	MTU6.TCR.BIT.CCLR = 1;				// TGRBコンペアマッチでTCNTクリ//ア
-//	MTU6.TIER.BIT.TGIEA = 1;				// TGRAの割り込み許//可
-//	MTU6.TGRA = (int) (_PCLKA / MTU_CYCLE) - 1900 - 1;// TGRB - TGRA = 発光時間 3840= 40u//s
-//	MTU6.TIER.BIT.TGIEB = 1;				// TGRBの割り込み許//可
-//	MTU6.TGRB = (int) (_PCLKA / MTU_CYCLE) - 1;	// 96MHz 1/96M =0.0104166us 0.0104166*19200=0.2m//s
-//	//割り込み許//可
-//	IEN(PERIA, INTA212) = 1;
-//	ICU.SLIAR212.BYTE = 0x15U;
-//	IPR(PERIA, INTA212) = 6;
-//	ICU.SLIAR213.BYTE = 0x16U;
-//	IEN(PERIA, INTA213) = 1;
-//	IPR(PERIA, INTA213) = 7;
+
+	MSTP (MTU6) = 0;
+	MTU6.TCR.BIT.TPSC = 0;
+	MTU6.TCR.BIT.CCLR = 2;		// TGRBコンペアマッチでTCNTクリア
+
+	MTU6.TIER.BIT.TGIEA = 1;	// TGRAの割り込み許可
+	MTU6.TIER.BIT.TGIEB = 1;	// TGRBの割り込み許可
+
+	//割り込み許可
+	ICU.SLIAR212.BYTE = 30;
+	ICU.SLIAR213.BYTE = 31;
+
+	IEN(PERIA, INTA212) = 1;
+	IPR(PERIA, INTA212) = 6;
+	IEN(PERIA, INTA213) = 1;
+	IPR(PERIA, INTA213) = 7;
+
 	SYSTEM.PRCR.WORD = 0xA500; // Protect off
 }
 

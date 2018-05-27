@@ -657,16 +657,18 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
 	char tmpSave = false;
 	char goaled = false;
 	int p = 0;
-	float velocity = 1000;
-	float velocity2 = 1500;
-	float acc = 5000;
-	float diac = 12000;
-	sensingMode = SearchMode;
+
+	float velocity = *(float *) 1049320;
+	float velocity2 = *(float *) 1049332;
+	float acc = *(float *) 1049324;
+	float diac = *(float *) 1049328;
+
 	map[0][0] |= 0xf0;
 	updateDist(GoalX, GoalY, 0, isFull);
 //	back(-100, -2000, 60, 0);
 	gyroZeroCheck(true);
 	if (velocity >= 1000) {
+		sensingMode = SearchMode;
 		startVacume2(70);
 	}
 	mtu_start();
@@ -873,10 +875,10 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
 				break;
 			case Back:
 				if (Front_SEN.now > wallhosei) {
-					gyroKeepFlg = 1;
 					realRun(velocity, acc, diac, 100, 100);
 					mtu_stop();
-					gyroRoll(L, 180, 60, 100);
+//					gyroRoll(R, 180, 60, 100);
+					gyroRollTest(R, 180, 60, 100);
 //					back(-300, -diac, 50, 1);
 					if (isStepped(firstGoalX, firstGoalY)) {
 						if (nextMotion == Back && !lock
@@ -901,11 +903,10 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
 					}
 					mtu_start();
 					check = runForWallOff(velocity, acc, 115, 1);
-					gyroKeepFlg = 0;
 				} else {
 					realRun(velocity, acc, diac, 115, 25);
 					mtu_stop();
-					gyroRoll(L, 180, 60, 80);
+					gyroRoll(R, 180, 60, 80);
 					if (isStepped(firstGoalX, firstGoalY)) {
 						if (nextMotion == Back && !lock
 								&& !(isStepped(GoalX, GoalY)
@@ -945,8 +946,10 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
 		}
 	}
 	realRun(velocity, acc, diac, 90, 50);
-
 	mtu_stop();
+	gyroRollTest(R, 180, 60, 100);
+	back(-100, -diac, 50, 1);
+	mtu_stop2();
 	if (saveFcuBlock(FLASH_DF_BLOCK_4)) {
 		oneUp(100);
 	} else {
@@ -1136,7 +1139,6 @@ char Adachi3(int GoalX, int GoalY, char Zen, char isFull) {
 			break;
 		case Back:
 			if (Front_SEN.now > wallhosei) {
-				gyroKeepFlg = 1;
 				realRun(velocity, 3500, 3500, 100, 25);
 				mtu_stop();
 				gyroRoll(L, 180, 60, 80);
@@ -1164,7 +1166,6 @@ char Adachi3(int GoalX, int GoalY, char Zen, char isFull) {
 				}
 				mtu_start();
 				check = runForWallOff(velocity, 4000, 145/*115 90.0 + 56*/, 1);
-				gyroKeepFlg = 0;
 			} else {
 				realRun(velocity, 1500, 1500, 120, 25);
 				mtu_stop();
@@ -1257,7 +1258,6 @@ void lefthand() {
 			slalom(R, Normal, v, v, 0);
 		} else {
 			if (Front_SEN.now > RF_WALL) {
-				gyroKeepFlg = 1;
 				realRun(v, 3500, 3500, 90, 25);
 				mtu_stop();
 				gyroRoll(R, 180, 40, 160);
@@ -1265,7 +1265,6 @@ void lefthand() {
 				cmt_wait(100);
 				mtu_start();
 				runForWallOff(500, 2000, 90.0 + 56, 1);
-				gyroKeepFlg = 0;
 			} else {
 				realRun(500, 3500, 3500, 90, 25);
 				mtu_stop();

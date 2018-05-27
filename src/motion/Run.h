@@ -214,6 +214,9 @@ char gyroRollTest(char RorL, float Angle, float w_max, float al) {
 			break;
 		}
 	}
+	Gy.error_now = 0;
+	Gy.error_old = 0;
+	Gy.error_delta = 0;
 	W_now = 0;
 	alpha = 0;
 	//	cmt_wait(200);
@@ -224,6 +227,7 @@ char gyroRollTest(char RorL, float Angle, float w_max, float al) {
 	cc = 0;
 	positionControlValueFlg = 0;
 	mtu_stop();
+//	cc = 0;
 	return 1;
 }
 char gyroRoll(char RorL, float Angle, float w_max, float al) {
@@ -284,7 +288,6 @@ char gyroRoll(char RorL, float Angle, float w_max, float al) {
 	}
 	W_now = 0;
 	alpha = 0;
-//	cmt_wait(200);
 	ang = 0;
 	angle = 0;
 	C.g = 0;
@@ -292,6 +295,7 @@ char gyroRoll(char RorL, float Angle, float w_max, float al) {
 	cc = 0;
 	positionControlValueFlg = 0;
 	mtu_stop();
+//	cmt_wait(200);
 	return 1;
 }
 char roll_timer(char RorL, float Angle, float w_max, float al) {
@@ -431,7 +435,7 @@ char roll(char RorL, float Angle, float w_max, float al) {
 	mtu_stop();
 	return 1;
 }
-float FRONT_CTRL_1 = 1275;   //前壁補正
+
 float RF_WALL_EXIST2 = 750; //前壁補正　開始
 char frontCtrl() {
 	globalState = FRONT_ctrl;
@@ -441,6 +445,7 @@ char frontCtrl() {
 		while (Front_SEN.now < FRONT_CTRL_1)
 			;
 		sensingMode = tmp;
+		cmtMusic(D3_, 100);
 	}
 	return 1;
 }
@@ -675,16 +680,6 @@ char slalom(char dir, char type, float Velocity, float vel2, float ac) {
 		returnStatus = runForWallOff2(vel2, ac, back, false, type, dir);
 	}
 
-//	mtu_stop2();
-//
-//	cc = 0;
-//	logOutPut();
-//	while (true) {
-//		cmt_wait(100);
-//		myprintf("%f %f %f %f\r\n", getFrontDistance(type, dir), back,
-//				globalSkipFront);
-//	}
-
 	cc = 0;
 	alpha = 0;
 	W_now = 0;
@@ -876,7 +871,15 @@ char orignalRun(float v1, float v2, float ac, float diac, float dist) {
 	originalDiaMode = true;
 	peekSideR = peekSideL = 0;
 	cc = 1;
+
+	gyroErrResetEnable = dist >= 180;
+
 	while (ABS(distance) < ABS(dist)) {
+
+		if (gyroErrResetEnable && (dist - distance) < 90) {
+			gyroErrResetEnable = false;
+		}
+
 		if (startDecrease(R)) {
 			peekSideR = RS_SEN45.now;
 		}
@@ -1098,9 +1101,9 @@ char runForWallOff(float vmax, float ACC, float dist, char control) {
 				if (checkSensor2Off(R, false)) {
 				} else {
 					bool = false;
-					cmtMusic(10, 100);
+					cmtMusic(G2_, 100);
 					distance = 0;
-					dist = 15 + 8;
+					dist = *(float *) 1049916;
 					continue;
 				}
 			}
@@ -1108,9 +1111,9 @@ char runForWallOff(float vmax, float ACC, float dist, char control) {
 				if (checkSensor2Off(L, false)) {
 				} else {
 					bool = false;
-					cmtMusic(10, 100);
+					cmtMusic(G2_, 100);
 					distance = 0;
-					dist = 15 + 7.25;
+					dist = *(float *) 1049920;
 					continue;
 				}
 			}

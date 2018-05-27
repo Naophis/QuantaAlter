@@ -120,6 +120,7 @@ volatile unsigned int meloTimer = 0;
 volatile int DutyR, DutyL;
 volatile float rpmR = 0, rpmL = 0;
 volatile float angle = 0;
+volatile char gyroErrResetEnable = false;
 int cc = 0;
 int logs = 0;
 volatile float ffR, ffL;
@@ -151,7 +152,6 @@ volatile float slaTerm = 0;
 volatile char runFlg = 0;
 volatile char errorFlg = 0;
 volatile char globalError = 0;
-volatile char gyroKeepFlg = 0;
 
 volatile char frontWallCtrl = 0;
 
@@ -330,8 +330,8 @@ volatile float log33[L_Length];
 #define Cycle 24000000.0f
 #define MTU_CYCLE 16000.0f	//4khz
 #define _ICLK 240000000 //240MHz
-#define _PCLKA 60000000 //60MHz
-#define _PCLKB 60000000 //60MHz
+#define _PCLKA 60000000.0f //60MHz
+#define _PCLKB 60000000.0f //60MHz
 #define CMT_CYCLE 4000 // 4kHz
 #define CMT_CYCLE2 2000 // 2kHz
 #define M_CYCLE2 500

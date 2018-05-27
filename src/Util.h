@@ -216,6 +216,20 @@ void mtu_stop() {
 //	stopVacume();
 	ledOn = 0;
 }
+void mtu_stop3() {
+	enablePWM = false;
+	GPT.GTSTR.BIT.CST0 = GPT.GTSTR.BIT.CST1 = 0;
+	GPT0.GTCCRA = GPT0.GTCCRC = GPT1.GTCCRA = GPT1.GTCCRC = 0;
+//	resetData2();
+//	V_now = 0;
+//	W_now = 0;
+//	resetGyroParam();
+//	resetAngleParam();
+//	resetOmegaParam();
+//	cmt_wait(5);
+//	stopVacume();
+	ledOn = 0;
+}
 void mtu_stop2() {
 	globalState = NONE;
 	V_now = 0;
@@ -600,6 +614,79 @@ void printMap() {
 	}
 	myprintf("\r\n");
 }
+
+void printMap2() {
+	int i = 0;
+	int j = 0;
+	myprintf("\r\n");
+	for (int j = 15; j >= 0; j--) {
+		myprintf("+");
+		for (int i = 0; i < 16; i++) {
+			if (existWall(i, j, North)) {
+				myprintf("----+");
+			} else {
+				myprintf("    +");
+			}
+		}
+		myprintf("\r\n");
+		for (i = 0; i < 16; i++) {
+			if (existWall(i, j, West)) {
+				myprintf("| ");
+			} else {
+				myprintf("  ");
+			}
+			myprintf("%2x ", map[i][j]);
+		}
+		myprintf("|\r\n");
+	}
+	myprintf("+");
+	i = 0;
+	for (i = 0; i < 16; i++) {
+		if (existWall(i, j, South)) {
+			myprintf("----+");
+		} else {
+			myprintf("    +");
+		}
+	}
+	myprintf("\r\n");
+}
+
+void printMap3() {
+	int i = 0;
+	int j = 0;
+	myprintf("\r\n");
+	for (int j = 15; j >= 0; j--) {
+		myprintf("+");
+		for (int i = 0; i < 16; i++) {
+			if (existWall(i, j, North)) {
+				myprintf("----+");
+			} else {
+				myprintf("    +");
+			}
+		}
+		myprintf("\r\n");
+		for (i = 0; i < 16; i++) {
+			if (existWall(i, j, West)) {
+				myprintf("| ");
+			} else {
+				myprintf("  ");
+			}
+			myprintf("%2x ", (map[i][j] & 0xf0) >> 4);
+		}
+		myprintf("|\r\n");
+	}
+	myprintf("+");
+	i = 0;
+	for (i = 0; i < 16; i++) {
+		if (existWall(i, j, South)) {
+			myprintf("----+");
+		} else {
+			myprintf("    +");
+		}
+	}
+	myprintf("\r\n");
+}
+
 int direction(int Dir, int SLRB) {
 	if (Dir == North) {
 		if (SLRB == Left) {

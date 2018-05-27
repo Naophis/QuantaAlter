@@ -196,8 +196,6 @@ void resetFull() {
 	if (FLASH_SUCCESS == ret2) {
 		myprintf("write success\r\n");
 		oneUp(100);
-		oneUp(100);
-		oneUp(100);
 	} else {
 		myprintf("error %d\r\n", ret2);
 		coin(50);

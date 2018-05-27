@@ -79,20 +79,30 @@ void startCmt1(int T) {
 
 void stopCmt1() {
 	singing = false;
-	PORTC.PODR.BIT.B6 = 0;
+	MTU.TSTRB.BIT.CST6 = 0;
+	PORTD.PODR.BIT.B7 = 0;
 }
+
+#define MUSIC_CYCLE2 30000000.0f
 void makeMusic(float melo, int meloTime) {
-	m_time = 0;
-	startCmt1((int) (MUSIC_CYCLE / melo / 2));
+	MTU6.TGRA = (int) ((MUSIC_CYCLE2 / melo) / 2 - 1);
+	MTU6.TGRB = (int) ((MUSIC_CYCLE2 / melo) - 1);
+	MTU6.TCNT = buzzerTimer = m_time = 0;
+	singing = true;
+	MTU.TSTRB.BIT.CST6 = 1;
 	cmt_wait((int) meloTime);
 	stopCmt1();
-	m_time = 0;
 }
 
 void cmtMusic(float melo, int meloTime) {
-	stopCmt1();
-	startCmt1((int) (MUSIC_CYCLE / melo / 2));
+	MTU6.TGRA = (int) ((MUSIC_CYCLE2 / melo) / 2 - 1);
+	MTU6.TGRB = (int) ((MUSIC_CYCLE2 / melo) - 1);
+	MTU6.TCNT = buzzerTimer = 0;
 	m_time = meloTime;
+	singing = true;
+	MTU.TSTRB.BIT.CST6 = 1;
+//	cmt_wait((int) meloTime);
+//	stopCmt1();
 }
 
 void mazeStartMusic(int te) {
@@ -159,6 +169,7 @@ void coin(int temp) {
 	makeMusic(B2_, temp - 10);
 	cmt_wait(10);
 	makeMusic(E3_, temp - 10);
+	cmt_wait(10);
 }
 
 void oneUp(int temp) {
@@ -193,19 +204,21 @@ void decide(int temp) {
 }
 void startTransam(int tmp) {
 	makeMusic(B3_, tmp - 10);
-	cmt_wait(10);
+	cmt_wait(15);
 	makeMusic(B3_, tmp - 10);
-	cmt_wait(10);
+	cmt_wait(15);
 	makeMusic(B3_, tmp - 10);
-	cmt_wait(10);
+	cmt_wait(15);
+	makeMusic(B3_, tmp - 10);
+	cmt_wait(15);
 	makeMusic(A3_, tmp - 10);
-	cmt_wait(10);
+	cmt_wait(15);
 	makeMusic(B3_, tmp - 10);
 	cmt_wait(tmp);
 	makeMusic(F3_, 2 * (tmp - 10));
-	cmt_wait(10);
+	cmt_wait(15);
 	makeMusic(E3_, tmp - 10);
-	cmt_wait(10);
+	cmt_wait(15);
 	makeMusic(D3_, tmp - 10);
 }
 

@@ -19,6 +19,7 @@
 
 #include "config/ParamDef.h"
 #include "config/ParamsController.h"
+#include "config/ParamUartImporter.h"
 #include "Util.h"
 #include "PhysicalBasement.h"
 
@@ -48,59 +49,60 @@
 #include "config/SerialMapper.h"
 
 volatile void buzzer() {
-	if ((buzzerTimer % 2) == 0) {
-		PORTD.PODR.BIT.B7 = 1;
-	} else {
-		PORTD.PODR.BIT.B7 = 0;
-	}
+//	if ((buzzerTimer % 2) == 0) {
+//		PORTD.PODR.BIT.B7 = 1;
+//	} else {
+//		PORTD.PODR.BIT.B7 = 0;
+//	}
 	buzzerTimer++;
-	if (m_time != 0) {
-		if (buzzerTimer == m_time) {
-			stopCmt1();
-			singing = false;
-		}
+	if (m_time > 0 && buzzerTimer >= m_time) {
+		stopCmt1();
 	}
 }
-void mtu6A() {
-	LED1 = 1;
-	PORTD.PODR.BIT.B7 = 0;
-	buzzerTimer++;
-	if (m_time != 0) {
-		if (buzzerTimer == m_time) {
-			stopCmt1();
-		}
-	}
-}
-void mtu6B() {
-	LED4 = 1;
+volatile int tmp1 = 0;
+volatile int tmp2 = 0;
+volatile void mtu6A() {
 	PORTD.PODR.BIT.B7 = 1;
+	tmp1++;
+}
+volatile void mtu6B() {
+	PORTD.PODR.BIT.B7 = 0;
+	tmp2++;
 }
 volatile char rightTrend = 0;
 volatile char leftTrend = 0;
 volatile void cmt() {
 	timer++;
 	time++;
+	if (singing) {
+		buzzerTimer++;
+		if (m_time > 0 && buzzerTimer >= (CMT_CYCLE / 1000) * m_time) {
+			stopCmt1();
+		}
+	}
 	sinCount++;
 	swTop = !PushTop;
 	swBottom = !PushBottom;
 	swRight = !PushRight;
 	swLeft = !PushLeft;
 	swCenter = !PushCenter;
-	if (!PushTop) {
-		cmtMusic(D2s_, 250);
+	if (!singing) {
+		if (!PushTop) {
+			cmtMusic(C2_, 100);
+		}
+		if (!PushRight) {
+			cmtMusic(D2_, 100);
+		}
+		if (!PushLeft) {
+			cmtMusic(E2_, 100);
+		}
+		if (!PushBottom) {
+			cmtMusic(F2_, 100);
+		}
 	}
-	if (!PushRight) {
-		cmtMusic(D2s_, 250);
-	}
-	if (!PushLeft) {
-		cmtMusic(D2s_, 250);
-	}
-	if (!PushBottom) {
-		cmtMusic(D2s_, 250);
-	}
-	if (singing) {
-		buzzer();
-	}
+//	if (singing) {
+//		buzzer();
+//	}
 	if (dia == 1) {
 		pushLatestSensor(RS_SEN45.now, LS_SEN45.now);
 		pushLatestSensor2(RS_SEN2.now, LS_SEN2.now);
@@ -220,14 +222,14 @@ void mtu4_B() {
 	case 4:
 		if (fanStart) {
 			if (fanMode == TestRun) {
-				GPT2.GTCCRA = (int) (myVacumeDuty / battery * FAN_CYCLE);
-				GPT2.GTCCRC = (int) (myVacumeDuty / battery * FAN_CYCLE);
+				GPT2.GTCCRA = (short) (myVacumeDuty / battery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (myVacumeDuty / battery * FAN_CYCLE);
 			} else if (fanMode == FastRun) {
-				GPT2.GTCCRA = (int) (FAN_AMP / battery * FAN_CYCLE);
-				GPT2.GTCCRC = (int) (FAN_AMP / battery * FAN_CYCLE);
+				GPT2.GTCCRA = (short) (FAN_AMP / battery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (FAN_AMP / battery * FAN_CYCLE);
 			} else {
-				GPT2.GTCCRA = (int) (FAN_AMP2 / battery * FAN_CYCLE);
-				GPT2.GTCCRC = (int) (FAN_AMP2 / battery * FAN_CYCLE);
+				GPT2.GTCCRA = (short) (FAN_AMP2 / battery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (FAN_AMP2 / battery * FAN_CYCLE);
 			}
 		} else {
 			GPT2.GTCCRA = GPT2.GTCCRC = 0;
@@ -287,8 +289,10 @@ void initRX64M() {
 //	initGPT2();
 	Init_SPI();
 	init_Mtu4();
+	init_Mtu6();
 	myprintf("Flash Open %d\r\n", R_FLASH_Open());
 	importParam();
+
 }
 void test() {
 	ComFlag = true;
@@ -318,9 +322,7 @@ void printErrorEnum() {
 void main(void) {
 	initRX64M();
 	batteryCheck();
-	setupCmt = true;
-	enableMPU = true;
-	os_escape = true;
+	setupCmt = enableMPU = os_escape = true;
 
 	while (1) {
 		float result = getZeroPoint();
@@ -334,28 +336,7 @@ void main(void) {
 	coin(100);
 	ledOn = 1;
 	os_escape = 1;
-//	readMaze();
-
-//	testFcu();
-
-//	for (int i = 0; i < 100; i++) {
-//		makeMusic(400 + 400 * i, 500);
-////		cmt_wait(500);
-//	}
-
-//	testFcu();
-//	preread();
 	myprintf("%c[33m", ESC); /* 文字を黄色に */
-//	while (1) {
-//		loadData();
-//	}
-
-//	myprintf("init :%d\r\n", start());
-//	preread();
-//	while (1) {
-//	}
-//	testFcu();
-
 	operation();
 	os_escape = 0;
 }

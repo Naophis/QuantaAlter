@@ -6,3 +6,4 @@ QuantamAlter Release.launch
 .cproject
 Release/*
 makefile.init
+/Release/

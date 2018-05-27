@@ -51,9 +51,9 @@ char writeParam(int key, float val) {
 //	long target =0;// g_flash_BlockAddresses[targetAddr];
 	char res1 =0;// erase(target);
 	cmt_wait(100);
-	myprintf("sizeof = %d\r\n", res1, sizeof(array));
+//	myprintf("sizeof = %d\r\n", res1, sizeof(array));
 	char res = 0;//R_FlashWrite(target, (uint32_t) array, sizeof(array));
-	myprintf("erase = %d   write = %d\r\n", res1, res);
+//	myprintf("erase = %d   write = %d\r\n", res1, res);
 	return res1 & res;
 }
 void loadData() {
@@ -61,17 +61,6 @@ void loadData() {
 	while (Swich) {
 
 	}
-
-//	cmt_wait(100);
-//	myprintf("erase[80] %d\r\n", erase(g_flash_BlockAddresses[80]));
-//	cmt_wait(100);
-//	myprintf("erase[81] %d\r\n", erase(g_flash_BlockAddresses[81]));
-//	cmt_wait(100);
-//	myprintf("erase[82] %d\r\n", erase(g_flash_BlockAddresses[82]));
-//	cmt_wait(100);
-//	myprintf("erase[83] %d\r\n", erase(g_flash_BlockAddresses[83]));
-//	cmt_wait(100);
-
 	cmt_wait(100);
 }
 float readParam(int key) {

@@ -142,7 +142,7 @@ void enc_to_vel(void) {
 #define KIREME_R2 10
 #define KIREME_L2 10
 unsigned int R_WALL = 820; //820; //#define R_WALL 4000	//サーキット用
-unsigned int L_WALL = 600; //600;	//制御壁閾値
+unsigned int L_WALL = 700; //600;	//制御壁閾値
 volatile float FRONT_OUT = 2250;	//袋小路時前センサー閾値
 
 int checkStr = 0;
@@ -167,6 +167,9 @@ float check_sen_error(void) {
 		Se.error_old = Se.before = Se.error_delta = 0;
 	} else {
 		if (!TRANSAM) {
+			Gy.error_old = 0;
+		}
+		if (gyroErrResetEnable) {
 			Gy.error_old = 0;
 		}
 		angle = 0;

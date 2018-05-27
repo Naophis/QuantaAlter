@@ -31,9 +31,14 @@ void sensourCheck() {
 	ledOn = 0;
 }
 void testRun() {
-	float velocity = 800;
-	float accele = 8000;
-	float diaccele = 2000;
+
+	float test_acc = *(float *) 1049268;
+	float test_max_v = *(float *) 1049272;
+	float test_dia = *(float *) 1049276;
+
+	float velocity = test_max_v;
+	float accele = test_acc;
+	float diaccele = test_acc;
 	float vMax = 100;
 
 	gyroZeroCheck(true);
@@ -47,31 +52,15 @@ void testRun() {
 	V_now = 0;
 
 	mtu_start();
-	dia = 1;
+	dia = test_dia > 0;
+
 	if (dia == 1) {
-		realRun(velocity, accele, diaccele, 180.0 * ROOT2 * 3.0, vMax);
+		float targetDistDia = *(float *) 1049300;
+		realRun(velocity, accele, diaccele, targetDistDia, vMax);
 	} else {
-		realRun(velocity, accele, diaccele, 180.0 * 4.5, vMax);
+		float targetdist = *(float *) 1049296;
+		realRun(velocity, accele, diaccele, targetdist, vMax);
 	}
-//	running(100, -diaccele, 180, 1);
-//	mtu_stop2();
-//	gyroRoll(R, 180, 20, 25);
-//
-//	mtu_start();
-////	dia = 1;
-//	realRun(velocity, accele, diaccele, 180.0 * 3.5, vMax);
-
-//	wallOff(R);
-//	running2(velocity, accele, 180, 1);
-//	V_now = 0;
-//	cmt_wait(1000);
-//	resetAllData();
-
-//	frontCtrl();
-//	isOverFront();
-//	resetAllData();
-//	mtu_stop2();
-//	ledOn = 1;
 
 	mtu_stop2();
 	logOutPut();
@@ -124,6 +113,13 @@ void inputNaiperTurnAll500_2() {
 	setPrms(Normal, 90, 50, 21.0, 40.0, 0, 0, 0.051453590393066406, 4, 1000);
 	setPrms3(Normal, 9, 52.0, 0);
 
+	setNormalParam500();
+	setNormalParam1000();
+	setLargeParam1000();
+	setOrvalParam1000();
+	setDia45Param1000();
+	setDia135Param1000();
+	setDia90Param1000();
 }
 
 void inputNaiperTurnAll1200() {
@@ -147,6 +143,7 @@ void inputNaiperTurnAll1200() {
 	setPrms3(Dia135, 25, 6.5, 28);
 	setPrms(Dia90, 90, 85.0, 16.75, 22.0, 0, 0, 0.05831432342529297, 4, 1500);
 	setPrms3(Dia90, 11.0, 0, 0);
+
 }
 
 void inputNaiperTurnAll1500() {
@@ -160,6 +157,11 @@ void inputNaiperTurnAll1500() {
 	setPrms3(Dia135, 25, 6.5, 28);
 	setPrms(Dia90, 90, 85.0, 16.75, 22.0, 0, 0, 0.05831432342529297, 4, 1500);
 	setPrms3(Dia90, 11.0, 0, 0);
+	setLargeParam1500();
+	setOrvalParam1500();
+	setDia45Param1500();
+	setDia135Param1500();
+	setDia90Param1500();
 }
 
 void inputNaiperTurnAll1700() {
@@ -178,36 +180,63 @@ void inputNaiperTurnAll1700() {
 	setPrms(Dia90, 90, 83.0, 12.75, 22.0, 0, 0, 0.050243377685546875, 4, 1700);
 	setPrms3(Dia90, 6.0, 0, 0);
 
+	setLargeParam1700();
+	setOrvalParam1700();
+	setDia45Param1700();
+	setDia135Param1700();
+	setDia90Param1700();
+
 }
 void inputNaiperTurnAll1800() {
+	setPrms(Large, 90, 115.0, 32.0, 20, 0, 0, 0.06574630737304688, 4, 1800);
+	setPrms3(Large, 15.5, 0, 35.5);
 
-//	setPrms(Large, 90, 120.0, 7.75, 20.0, 0, 0, 0.0686044692993164, 4, 1800);
-//	setPrms3(Large, 13.0, 0);
-//	setPrms(Orval, 180, 86.5, 10.0, 65.0, 0, 0, 0.09890556335449219, 4, 1800);
-//	setPrms3(Orval, 10, 65);
-//	setPrms(Dia45, 45, 110.0, 8, 68.0, 62.0, 30, 0.031444549560546875, 4, 1800);
-//	setPrms3(Dia45, 10.75, 53);
-//	setPrms(Dia135, 135, 80, 16.125, 45, 21.5, 45, 0.0686044692993164, 4, 1800);
-//	setPrms3(Dia135, 24.25, 19.5);
-//	setPrms(Dia90, 90, 83.0, 7.5, 45.0, 0, 0, 0.04745197296142578, 4, 1800);
-//	setPrms3(Dia90, 3.9, 0);
-//
-//	setPrms(Dia90, 90, 85, 13.5, 20.0, 0, 0, 0.051453590393066406, 4, 1700);
-//	setPrms3(Dia90, 10.9, 0);
+	setPrms(Orval, 180, 88.5, 20, 35, 0, 0, 0.10119152069091797, 4, 1800);
+	setPrms3(Orval, 20, 38, 35);
 
+	setPrms(Dia45, 45, 100, 23.5, 40, 61, 25, 0.028585433959960938, 4, 1800);
+	setPrms3(Dia45, 11.0, 53.5, 32.5);
+
+	setPrms(Dia135, 135, 80, 34.45, 20, 35.5, 30, 0.0686044692993164, 4, 1800);
+	setPrms3(Dia135, 24, 22.5, 35.5);
+
+	setPrms(Dia90, 90, 83.0, 18.5, 22.0, 0, 0, 0.04745197296142578, 4, 1800);
+	setPrms3(Dia90, 4.5, 0, 0);
+
+	setLargeParam1800();
+	setOrvalParam1800();
+	setDia45Param1800();
+	setDia135Param1800();
+	setDia90Param1800();
 }
 void inputNaiperTurnAll1900() {
-	inputNaiperTurnAll1800();
-//	setPrms(Large, 90, 115.0, 9.875, 45.0, 0, 0, 0.062286376953125, 4, 1900);
-//	setPrms3(Large, 15.0, 0);
-//	setPrms(Orval, 180, 87.5, 10.0, 65.0, 0, 0, 0.09478282928466797, 4, 1900);
-//	setPrms3(Orval, 10, 65);
+	setPrms(Large, 90, 115.0, 23.5, 20, 0, 0, 0.062286376953125, 4, 1900);
+	setPrms3(Large, 11.0, 0, 35.5);
+
+	setPrms(Orval, 180, 88.5, 20, 35, 0, 0, 0.10119152069091797, 4, 1900);
+	setPrms3(Orval, 20, 38, 35);
+
+	setPrms(Dia45, 45, 100, 21, 40, 64, 25, 0.02708148956298828, 4, 1900);
+	setPrms3(Dia45, 9.0, 53.5, 32.5);
+
+	setPrms(Dia135, 135, 80, 29, 20, 36, 30, 0.06499385833740234, 4, 1900);
+	setPrms3(Dia135, 21, 22.5, 35.5);
+
+	setPrms(Dia90, 90, 83.0, 16.5, 22.0, 0, 0, 0.04495429992675781, 4, 1900);
+	setPrms3(Dia90, 4.5, 0, 0);
+
+	setLargeParam1900();
+	setOrvalParam1900();
+	setDia45Param1900();
+	setDia135Param1900();
+	setDia90Param1900();
 
 }
 void inputNaiperTurnAll2000() {
-//	inputNaiperTurnAll1800();
-//	setPrms(Orval, 180, 88.5, 10.0, 80.0, 0, 0, 0.09107303619384766, 4, 2000);
-//	setPrms3(Orval, 10, 90);
+	inputNaiperTurnAll1900();
+	setPrms(Large, 90, 115.0, 23.5, 20, 0, 0, 0.05917167663574219, 4, 2000);
+	setPrms3(Large, 11.0, 0, 35.5);
+	setLargeParam2000();
 }
 /**
  * 	t_radiusData large;
@@ -217,40 +246,6 @@ void inputNaiperTurnAll2000() {
  t_radiusData dia90;
  t_radiusData kojima;
  */
-void testSlalom() {
-	float vMax = 1500;
-	float maxVelocity = 500;
-	float accele = 8000;
-	float diaccele = 8000;
-	motionCheck();
-	cmt_wait(500);
-	gyroZeroCheck(false);
-	mtu_start();
-	ang = 0;
-	angle = 0;
-	Gy.error_old = 0;
-	mode_FF = 1;
-	dia = 1;
-	realRun(maxVelocity, accele, diaccele, 90 * 1, vMax);
-	gyroOn = 0;
-	logs = 0;
-	time = 0;
-	cc = 1;
-	led(1, 1, 1, 1);
-	slalom(R, Normal, vMax, vMax, 0);
-	led(0, 0, 0, 0);
-	cc = 0;
-	realRun(maxVelocity, accele, diaccele, 90.0 * 1.0, 50);
-	C.g = 0;
-	C.angles = 0;
-	ang = 0;
-	angle = 0;
-	Gy.error_old = 0;
-	Angle.error_old = 0;
-	mtu_stop();
-	cmt_wait(500);
-	logOutPut();
-}
 
 void loadNaname(char RorL, float vMax, float maxVelocity, float accele,
 		float diaccele) {
@@ -343,12 +338,30 @@ void testDia90Turn(char RorL, float vMax, float maxVelocity, float accele,
 //	}
 }
 
-void testSlalom3(float vMax) {
-	float maxVelocity = vMax;
-	float accele = 20000;
-	float diaccele = 20000;
+void testSlalom3() {
+	float vMax = *(float *) 1049264;
+	char test_dia = (char) (*(float *) 1049276);
+	char turnType = (char) (*(float *) 1049280);
+	char test_sla_scenario2 = (char) (*(float *) 1049284);
 
-	inputNaiperTurnAll1500();
+	char test_sla_return_flg = (char) (*(float *) 1049288);
+	char test_sla_return_scenario = (char) (*(float *) 1049292);
+
+	float accele = *(float *) 1049268;
+	float diaccele = *(float *) 1049268;
+
+	if (vMax == 1500) {
+		inputNaiperTurnAll1500();
+	} else if (vMax == 1700) {
+		inputNaiperTurnAll1700();
+	} else if (vMax == 1800) {
+		inputNaiperTurnAll1800();
+	} else if (vMax == 1900) {
+		inputNaiperTurnAll1900();
+	} else if (vMax == 2000) {
+		inputNaiperTurnAll2000();
+	}
+
 	char RorL = eigherRightLeft() == Right ? R : L;
 	wall_off_limit = wall_off_limit_d = 400;
 	motionCheck();
@@ -371,34 +384,19 @@ void testSlalom3(float vMax) {
 	angle = 0;
 	Gy.error_old = 0;
 	mode_FF = 1;
-//	dia = 1;
 
-	setPrms(Large, 90, 115.0, 24.25, 20, 0, 0, 0.06574630737304688, 4, 1800);
-	setPrms3(Large, 16.0, 0, 35.5);
+	dia = (char) test_dia > 0;
 
-	setPrms(Orval, 180, 88.5, 20, 35, 0, 0, 0.10119152069091797, 4, 1800);
-	setPrms3(Orval, 20, 38, 35);
-
-	setPrms(Dia45, 45, 100, 27, 40, 65, 20, 0.028585433959960938, 4, 1800);
-	setPrms3(Dia45, 21.0, 53.0, 32.5);
-
-	setPrms(Dia135, 135, 80, 30, 20, 25, 25, 0.0686044692993164, 4, 1800);
-	setPrms3(Dia135, 24, 16.5, 35.5);
-
-	setPrms(Dia90, 90, 83.0, 12.75, 22.0, 0, 0, 0.04745197296142578, 4, 1800);
-	setPrms3(Dia90, 6.0, 0, 0);
 	save();
 
-	globalSkipFront = false;
+	globalSkipFront = test_sla_scenario2;
 
-	char type = Dia45;
+	char type = turnType;
 	if (globalSkipFront) {
-		realRun(maxVelocity, accele, diaccele, 41 + getFirstFront(type), vMax);
+		realRun(vMax, accele, diaccele, 41 + getFirstFront(type), vMax);
 	} else {
-		realRun(maxVelocity, accele, diaccele, 180.0 * 1.22, vMax);
+		realRun(vMax, accele, diaccele, 180.0 * 1.22, vMax);
 	}
-
-	//	gyroOn = 0;
 	logs = 0;
 	time = 0;
 	cc = 1;
@@ -415,9 +413,10 @@ void testSlalom3(float vMax) {
 	peekRight = peekLeft = 0;
 
 	Sen.Kp = Sen.Ki = Sen.Kd = 0.0;
-	wallOff(RorL == R ? L : R, !dia);
-	slalom(RorL == R ? L : R, Dia135, vMax, vMax, 0);
-
+	if (test_sla_return_flg) {
+		wallOff(RorL == R ? L : R, !dia);
+		slalom(RorL == R ? L : R, test_sla_return_scenario, vMax, vMax, 0);
+	}
 	cc = 0;
 	if (dia == 1) {
 		realRun(vMax, accele, diaccele, 180.0 * ROOT2, 50);
@@ -430,81 +429,69 @@ void testSlalom3(float vMax) {
 	cmt_wait(500);
 	logOutPut();
 }
-void testNormalSlalom(float vMax) {
-	float maxVelocity = vMax;
-	float accele = 4500;
-	float diaccele = 4500;
-	inputNaiperTurnAll1500();
-	char RorL = eigherRightLeft() == Right ? R : L;
+void testNormalSlalom() {
 
-	fanMode = SearchRun;
+	char testCmd = (char) (*(float *) 1049260);
+	char test_front_ctrl = testCmd == 4;
+
+	float accele = *(float *) 1049324;
+	float diaccele = *(float *) 1049328;
+	float vMax = *(float *) 1049320;
+
+	char RorL = eigherRightLeft() == Right ? R : L;
 
 	motionCheck();
 	cmt_wait(500);
 	gyroZeroCheck(false);
 
 	if (vMax >= 1000) {
+		fanMode = SearchRun;
 		startVacume2(70);
+		setNormalParam1000();
+	} else {
+		setNormalParam500();
 	}
 
 	mtu_start();
 	readGyroParam();
 	readVelocityGain();
 
-	ang = 0;
-	angle = 0;
-	Gy.error_old = 0;
+	ang = angle = Gy.error_old = 0;
 	mode_FF = 1;
-	changeMode(true);
-	inputNaiperTurnAll1500();
-
-	setPrms(Normal, 90, 50, 20.50, 35.0, 0, 0, 0.10290718078613281, 4, 500);
-	setPrms3(Normal, 18.5, 40.50, 0);
-
-//	setPrms(Normal, 90, 50, 21.0, 40.0, 0, 0, 0.051453590393066406, 4, 1000);
-//	setPrms3(Normal, 9, 52.0);
-
 	save();
 
-	runForWallOff(maxVelocity, accele, 200, 1);
-//	realRun(maxVelocity, accele, diaccele, 180.0 * 1, vMax);
-//	gyroOn = 0;
-	logs = 0;
-	time = 0;
-	cc = 1;
-	logs = 0;
-//
-	{
-		//	frontCtrl();
-		//	realRun(vMax, accele, diaccele, 90.0 * 1, 50);
-		//	resetAllData();
-		//	mtu_stop2();
+	if (test_front_ctrl) {
+		realRun(vMax, accele, diaccele, 180.0 * 1, vMax);
+		frontCtrl();
+		realRun(vMax, accele, diaccele, 90.0 * 1, 50);
+		resetAllData();
+		mtu_stop2();
+	} else {
+		runForWallOff(vMax, accele, 200, 1);
+		logs = 0;
+		time = 0;
+		cc = 1;
+		logs = 0;
+		slalom(RorL, Normal, vMax, vMax, 0);
+		cc = 0;
+		realRun(vMax, accele, diaccele, 180.0 * 1, 50);
 	}
-//	ledOn = 1;
-//	while (1) {
-//		myprintf("%f %f %d %d %f %f  \r\n", LF_SEN1.now, RF_SEN1.now,
-//				LF_SEN1.now < FRONT_CTRL_L, RF_SEN1.now < FRONT_CTRL_R,
-//				FRONT_CTRL_L, FRONT_CTRL_R);
-//		cmt_wait(10);
-//	}
-//		printSensor();
-	slalom(RorL, Normal, vMax, vMax, 0);
-//	slalom3(RorL == R ? L : R, Normal, vMax, vMax, 0);
-//	slalom3(RorL == R ? L : R, Normal, vMax, vMax, 0);
-//	slalom3(RorL == R ? L : R, Normal, vMax, vMax, 0);
-//	slalom3(RorL == R ? L : R, Normal, vMax, vMax, 0);
-	cc = 0;
-	realRun(vMax, accele, diaccele, 180.0 * 1, 50);
-//	running(50, 0, 90, 0);
 	mtu_stop2();
 	stopVacume();
 	cmt_wait(500);
 	logOutPut();
 }
-void testWallOff(float vMax) {
-	float maxVelocity = vMax;
-	float accele = 2000;
-	float diaccele = 2000;
+void testWallOff() {
+	float test_acc = *(float *) 1049268;
+	float test_max_v = *(float *) 1049264;
+	float test_dia = *(float *) 1049276;
+
+	float maxVelocity = test_max_v;
+	float vMax = maxVelocity;
+
+	float accele = test_acc;
+	float diaccele = test_acc;
+
 	wall_off_limit = wall_off_limit_d = 400;
 	inputNaiperTurnAll1500();
 	char RorL = eigherRightLeft() == Right ? R : L;
@@ -519,24 +506,17 @@ void testWallOff(float vMax) {
 	if (vMax > 1200) {
 		startVacume2(70);
 	}
-	ang = 0;
-	angle = 0;
-	Gy.error_old = 0;
+	ang = angle = Gy.error_old = 0;
 	mode_FF = 1;
-//	dia = 1;
+	dia = test_dia > 0;
 
-	changeMode(true);
-	realRun(maxVelocity, accele, diaccele, 90.0, vMax);
-	runForWallOff(maxVelocity, accele, 180, 1);
-//	gyroOn = 0;
-//	logs = 0;
-//	time = 0;
-//	cc = 1;
-//	logs = 0;
-//	wallOff(RorL);
-//	cc = 0;
-//	V_now = 0;
-//	cmt_wait(1000);
+	realRun(maxVelocity, accele, diaccele, 200.0, vMax);
+//	runForWallOff(maxVelocity, accele, 180, 1);
+	logs = time = 0;
+	cc = 1;
+
+	wallOff(RorL, !dia);
+
 	if (dia) {
 		realRun(vMax, accele, diaccele, 90.0 * ROOT2, 50);
 	} else {
@@ -547,12 +527,11 @@ void testWallOff(float vMax) {
 	cmt_wait(500);
 	logOutPut();
 }
-void testWallOffSeach(float vMax) {
-	float maxVelocity = vMax;
-	float accele = 2000;
-	float diaccele = 2000;
+void testWallOffSeach() {
 
-	inputNaiperTurnAll1500();
+	float vMax = *(float *) 1049320;
+	float accele = *(float *) 1049324;
+	float diaccele = *(float *) 1049324;
 
 	motionCheck();
 	cmt_wait(500);
@@ -561,22 +540,17 @@ void testWallOffSeach(float vMax) {
 	readGyroParam();
 	readVelocityGain();
 
+	if (vMax >= 1000) {
+		fanMode = SearchRun;
+		startVacume2(70);
+	}
+
 	ang = 0;
 	angle = 0;
 	Gy.error_old = 0;
 	mode_FF = 1;
-//	dia = 1;
-
-	changeMode(true);
-//	realRun(maxVelocity, accele, diaccele, 180, vMax);
 	cc = 1;
-	runForWallOff(maxVelocity, accele, 200, 1);
-	gyroOn = 0;
-	logs = 0;
-	time = 0;
-	cc = 1;
-	logs = 0;
-	cc = 0;
+	runForWallOff(vMax, accele, 200, 1);
 	realRun(vMax, accele, diaccele, 90.0 * 1, 50);
 	mtu_stop2();
 	stopVacume();
@@ -585,20 +559,20 @@ void testWallOffSeach(float vMax) {
 }
 
 void testRoll(char r) {
-	char a = 0;
+
+	float test_turn_angle = *(float *) 1049304;
+	char test_turn_times = (char) (*(float *) 1049308);
+	float test_turn_acc = *(float *) 1049312;
+	float test_turn_w = *(float *) 1049316;
+
 	r = eigherRightLeft() == Right ? R : L;
 	gyroZeroCheck(true);
 
-	for (a = 0; a < 1 * 1; a++) {
+	for (char a = 0; a < test_turn_times; a++) {
 		cmt_wait(150);
 		cc = 1;
-//		gyroRoll(L, 180, 60, 80);
-//		gyroRoll(r, 180 * 2 * 1, 10, 15);
-//		gyroRoll(r, 180 * 2 * 1, 60, 20);
-		gyroRollTest(r == R ? L : R, 180 * 2 * 1, 15, 7);
-//		gyroRollTest(r == R ? L : R, 180 * 2 * 1, 30, 40);
-//		gyroRoll(r == R ? L : R, 180 * 2 * 1, 20, 25);
-//		cmt_wait(250);
+		gyroRollTest(r == R ? L : R, test_turn_angle, test_turn_w,
+				test_turn_acc);
 //		gyroZeroCheck(false);
 		cc = 0;
 	}
@@ -671,6 +645,7 @@ char makePath4() {
 void makePath(char goalX, char goalY, char isFull) {
 	flushcheckQ();
 	printMap();
+	printMap2();
 	if (cirquitMode == false) {
 		minus = 3;
 		int minus3 = makePath3(goalX, goalY, isFull);
@@ -987,7 +962,6 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 	if (mode == SEARCH) {
 		fanMode = SearchRun;
 		wall_off_limit = wall_off_limit_d = 35;
-		gyroKeepFlg = 0;
 		now_dir = North;
 		next_dir = North;
 		x = 0;
@@ -1000,7 +974,6 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 	} else if (mode == SEARCH2) {
 		wall_off_limit = wall_off_limit_d = 35;
 		char m2 = eigherRightLeft() == Right ? Oufuku : Kata;
-		gyroKeepFlg = 0;
 		now_dir = North;
 		next_dir = North;
 		x = 0;
@@ -1009,31 +982,48 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		inputNaiperTurnAll500_2();
 		save();
 		pathClear();
-		return Adachi2(goalX, goalY, m2, isFull);
+		return Adachi2(goalX, goalY, m2, isFull) ? 2 : 0;
 	} else if (mode == RUN) {
-		float v = eigherRightLeft() == Right ? 4500 : 3500;
+		float v = 4500;
+		if (!fastMode) {
+			v = eigherRightLeft() == Right ? 4500 : 3500;
+		}
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1500();
 		save();
 		save2();
+		if (!fastMode) {
+			motionCheck();
+		}
 		char check = runForPath(v, 18000, 18000);
-//		logOutPut();
 	} else if (mode == RUN2) {
-		float v = eigherRightLeft() == Right ? 4700 : 4000;
+		float v = 4700;
+		if (!fastMode) {
+			v = eigherRightLeft() == Right ? 4700 : 4000;
+		}
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1700();
 		save();
 		inputNaiperTurnAll1500();
 		save2();
-		char check = runForPath(v, 18000, 18000);
+		if (!fastMode) {
+			motionCheck();
+		}
+		char check = runForPath(v, 20000, 18000);
 	} else if (mode == RUN3) {
-		float v = eigherRightLeft() == Right ? 5000 : 4500;
+		float v = 5000;
+		if (!fastMode) {
+			v = eigherRightLeft() == Right ? 5000 : 4500;
+		}
 		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll1700();
+		inputNaiperTurnAll1800();
 		save();
 		inputNaiperTurnAll1500();
 		save2();
-		char check = runForPath(v, 18000, 18000);
+		if (!fastMode) {
+			motionCheck();
+		}
+		char check = runForPath(v, 20000, 18000);
 	} else if (mode == RUN4) {
 		float v = eigherRightLeft() == Right ? 5000 : 4500;
 		makePath(goalX, goalY, isFull);
@@ -1049,46 +1039,64 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		save();
 		inputNaiperTurnAll1500();
 		save2();
+		if (!fastMode) {
+			motionCheck();
+		}
 		char check = runForPath(v, 20000, 18000);
 	} else if (mode == CONFIG) {
 		float v = eigherRightLeft() == Right ? 5100 : 5000;
 		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll2000();
+		inputNaiperTurnAll1900();
 		save();
 		inputNaiperTurnAll1500();
 		save2();
+		if (!fastMode) {
+			motionCheck();
+		}
 		char check = runForPath(v, 20500, 19000);
 	} else if (mode == CONFIG2) {
 		float v = eigherRightLeft() == Right ? 5100 : 5000;
 		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll2000();
+		inputNaiperTurnAll1900();
 		save();
 		inputNaiperTurnAll1500();
 		save2();
+		if (!fastMode) {
+			motionCheck();
+		}
 		char check = runForPath(v, 21000, 19500);
 	} else if (mode == CONFIG3) {
 		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll1500();
+		inputNaiperTurnAll1900();
 		save();
 		inputNaiperTurnAll1500();
 		save2();
+		if (!fastMode) {
+			motionCheck();
+		}
 		float v = getMaxVeloctiy();
 		char check = runForPath(v, 20000, 18000);
 	} else if (mode == CONFIG4) {
 		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll1700();
+		inputNaiperTurnAll1900();
 		save();
 		inputNaiperTurnAll1500();
 		save2();
 		float v = getMaxVeloctiy();
+		if (!fastMode) {
+			motionCheck();
+		}
 		char check = runForPath(v, 20000, 18000);
 	} else if (mode == CONFIG5) {
 		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll1500();
+		inputNaiperTurnAll1900();
 		save();
 		inputNaiperTurnAll1500();
 		save2();
 		float v = getMaxVeloctiy();
+		if (!fastMode) {
+			motionCheck();
+		}
 		char check = runForPath(v, 20000, 18000);
 	} else if (mode == CONFIG6) {
 	} else if (mode == CONFIG7) {
@@ -1155,6 +1163,7 @@ void exportMap2() {
 void checkMemory(int goalX, int goalY) {
 	if (writeMap2(FLASH_DF_BLOCK_0)) {
 		startTransam(150);
+//		quoria(400);
 	} else {
 //		coin(125);
 	}
@@ -1268,9 +1277,8 @@ void frontCtrlTest2() {
 }
 
 void operation() {
-	volatile char goalX = 1; // selectGoal();
-	volatile char goalY = 0; //selectGoal();
-
+	volatile char goalX = (char) (*(float *) 1049336);
+	volatile char goalY = (char) (*(float *) 1049340); //selectGoal();
 	fanMode = FastRun;
 	if (!PushBottom) {
 		goalX = 7;
@@ -1300,31 +1308,58 @@ void operation() {
 		while (PushBottom)
 			;
 	}
+//	motionCheck();
+//	fanMode = SearchRun;
+//	startVacume2(70);
+//	mtu_start();
+//	runForWallOff(1000, 5000, 115, 1);
+//	mtu_stop2();
+	char testCmd = (char) (*(float *) 1049260);
 
+	if (testCmd > 0) {
+		switch (testCmd) {
+		case 1:
+			cmtMusic(D2_, 100);
+			testSlalom3();
+			break;
+		case 2:
+			cmtMusic(E2_, 100);
+			testRun();
+			break;
+		case 3:
+			cmtMusic(F2_, 100);
+			testRoll(R);
+			break;
+		case 4:
+			cmtMusic(G2_, 100);
+			testNormalSlalom();
+			break;
+		case 5:
+			cmtMusic(A2_, 100);
+			testWallOff();
+			break;
+		case 6:
+			cmtMusic(B2_, 100);
+			testWallOffSeach();
+			break;
+		case 7:
+			cmtMusic(C3_, 100);
+			testNormalSlalom();
+			break;
+		case 8:
+			cmtMusic(D3_, 100);
+			checkIsoukeisu();
+			break;
+		}
+	} else {
+		cmtMusic(C2_, 100);
+	}
 	if (PushLeft) {
 		if (!PushTop) {
 			printSensor();
 		}
-//		frontCtrlTest();
-//		frontCtrlTest2();
-//		testRun();
-//		testRunPararel();
-//		mtu_start();
-//		while (1)
-//			;
-//		keepZeroPoint();
-//		testRoll(L);
-//		testWallOff(500);
-//	testWallOffSeach(500);
-//		testNormalSlalom(500);
-		testSlalom3(1700);
-//	inputData2();
-//		testVacume2(90);
-//	testWallOff();
-//	checkIsoukeisu();
+//		testWallOffSeach();
 	}
-//	mtu_start();
-//	while(1);
 
 	cirquit();
 	checkMemory(goalX, goalY);
@@ -1340,9 +1375,9 @@ void operation() {
 		TRANSAM = false;
 		int res = action(encorderOperation(), goalX, goalY, false);
 		mtu_stop2();
-//		if (res != 0) {
-//			action(RUN, goalX, goalY, true);
-//		}
+		if (res == 2) {
+			action(RUN2, goalX, goalY, true);
+		}
 		mtu_stop2();
 	}
 }
