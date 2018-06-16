@@ -640,7 +640,7 @@ char checkSearchVector(int Gx, int Gy, int dir) {
 	return false;
 }
 
-char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
+char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 	char known = false;
 	char next_dir = now_dir;
 	char nextMotion = 0;
@@ -662,6 +662,18 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull) {
 	float velocity2 = *(float *) 1049332;
 	float acc = *(float *) 1049324;
 	float diac = *(float *) 1049328;
+
+	if (Mode == true) {
+		velocity = 1000;
+		velocity2 = 1500;
+		acc = 5000;
+		diac = 12000;
+	} else {
+		velocity = 500;
+		velocity2 = 1000;
+		acc = 3000;
+		diac = 6000;
+	}
 
 	map[0][0] |= 0xf0;
 	updateDist(GoalX, GoalY, 0, isFull);
@@ -1237,9 +1249,9 @@ char Adachi3(int GoalX, int GoalY, char Zen, char isFull) {
 	}
 	return true;
 }
-void inputNaiperTurnAll500_2();
+void inputNaiperTurnAll1000();
 void lefthand() {
-	inputNaiperTurnAll500_2();
+	inputNaiperTurnAll1000();
 	gyroZeroCheck(true);
 	mtu_start();
 	running(500, 2000, 90.0 + 56, 1);

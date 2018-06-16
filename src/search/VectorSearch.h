@@ -73,6 +73,10 @@ volatile void step(int x, int y, int dir, char isWall) {
 	if (x < 0 || x >= MAZE_SIZE || y < 0 || y >= MAZE_SIZE) {
 		return;
 	}
+//	if (!((map[x][y] & (0x10 * dir)) == 0x00)) {
+//		return;
+//	}
+
 	map[x][y] |= (0x10 * dir);
 	if (isWall) {
 		map[x][y] |= 0x01 * dir;

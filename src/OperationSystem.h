@@ -102,18 +102,17 @@ void testRun2(float v, float accele, float diaccele, float dist, float vM) {
 	mtu_stop();
 	stopVacume();
 }
-// search parm
-//inputRadiusDatas(Normal, 44.5, 45.5, 108.75, 33, 9, 21.5, 0, 0);
 
-void inputNaiperTurnAll500_2() {
-
-	setPrms(Normal, 90, 50, 20.50, 35.0, 0, 0, 0.10290718078613281, 4, 500);
-	setPrms3(Normal, 18.5, 40.50, 0);
-
-	setPrms(Normal, 90, 50, 21.0, 40.0, 0, 0, 0.051453590393066406, 4, 1000);
-	setPrms3(Normal, 9, 52.0, 0);
-
+void inputNaiperTurnAll500() {
 	setNormalParam500();
+	setLargeParam1000();
+	setOrvalParam1000();
+	setDia45Param1000();
+	setDia135Param1000();
+	setDia90Param1000();
+}
+
+void inputNaiperTurnAll1000() {
 	setNormalParam1000();
 	setLargeParam1000();
 	setOrvalParam1000();
@@ -123,16 +122,6 @@ void inputNaiperTurnAll500_2() {
 }
 
 void inputNaiperTurnAll1200() {
-//	setPrms(Large, 90, 125.0, 13.0, 15, 0, 0, 0.10719490051269531, 4, 1200);
-//	setPrms3(Large, 16.5, 0, 13);
-//	setPrms(Orval, 180, 86.5, 35, 35, 0, 0, 0.14835739135742188, 4, 1200);
-//	setPrms3(Orval, 35, 0, 35);
-//	setPrms(Dia45, 45, 120, 22.0, 50, 62, 15, 0.051453590393066406, 4, 1200);
-//	setPrms3(Dia45, 17.0, 54.0, 22);
-//	setPrms(Dia135, 135, 80, 38.75, 25, 28.0, 30, 0.10290718078613281, 4, 1200);
-//	setPrms3(Dia135, 35.0, 22.5, 38.75);
-//	setPrms(Dia90, 90, 80.0, 22.25, 13, 0, 0, 0.0686044692993164, 4, 1200);
-//	setPrms3(Dia90, 19.5, 0, 0);
 	setPrms(Large, 90, 115.0, 33.5, 20, 0, 0, 0.07889556884765625, 4, 1500);
 	setPrms3(Large, 13.5, 0, 40);
 	setPrms(Orval, 180, 88.5, 20, 35, 0, 0, 0.1214303970336914, 4, 1500);
@@ -147,16 +136,6 @@ void inputNaiperTurnAll1200() {
 }
 
 void inputNaiperTurnAll1500() {
-	setPrms(Large, 90, 115.0, 33.5, 20, 0, 0, 0.07889556884765625, 4, 1500);
-	setPrms3(Large, 13.5, 0, 40);
-	setPrms(Orval, 180, 88.5, 20, 35, 0, 0, 0.1214303970336914, 4, 1500);
-	setPrms3(Orval, 20, 38, 35);
-	setPrms(Dia45, 45, 125, 13, 40, 57, 10, 0.042878150939941406, 4, 1500);
-	setPrms3(Dia45, 8.0, 47.0, 26);
-	setPrms(Dia135, 135, 85, 26, 20, 17.25, 25, 0.08747100830078125, 4, 1500);
-	setPrms3(Dia135, 25, 6.5, 28);
-	setPrms(Dia90, 90, 85.0, 16.75, 22.0, 0, 0, 0.05831432342529297, 4, 1500);
-	setPrms3(Dia90, 11.0, 0, 0);
 	setLargeParam1500();
 	setOrvalParam1500();
 	setDia45Param1500();
@@ -165,21 +144,6 @@ void inputNaiperTurnAll1500() {
 }
 
 void inputNaiperTurnAll1700() {
-	setPrms(Large, 90, 115.0, 24.25, 20, 0, 0, 0.06961345672607422, 4, 1700);
-	setPrms3(Large, 16.0, 0, 35.5);
-
-	setPrms(Orval, 180, 88.5, 20, 35, 0, 0, 0.10714435577392578, 4, 1700);
-	setPrms3(Orval, 20, 38, 35);
-
-	setPrms(Dia45, 45, 100, 27, 40, 65, 20, 0.030266761779785156, 4, 1700);
-	setPrms3(Dia45, 21.0, 53.0, 32.5);
-
-	setPrms(Dia135, 135, 80, 30, 20, 25, 25, 0.07264041900634766, 4, 1700);
-	setPrms3(Dia135, 24, 16.5, 35.5);
-
-	setPrms(Dia90, 90, 83.0, 12.75, 22.0, 0, 0, 0.050243377685546875, 4, 1700);
-	setPrms3(Dia90, 6.0, 0, 0);
-
 	setLargeParam1700();
 	setOrvalParam1700();
 	setDia45Param1700();
@@ -188,21 +152,6 @@ void inputNaiperTurnAll1700() {
 
 }
 void inputNaiperTurnAll1800() {
-	setPrms(Large, 90, 115.0, 32.0, 20, 0, 0, 0.06574630737304688, 4, 1800);
-	setPrms3(Large, 15.5, 0, 35.5);
-
-	setPrms(Orval, 180, 88.5, 20, 35, 0, 0, 0.10119152069091797, 4, 1800);
-	setPrms3(Orval, 20, 38, 35);
-
-	setPrms(Dia45, 45, 100, 23.5, 40, 61, 25, 0.028585433959960938, 4, 1800);
-	setPrms3(Dia45, 11.0, 53.5, 32.5);
-
-	setPrms(Dia135, 135, 80, 34.45, 20, 35.5, 30, 0.0686044692993164, 4, 1800);
-	setPrms3(Dia135, 24, 22.5, 35.5);
-
-	setPrms(Dia90, 90, 83.0, 18.5, 22.0, 0, 0, 0.04745197296142578, 4, 1800);
-	setPrms3(Dia90, 4.5, 0, 0);
-
 	setLargeParam1800();
 	setOrvalParam1800();
 	setDia45Param1800();
@@ -210,27 +159,11 @@ void inputNaiperTurnAll1800() {
 	setDia90Param1800();
 }
 void inputNaiperTurnAll1900() {
-	setPrms(Large, 90, 115.0, 23.5, 20, 0, 0, 0.062286376953125, 4, 1900);
-	setPrms3(Large, 11.0, 0, 35.5);
-
-	setPrms(Orval, 180, 88.5, 20, 35, 0, 0, 0.10119152069091797, 4, 1900);
-	setPrms3(Orval, 20, 38, 35);
-
-	setPrms(Dia45, 45, 100, 21, 40, 64, 25, 0.02708148956298828, 4, 1900);
-	setPrms3(Dia45, 9.0, 53.5, 32.5);
-
-	setPrms(Dia135, 135, 80, 29, 20, 36, 30, 0.06499385833740234, 4, 1900);
-	setPrms3(Dia135, 21, 22.5, 35.5);
-
-	setPrms(Dia90, 90, 83.0, 16.5, 22.0, 0, 0, 0.04495429992675781, 4, 1900);
-	setPrms3(Dia90, 4.5, 0, 0);
-
 	setLargeParam1900();
 	setOrvalParam1900();
 	setDia45Param1900();
 	setDia135Param1900();
 	setDia90Param1900();
-
 }
 void inputNaiperTurnAll2000() {
 	inputNaiperTurnAll1900();
@@ -962,27 +895,38 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 	if (mode == SEARCH) {
 		fanMode = SearchRun;
 		wall_off_limit = wall_off_limit_d = 35;
+		char m2 = eigherRightLeft() == Right;
 		now_dir = North;
 		next_dir = North;
 		x = 0;
 		y = 0;
 		cirquitMode = 0;
-		inputNaiperTurnAll500_2();
+		if (m2) {
+			inputNaiperTurnAll1000();
+		} else {
+			inputNaiperTurnAll500();
+		}
 		save();
 		pathClear();
-		return Adachi2(goalX, goalY, Zentansaku, isFull);
+		return Adachi2(goalX, goalY, Zentansaku, isFull, m2);
 	} else if (mode == SEARCH2) {
+		fanMode = SearchRun;
 		wall_off_limit = wall_off_limit_d = 35;
-		char m2 = eigherRightLeft() == Right ? Oufuku : Kata;
+		char m2 = eigherRightLeft() == Right;
 		now_dir = North;
 		next_dir = North;
 		x = 0;
 		y = 0;
 		cirquitMode = 0;
-		inputNaiperTurnAll500_2();
+
+		if (m2) {
+			inputNaiperTurnAll1000();
+		} else {
+			inputNaiperTurnAll500();
+		}
 		save();
 		pathClear();
-		return Adachi2(goalX, goalY, m2, isFull) ? 2 : 0;
+		return Adachi2(goalX, goalY, Oufuku, isFull, m2) ? 2 : 0;
 	} else if (mode == RUN) {
 		float v = 4500;
 		if (!fastMode) {
@@ -1031,6 +975,9 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		save();
 		inputNaiperTurnAll1500();
 		save2();
+		if (!fastMode) {
+			motionCheck();
+		}
 		char check = runForPath(v, 20000, 18000);
 	} else if (mode == RUN5) {
 		float v = eigherRightLeft() == Right ? 5100 : 4700;
@@ -1111,7 +1058,10 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 //		}
 		keepZeroPoint();
 	} else if (mode == MapMemory) {
-		testVacume2(50);
+//		testVacume2(70);
+		motionCheck();
+		startVacume2(70);
+		cmt_wait(15000);
 	} else if (mode == VacumeTest) {
 		printSensor();
 	} else if (mode == Mentenance) {
@@ -1279,6 +1229,7 @@ void frontCtrlTest2() {
 void operation() {
 	volatile char goalX = (char) (*(float *) 1049336);
 	volatile char goalY = (char) (*(float *) 1049340); //selectGoal();
+
 	fanMode = FastRun;
 	if (!PushBottom) {
 		goalX = 7;
@@ -1371,11 +1322,13 @@ void operation() {
 	wall_off_limit = 25;
 	wall_off_limit_d = 25;
 
+	volatile char autostart = (char) (*(float *) 1049408);
+
 	while (1) {
 		TRANSAM = false;
 		int res = action(encorderOperation(), goalX, goalY, false);
 		mtu_stop2();
-		if (res == 2) {
+		if (autostart && res == 2) {
 			action(RUN2, goalX, goalY, true);
 		}
 		mtu_stop2();

@@ -1079,8 +1079,14 @@ char runForWallOff(float vmax, float ACC, float dist, char control) {
 	char bool = bool2 | bool3;
 
 	resetAngleError();
+	gyroErrResetEnable = dist >= 180;
 
 	while (distance < dist) {
+
+		if (gyroErrResetEnable && (dist - distance) < 90) {
+			gyroErrResetEnable = false;
+		}
+
 		if (ACC > 0) {
 			if (V_now < V_max) {
 			} else if (V_now >= V_max) {

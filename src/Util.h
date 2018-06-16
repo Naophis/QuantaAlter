@@ -367,15 +367,14 @@ void printSensor() {
 	while (1) {
 		if (!skipPrint) {
 			myprintf(
-					"{\"battery\":%f,\"gyro\":%f,\"LS1\":%d,\"RS1\":%d,\"LF1\":%d,\"RF1\":%d,\"LS2\":%d,\"RS2\":%d,",
+					"{\"battery\":%f,\"gyro\":%f,\"left\":%d,\"right\":%d,\"front\":%d,\"left90\":%d,\"right90\":%d}\r\n",
 					battery, settleGyro, (int) LS_SEN45.now, (int) RS_SEN45.now,
-					(int) 0, (int) Front_SEN.now, (int) LS_SEN2.now,
-					(int) RS_SEN2.now);
-			myprintf(
-					"\"LS1_2\":%d,\"RS1_2\":%d,\"LF1_2\":%d,\"RF1_2\":%d,\"LS2_2\":%d,\"RS2_2\":%d,\"BATT\":%d}\r\n",
-					(int) LS_SEN45.dist, (int) RS_SEN45.dist, (int) 0,
-					(int) Front_SEN.dist, (int) LS_SEN2.dist,
-					(int) RS_SEN2.dist, BATTERY);
+					(int) Front_SEN.now, (int) LS_SEN2.now, (int) RS_SEN2.now);
+//			myprintf(
+//					"\"LS1_2\":%d,\"RS1_2\":%d,\"LF1_2\":%d,\"RF1_2\":%d,\"LS2_2\":%d,\"RS2_2\":%d,\"BATT\":%d}\r\n",
+//					(int) LS_SEN45.dist, (int) RS_SEN45.dist, (int) 0,
+//					(int) Front_SEN.dist, (int) LS_SEN2.dist,
+//					(int) RS_SEN2.dist, BATTERY);
 		}
 		cmt_wait(50);
 		if (!Swich) {
