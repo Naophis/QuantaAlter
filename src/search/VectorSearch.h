@@ -754,265 +754,167 @@ volatile void updateWall(int x, int y, int dir) {
 	}
 }
 
-float R_WALL_EXIST = 600;  //探索時壁判定
-float L_WALL_EXIST = 500;  //探索時壁判定
-float FRONT_WALL_EXIST = 800; //探索時壁判定
-
-volatile void wallJudge2(short dir, short X, short Y) {
-	char wallN = 0, wallE = 0, wallW = 0, wallS = 0;
-	if (dir == North) {
-		wallW = LS_SEN45.now > L_WALL_EXIST;
-		wallE = RS_SEN45.now > R_WALL_EXIST;
-		wallN = Front_SEN.now > FRONT_WALL_EXIST;
-	} else if (dir == East) {
-		wallN = LS_SEN45.now > L_WALL_EXIST;
-		wallS = RS_SEN45.now > R_WALL_EXIST;
-		wallE = Front_SEN.now > FRONT_WALL_EXIST;
-	} else if (dir == West) {
-		wallS = LS_SEN45.now > L_WALL_EXIST;
-		wallN = RS_SEN45.now > R_WALL_EXIST;
-		wallW = Front_SEN.now > FRONT_WALL_EXIST;
-	} else if (dir == South) {
-		wallE = LS_SEN45.now > L_WALL_EXIST;
-		wallW = RS_SEN45.now > R_WALL_EXIST;
-		wallS = Front_SEN.now > FRONT_WALL_EXIST;
-	}
-	step(X, Y, North, wallN);
-	step(X, Y + 1, South, wallN);
-	step(X, Y, East, wallE);
-	step(X + 1, Y, West, wallE);
-	step(X, Y, West, wallW);
-	step(X - 1, Y, East, wallW);
-	step(X, Y, South, wallS);
-	step(X, Y - 1, North, wallS);
-
-	for (char i = 0; i < MAZE_SIZE; i++) {
-		map[i][MAZE_SIZE - 1] |= 0x11;
-		map[MAZE_SIZE - 1][i] |= 0x22;
-		map[0][i] |= 0x44;
-		map[i][0] |= 0x88;
-	}
-	map[0][0] |= 0x22;
-	map[1][0] |= 0x44;
-
-}
-
-volatile void wallJudge3(short dir, short X, short Y) {
-	char wallN = 0, wallE = 0, wallW = 0, wallS = 0;
-	char wallN2 = 0, wallE2 = 0, wallW2 = 0, wallS2 = 0;
-	frontCtrl();
-	if (dir == North) {
-		wallW = LS_SEN2.now > L_WALL_EXIST2;
-		wallE = RS_SEN2.now > R_WALL_EXIST2;
-		wallN = Front_SEN.now > FRONT_WALL_EXIST2;
-		if (!wallW) {
-			wallW2 = LS_SEN2.now > L_WALL_EXIST3;
-			step(X - 1, Y, West, wallW2);
-			step(X - 2, Y, East, wallW2);
-		}
-		if (!wallE) {
-			wallE2 = RS_SEN2.now > R_WALL_EXIST3;
-			step(X + 1, Y, East, wallE2);
-			step(X + 2, Y, West, wallE2);
-		}
-		if (!wallN) {
-			wallN2 = Front_SEN.now > FRONT_WALL_EXIST3;
-			step(X, Y + 1, North, wallN2);
-			step(X, Y + 2, South, wallN2);
-		}
-
-	} else if (dir == East) {
-		wallN = LS_SEN2.now > L_WALL_EXIST2;
-		wallS = RS_SEN2.now > R_WALL_EXIST2;
-		wallE = Front_SEN.now > FRONT_WALL_EXIST2;
-		if (!wallN) {
-			wallN2 = LS_SEN2.now > L_WALL_EXIST3;
-			step(X, Y + 1, North, wallN2);
-			step(X, Y + 2, South, wallN2);
-		}
-		if (!wallS) {
-			wallS2 = RS_SEN2.now > R_WALL_EXIST3;
-			step(X, Y - 1, South, wallS2);
-			step(X, Y - 2, North, wallS2);
-		}
-		if (!wallE) {
-			wallE2 = Front_SEN.now > FRONT_WALL_EXIST3;
-			step(X + 1, Y, East, wallE2);
-			step(X + 2, Y, West, wallE2);
-		}
-	} else if (dir == West) {
-		wallS = LS_SEN2.now > L_WALL_EXIST2;
-		wallN = RS_SEN2.now > R_WALL_EXIST2;
-		wallW = Front_SEN.now > FRONT_WALL_EXIST2;
-		if (!wallS) {
-			wallS2 = LS_SEN2.now > L_WALL_EXIST3;
-			step(X, Y - 1, South, wallS2);
-			step(X, Y - 2, North, wallS2);
-		}
-		if (!wallN) {
-			wallN2 = RS_SEN2.now > R_WALL_EXIST3;
-			step(X, Y + 1, North, wallN2);
-			step(X, Y + 2, South, wallN2);
-		}
-		if (!wallW) {
-			wallW2 = Front_SEN.now > FRONT_WALL_EXIST3;
-			step(X - 1, Y, West, wallW2);
-			step(X - 2, Y, East, wallW2);
-		}
-	} else if (dir == South) {
-		wallE = LS_SEN2.now > L_WALL_EXIST2;
-		wallW = RS_SEN2.now > R_WALL_EXIST2;
-		wallS = Front_SEN.now > FRONT_WALL_EXIST2;
-		if (!wallE) {
-			wallE2 = LS_SEN2.now > L_WALL_EXIST3;
-			step(X + 1, Y, East, wallE2);
-			step(X + 2, Y, West, wallE2);
-		}
-		if (!wallW) {
-			wallW2 = RS_SEN2.now > R_WALL_EXIST3;
-			step(X - 1, Y, West, wallW2);
-			step(X - 2, Y, East, wallW2);
-		}
-		if (!wallS) {
-			wallS2 = Front_SEN.now > FRONT_WALL_EXIST3;
-			step(X, Y - 1, South, wallS2);
-			step(X, Y - 2, North, wallS2);
-		}
-	}
-	step(X, Y, North, wallN);
-	step(X, Y + 1, South, wallN);
-	step(X, Y, East, wallE);
-	step(X + 1, Y, West, wallE);
-	step(X, Y, West, wallW);
-	step(X - 1, Y, East, wallW);
-	step(X, Y, South, wallS);
-	step(X, Y - 1, North, wallS);
-
-	for (char i = 0; i < MAZE_SIZE; i++) {
-		map[i][MAZE_SIZE - 1] |= 0x11;
-		map[MAZE_SIZE - 1][i] |= 0x22;
-		map[0][i] |= 0x44;
-		map[i][0] |= 0x88;
-	}
-	map[0][0] |= 0x22;
-	map[1][0] |= 0x44;
-}
-float R_WALL_EXIST4 = 180;  //探索時壁判定
-float L_WALL_EXIST4 = 180;  //探索時壁判定
-
 volatile void wallJudge4(short dir, short X, short Y) {
 	char wallN = 0, wallE = 0, wallW = 0, wallS = 0;
 	char wallN2 = 0, wallE2 = 0, wallW2 = 0, wallS2 = 0;
 	char wallN3 = 0, wallE3 = 0, wallW3 = 0, wallS3 = 0;
 	frontCtrl5();
+
+	char tmpSearchRange = (char) searchrange;
+	char flag = tmpSearchRange > 0;
+	char flag1 = tmpSearchRange & 0x01;
+	char flag2 = tmpSearchRange & 0x02;
+	char flag3 = tmpSearchRange & 0x04;
+
 	if (dir == North) {
 		wallW = LS_SEN2.now > L_WALL_EXIST2;
 		wallE = RS_SEN2.now > R_WALL_EXIST2;
 		wallN = Front_SEN.now > FRONT_WALL_EXIST2;
-		if (!wallW) {
-			wallW2 = LS_SEN2.now > L_WALL_EXIST3;
-			step(X - 1, Y, West, wallW2);
-			step(X - 2, Y, East, wallW2);
-
-			wallW3 = LS_SEN45.now > L_WALL_EXIST4;
-			step(X - 1, Y, North, wallW3);
-			step(X - 1, Y + 1, South, wallW3);
-		}
-		if (!wallE) {
-			wallE2 = RS_SEN2.now > R_WALL_EXIST3;
-			step(X + 1, Y, East, wallE2);
-			step(X + 2, Y, West, wallE2);
-
-			wallE3 = RS_SEN45.now > R_WALL_EXIST4;
-			step(X + 1, Y, North, wallE3);
-			step(X + 1, Y + 1, South, wallE3);
-		}
-		if (!wallN) {
-			wallN2 = Front_SEN.now > FRONT_WALL_EXIST3;
-			step(X, Y + 1, North, wallN2);
-			step(X, Y + 2, South, wallN2);
+		if (flag) {
+			if (!wallW) {
+				if (flag1) {
+					wallW2 = LS_SEN2.now > L_WALL_EXIST3;
+					step(X - 1, Y, West, wallW2);
+					step(X - 2, Y, East, wallW2);
+				}
+				if (flag2) {
+					wallW3 = LS_SEN45.now > L_WALL_EXIST4;
+					step(X - 1, Y, North, wallW3);
+					step(X - 1, Y + 1, South, wallW3);
+				}
+			}
+			if (!wallE) {
+				if (flag1) {
+					wallE2 = RS_SEN2.now > R_WALL_EXIST3;
+					step(X + 1, Y, East, wallE2);
+					step(X + 2, Y, West, wallE2);
+				}
+				if (flag2) {
+					wallE3 = RS_SEN45.now > R_WALL_EXIST4;
+					step(X + 1, Y, North, wallE3);
+					step(X + 1, Y + 1, South, wallE3);
+				}
+			}
+			if (!wallN) {
+				if (flag3) {
+					wallN2 = Front_SEN.now > FRONT_WALL_EXIST3;
+					step(X, Y + 1, North, wallN2);
+					step(X, Y + 2, South, wallN2);
+				}
+			}
 		}
 
 	} else if (dir == East) {
 		wallN = LS_SEN2.now > L_WALL_EXIST2;
 		wallS = RS_SEN2.now > R_WALL_EXIST2;
 		wallE = Front_SEN.now > FRONT_WALL_EXIST2;
-		if (!wallN) {
-			wallN2 = LS_SEN2.now > L_WALL_EXIST3;
-			step(X, Y + 1, North, wallN2);
-			step(X, Y + 2, South, wallN2);
-
-			wallN3 = LS_SEN45.now > L_WALL_EXIST4;
-			step(X, Y + 1, East, wallN3);
-			step(X + 1, Y + 1, West, wallN3);
-		}
-		if (!wallS) {
-			wallS2 = RS_SEN2.now > R_WALL_EXIST3;
-			step(X, Y - 1, South, wallS2);
-			step(X, Y - 2, North, wallS2);
-
-			wallS3 = RS_SEN45.now > R_WALL_EXIST4;
-			step(X, Y - 1, East, wallS3);
-			step(X + 1, Y - 1, West, wallS3);
-		}
-		if (!wallE) {
-			wallE2 = Front_SEN.now > FRONT_WALL_EXIST3;
-			step(X + 1, Y, East, wallE2);
-			step(X + 2, Y, West, wallE2);
+		if (flag) {
+			if (!wallN) {
+				if (flag1) {
+					wallN2 = LS_SEN2.now > L_WALL_EXIST3;
+					step(X, Y + 1, North, wallN2);
+					step(X, Y + 2, South, wallN2);
+				}
+				if (flag2) {
+					wallN3 = LS_SEN45.now > L_WALL_EXIST4;
+					step(X, Y + 1, East, wallN3);
+					step(X + 1, Y + 1, West, wallN3);
+				}
+			}
+			if (!wallS) {
+				if (flag1) {
+					wallS2 = RS_SEN2.now > R_WALL_EXIST3;
+					step(X, Y - 1, South, wallS2);
+					step(X, Y - 2, North, wallS2);
+				}
+				if (flag2) {
+					wallS3 = RS_SEN45.now > R_WALL_EXIST4;
+					step(X, Y - 1, East, wallS3);
+					step(X + 1, Y - 1, West, wallS3);
+				}
+			}
+			if (!wallE) {
+				if (flag3) {
+					wallE2 = Front_SEN.now > FRONT_WALL_EXIST3;
+					step(X + 1, Y, East, wallE2);
+					step(X + 2, Y, West, wallE2);
+				}
+			}
 		}
 	} else if (dir == West) {
 		wallS = LS_SEN2.now > L_WALL_EXIST2;
 		wallN = RS_SEN2.now > R_WALL_EXIST2;
 		wallW = Front_SEN.now > FRONT_WALL_EXIST2;
-		if (!wallS) {
-			wallS2 = LS_SEN2.now > L_WALL_EXIST3;
-			step(X, Y - 1, South, wallS2);
-			step(X, Y - 2, North, wallS2);
+		if (flag) {
+			if (!wallS) {
+				if (flag1) {
+					wallS2 = LS_SEN2.now > L_WALL_EXIST3;
+					step(X, Y - 1, South, wallS2);
+					step(X, Y - 2, North, wallS2);
+				}
 
-			wallS3 = LS_SEN45.now > L_WALL_EXIST4;
-			step(X, Y - 1, West, wallS3);
-			step(X - 1, Y - 1, East, wallS3);
-		}
-		if (!wallN) {
-			wallN2 = RS_SEN2.now > R_WALL_EXIST3;
-			step(X, Y + 1, North, wallN2);
-			step(X, Y + 2, South, wallN2);
-
-			wallS3 = RS_SEN45.now > R_WALL_EXIST4;
-			step(X, Y + 1, West, wallS3);
-			step(X - 1, Y + 1, East, wallS3);
-		}
-		if (!wallW) {
-			wallW2 = Front_SEN.now > FRONT_WALL_EXIST3;
-			step(X - 1, Y, West, wallW2);
-			step(X - 2, Y, East, wallW2);
+				if (flag2) {
+					wallS3 = LS_SEN45.now > L_WALL_EXIST4;
+					step(X, Y - 1, West, wallS3);
+					step(X - 1, Y - 1, East, wallS3);
+				}
+			}
+			if (!wallN) {
+				if (flag1) {
+					wallN2 = RS_SEN2.now > R_WALL_EXIST3;
+					step(X, Y + 1, North, wallN2);
+					step(X, Y + 2, South, wallN2);
+				}
+				if (flag2) {
+					wallS3 = RS_SEN45.now > R_WALL_EXIST4;
+					step(X, Y + 1, West, wallS3);
+					step(X - 1, Y + 1, East, wallS3);
+				}
+			}
+			if (!wallW) {
+				if (flag3) {
+					wallW2 = Front_SEN.now > FRONT_WALL_EXIST3;
+					step(X - 1, Y, West, wallW2);
+					step(X - 2, Y, East, wallW2);
+				}
+			}
 		}
 	} else if (dir == South) {
 		wallE = LS_SEN2.now > L_WALL_EXIST2;
 		wallW = RS_SEN2.now > R_WALL_EXIST2;
 		wallS = Front_SEN.now > FRONT_WALL_EXIST2;
-		if (!wallE) {
-			wallE2 = LS_SEN2.now > L_WALL_EXIST3;
-			step(X + 1, Y, East, wallE2);
-			step(X + 2, Y, West, wallE2);
-
-			wallE3 = LS_SEN45.now > L_WALL_EXIST4;
-			step(X + 1, Y, South, wallE3);
-			step(X + 1, Y - 1, North, wallE3);
-		}
-		if (!wallW) {
-			wallW2 = RS_SEN2.now > R_WALL_EXIST3;
-			step(X - 1, Y, West, wallW2);
-			step(X - 2, Y, East, wallW2);
-
-			wallS3 = RS_SEN45.now > R_WALL_EXIST4;
-			step(X - 1, Y, South, wallS3);
-			step(X - 1, Y - 1, North, wallS3);
-		}
-		if (!wallS) {
-			wallS2 = Front_SEN.now > FRONT_WALL_EXIST3;
-			step(X, Y - 1, South, wallS2);
-			step(X, Y - 2, North, wallS2);
+		if (flag) {
+			if (!wallE) {
+				if (flag1) {
+					wallE2 = LS_SEN2.now > L_WALL_EXIST3;
+					step(X + 1, Y, East, wallE2);
+					step(X + 2, Y, West, wallE2);
+				}
+				if (flag2) {
+					wallE3 = LS_SEN45.now > L_WALL_EXIST4;
+					step(X + 1, Y, South, wallE3);
+					step(X + 1, Y - 1, North, wallE3);
+				}
+			}
+			if (!wallW) {
+				if (flag1) {
+					wallW2 = RS_SEN2.now > R_WALL_EXIST3;
+					step(X - 1, Y, West, wallW2);
+					step(X - 2, Y, East, wallW2);
+				}
+				if (flag2) {
+					wallS3 = RS_SEN45.now > R_WALL_EXIST4;
+					step(X - 1, Y, South, wallS3);
+					step(X - 1, Y - 1, North, wallS3);
+				}
+			}
+			if (!wallS) {
+				if (flag3) {
+					wallS2 = Front_SEN.now > FRONT_WALL_EXIST3;
+					step(X, Y - 1, South, wallS2);
+					step(X, Y - 2, North, wallS2);
+				}
+			}
 		}
 	}
 	step(X, Y, North, wallN);

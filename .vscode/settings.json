@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "xmemory0": "cpp",
+        "xstddef": "cpp",
+        "xtr1common": "cpp",
+        "xutility": "cpp",
+        "paramscontroller.h": "c",
+        "stdint.h": "c"
+    }
+}

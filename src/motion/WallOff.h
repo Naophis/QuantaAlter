@@ -22,6 +22,7 @@ void walloff1(char RorL) {
 				break;
 			}
 		}
+		globalState = WALL_OFF;
 		while (SEN_R > R_WALL_OFF /*&& SEN_FRONT < FRONT_WALL_ON*/) {
 			if (!fail) {
 				positionControlValueFlg = 0;
@@ -36,6 +37,7 @@ void walloff1(char RorL) {
 				break;
 			}
 		}
+		globalState = WALL_OFF;
 		while (SEN_L > L_WALL_OFF /*&& SEN_FRONT < FRONT_WALL_ON*/) {
 			if (!fail) {
 				positionControlValueFlg = 0;
@@ -67,8 +69,14 @@ float existRightWall4 = 6000;  //壁切れの予備
 float existLeftWall4 = 6000;   //壁切れの予備
 
 char wallOff(char RorL, char ctrl) {
-	globalState = WALL_OFF;
+	globalState = WALL_OFF_WAIT;
 	cc = 1;
+
+	distance = img_distance = 0;
+	Distance.error_now = 0;
+	Distance.error_old = 0;
+	Distance.error_delta = 0;
+
 	if (globalSkipFront) {
 		return true;
 	}
@@ -81,6 +89,7 @@ char wallOff(char RorL, char ctrl) {
 	ang = 0;
 	angle = 0;
 	distance = 0;
+	img_distance = 0;
 
 	if (RorL == R) {
 		if (SEN_R < existRightWall4) {
@@ -114,8 +123,9 @@ void walloff3(char RorL) {
 				break;
 			}
 		}
+		globalState = WALL_OFF;
 		while (SEN_R > R_WALL_OFF_D /*&& SEN_L < DIA_N_LEFT_WALL
-				&& SEN_FRONT < DIA_FRONT_WALL_ORDER*/) {
+		 && SEN_FRONT < DIA_FRONT_WALL_ORDER*/) {
 			if (!fail) {
 				positionControlValueFlg = 0;
 				break;
@@ -129,8 +139,9 @@ void walloff3(char RorL) {
 				break;
 			}
 		}
+		globalState = WALL_OFF;
 		while (SEN_L > L_WALL_OFF_D /*&& SEN_R < DIA_N_RIGHT_WALL
-				&& SEN_FRONT < DIA_FRONT_WALL_ORDER*/) {
+		 && SEN_FRONT < DIA_FRONT_WALL_ORDER*/) {
 			if (!fail) {
 				positionControlValueFlg = 0;
 				break;
@@ -162,6 +173,7 @@ char wallOff_D(char RorL, char ctrl) {
 	ang = 0;
 	angle = 0;
 	distance = 0;
+	img_distance = 0;
 	sensingMode = AtackDia;
 	if (RorL == R) {
 		if (SEN_R < existRightWall5) {

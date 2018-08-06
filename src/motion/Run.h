@@ -115,7 +115,13 @@ char running(float vmax, float ACC, float dist, char control) {
 	readGyroParam();
 	readAngleParam();
 	readOmegaParam();
-	distance = 0;
+	if (testMode) {
+		distance = 0;
+		img_distance = 0;
+	} else {
+		distance = distance - img_distance;
+		img_distance = 0;
+	}
 	alpha = 0;
 	W_now = 0;
 	W_now2 = 0;
@@ -159,7 +165,7 @@ char running(float vmax, float ACC, float dist, char control) {
 	runFlg = 0;
 	return 1;
 }
-char gyroRollTest(char RorL, float Angle, float w_max, float al) {
+char gyroRollTest(char RorL, float targetAng, float w_max, float al) {
 	if (RorL == L) {
 		al = -al;
 	}
@@ -185,13 +191,15 @@ char gyroRollTest(char RorL, float Angle, float w_max, float al) {
 	W_now2 = 0;
 	readGyroParam();
 	readAngleParam();
-	Angle = Angle * PI / 180;
+	C.angles = 0;
+	C.g = 0;
+	targetAng = targetAng * PI / 180;
 	cc = 1;
 	time = 0;
 	logs = 0;
 	char phase = 0;
 	float targetWo = RorL == L ? -Wo : Wo;
-	while (ABS(ang) < ABS(Angle)) {
+	while (ABS(ang) < ABS(targetAng)) {
 		float sita = ABS((W_now + targetWo) * (W_now - targetWo) / (2.0 * al));
 		if (phase == 3) {
 //			angle = RorL == L ? -Angle : Angle;
@@ -202,7 +210,7 @@ char gyroRollTest(char RorL, float Angle, float w_max, float al) {
 //				angle = RorL == L ? -Angle : Angle;
 				phase = 3;
 			}
-		} else if (ABS(Angle) <= ABS(angle) + ABS(sita)) {
+		} else if (ABS(targetAng) <= ABS(angle) + ABS(sita)) {
 			alpha = -al;
 			phase = 2;
 		} else if (ABS(W_now) >= ABS(w_max) && phase == 0) {
@@ -217,6 +225,10 @@ char gyroRollTest(char RorL, float Angle, float w_max, float al) {
 	Gy.error_now = 0;
 	Gy.error_old = 0;
 	Gy.error_delta = 0;
+	Angle.error_now = 0;
+	Angle.error_old = 0;
+	Angle.error_delta = 0;
+	resetAngleParam();
 	W_now = 0;
 	alpha = 0;
 	//	cmt_wait(200);
@@ -446,36 +458,42 @@ char frontCtrl() {
 			;
 		sensingMode = tmp;
 		cmtMusic(D3_, 100);
+		distance = img_distance = 0;
+		Distance.error_now = 0;
+		Distance.error_old = 0;
+		Distance.error_delta = 0;
 	}
 	return 1;
 }
 float FRONT_CTRL = 1315;   //前壁補正
-float F_WALL_EXIST5 = 850; //前壁補正　開始
+float F_WALL_EXIST5 = 750; //前壁補正　開始
 char frontCtrl5() {
 	char tmp = sensingMode;
 	if (Front_SEN.now > F_WALL_EXIST5) {
 		sensingMode = SearchMode;
-		while (Front_SEN.now < FRONT_CTRL)
+		while (Front_SEN.now < FRONT_CTRL_1)
 			;
 		sensingMode = tmp;
+		distance = img_distance = 0;
+		Distance.error_now = 0;
+		Distance.error_old = 0;
+		Distance.error_delta = 0;
 	}
 	return 1;
 }
 float FRONT_CTRL_R4 = 1670;   //前壁補正
 float FRONT_CTRL_L4 = 1530;	//前壁補正
-char frontCtrl4() {
-	char tmp = sensingMode;
-	while (Front_SEN.now < FRONT_CTRL_R4)
-		;
-	return 1;
-}
 char frontCtrl3() {
 	char tmp = sensingMode;
 	if (Front_SEN.now > RF_WALL_EXIST2) {
 		sensingMode = SearchMode;
-		while (Front_SEN.now < FRONT_CTRL_1)
+		while (Front_SEN.now < (FRONT_CTRL_1 + 400))
 			;
 		sensingMode = tmp;
+		distance = img_distance = 0;
+		Distance.error_now = 0;
+		Distance.error_old = 0;
+		Distance.error_delta = 0;
 	}
 	return 1;
 }
@@ -486,9 +504,13 @@ char frontCtrl2() {
 	distance = 0;
 	if (Front_SEN.now > 0 && distance < 100) {
 		sensingMode = SearchMode;
-		while (Front_SEN.now < FRONT_CTRL_R2 && distance < 100)
+		while (Front_SEN.now < FRONT_CTRL_1 + 300 && distance < 180)
 			;
 		sensingMode = tmp;
+		distance = img_distance = 0;
+		Distance.error_now = 0;
+		Distance.error_old = 0;
+		Distance.error_delta = 0;
 	}
 	return 1;
 }
@@ -496,7 +518,9 @@ char targetRun(float vmax, float ACC, float dist, char control, char target) {
 	char errorCheck = 1;
 	readGyroParam();
 	readGyroParam();
-	distance = 0;
+
+	distance = distance - img_distance;
+	img_distance = 0;
 	alpha = 0;
 	W_now = 0;
 	W_now2 = 0;
@@ -578,6 +602,7 @@ char slalom(char dir, char type, float Velocity, float vel2, float ac) {
 	etN = getNaiperN(type);
 	w_now = W_now = 0;
 	cc = 1;
+
 	if (dir == R) {
 		G.th = gyroTh_R;
 	} else {
@@ -618,6 +643,9 @@ char slalom(char dir, char type, float Velocity, float vel2, float ac) {
 
 	slaTerm = time;
 	globalState = SLA_TURN;
+
+	px = py = 0;
+
 	while (1) {
 		if (!fail) {
 			positionControlValueFlg = 0;
@@ -650,6 +678,10 @@ char slalom(char dir, char type, float Velocity, float vel2, float ac) {
 			}
 		}
 	}
+
+	px2 = px;
+	py2 = py;
+
 	fail = 1;
 	if (dia == 0 && (type == Dia45 || type == Dia135)) {
 		dia = 1;
@@ -679,7 +711,7 @@ char slalom(char dir, char type, float Velocity, float vel2, float ac) {
 	} else {
 		returnStatus = runForWallOff2(vel2, ac, back, false, type, dir);
 	}
-
+	resetAngleParam();
 	cc = 0;
 	alpha = 0;
 	W_now = 0;
@@ -774,9 +806,18 @@ char orignalRunDia(float v1, float v2, float ac, float diac, float dist) {
 	acc = ac;
 	tmpDiac = -diac;
 	readGyroParam();
+	readAngleParam();
 
 	peekRight = peekLeft = 0;
-	distance = 0;
+
+	if (testMode) {
+		distance = 0;
+		img_distance = 0;
+	} else {
+		distance = distance - img_distance;
+		img_distance = 0;
+	}
+
 	alpha = 0;
 	W_now = 0;
 	sinCount = 0;
@@ -857,8 +898,16 @@ char orignalRun(float v1, float v2, float ac, float diac, float dist) {
 	acc = ac;
 	tmpDiac = -diac;
 	readGyroParam();
+	readAngleParam();
 
-	distance = 0;
+	if (testMode) {
+		distance = 0;
+		img_distance = 0;
+	} else {
+		distance = distance - img_distance;
+		img_distance = 0;
+	}
+
 	alpha = 0;
 	W_now = 0;
 	sinCount = 0;
@@ -948,10 +997,12 @@ void back(float v1, float ac, float dist, char control) {
 	char sequence = ACCELE;
 	mtu_start();
 	readGyroParam();
+
 	rotate_r = rotate_l = false;
 	friction_str = true;
 	friction_roll = false;
 	distance = 0;
+	img_distance = 0;
 	alpha = 0;
 	W_now = 0;
 	acc = ac;
@@ -1064,7 +1115,15 @@ char runForWallOff(float vmax, float ACC, float dist, char control) {
 	friction_roll = false;
 	errorOld_dia = errorOld_dia_side = 0;
 	readGyroParam();
-	distance = 0;
+	readAngleParam();
+
+	if (testMode) {
+		distance = 0;
+		img_distance = 0;
+	} else {
+		distance = distance - img_distance;
+		img_distance = 0;
+	}
 	alpha = 0;
 	W_now = 0;
 	W_now2 = 0;
@@ -1083,7 +1142,7 @@ char runForWallOff(float vmax, float ACC, float dist, char control) {
 
 	while (distance < dist) {
 
-		if (gyroErrResetEnable && (dist - distance) < 90) {
+		if (gyroErrResetEnable && (dist - distance) < 100) {
 			gyroErrResetEnable = false;
 		}
 
@@ -1108,7 +1167,10 @@ char runForWallOff(float vmax, float ACC, float dist, char control) {
 				} else {
 					bool = false;
 					cmtMusic(G2_, 100);
-					distance = 0;
+					distance = img_distance = 0;
+					Distance.error_now = 0;
+					Distance.error_old = 0;
+					Distance.error_delta = 0;
 					dist = *(float *) 1049916;
 					continue;
 				}
@@ -1118,7 +1180,10 @@ char runForWallOff(float vmax, float ACC, float dist, char control) {
 				} else {
 					bool = false;
 					cmtMusic(G2_, 100);
-					distance = 0;
+					distance = img_distance = 0;
+					Distance.error_now = 0;
+					Distance.error_old = 0;
+					Distance.error_delta = 0;
 					dist = *(float *) 1049920;
 					continue;
 				}
@@ -1149,7 +1214,13 @@ char runForWallOff2(float vmax, float ACC, float dist, char control, char type,
 	friction_roll = false;
 	errorOld_dia = errorOld_dia_side = 0;
 	readGyroParam();
-	distance = 0;
+	if (testMode) {
+		distance = 0;
+		img_distance = 0;
+	} else {
+		distance = distance - img_distance;
+		img_distance = 0;
+	}
 	alpha = 0;
 	W_now = 0;
 	W_now2 = 0;
@@ -1162,7 +1233,7 @@ char runForWallOff2(float vmax, float ACC, float dist, char control, char type,
 	Se.before = Se.error_old = Se.error_delta = 0;
 	Se2.before = Se2.error_old = Se.error_delta = 0;
 
-	resetAngleError();
+//	resetAngleError();
 
 	while (distance < dist) {
 		if (ACC > 0) {

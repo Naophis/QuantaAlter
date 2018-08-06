@@ -24,6 +24,7 @@
 #include "PhysicalBasement.h"
 
 #include "motion/Run.h"
+#include "motion/DistCalc.h"
 #include "motion/WallOff.h"
 #include "motion/WallOff2.h"
 #include "search/Map.h"
@@ -49,11 +50,6 @@
 #include "config/SerialMapper.h"
 
 volatile void buzzer() {
-//	if ((buzzerTimer % 2) == 0) {
-//		PORTD.PODR.BIT.B7 = 1;
-//	} else {
-//		PORTD.PODR.BIT.B7 = 0;
-//	}
 	buzzerTimer++;
 	if (m_time > 0 && buzzerTimer >= m_time) {
 		stopCmt1();
@@ -100,9 +96,6 @@ volatile void cmt() {
 			cmtMusic(F2_, 100);
 		}
 	}
-//	if (singing) {
-//		buzzer();
-//	}
 	if (dia == 1) {
 		pushLatestSensor(RS_SEN45.now, LS_SEN45.now);
 		pushLatestSensor2(RS_SEN2.now, LS_SEN2.now);
@@ -118,8 +111,8 @@ volatile void cmt() {
 		Se2.error_old = Se2.before = Se2.error_delta = 0;
 	}
 	Physical_Basement();
-	if (logs < L_Length && cc == 1) {
-		if ((time % 4) == 0) {
+	if ((logs < (L_Length - 1)) && (cc == 1) && (time >= 0)) {
+		if ((time % (char) (logterm)) == 0) {
 			log1[logs] = (int) (V_now);
 			logs2[logs] = ((Wo * Wo - W_now * W_now) / (2.0 * alpha));
 			log3[logs] = (V_Enc.r + V_Enc.l) / 2;
@@ -227,9 +220,15 @@ void mtu4_B() {
 			} else if (fanMode == FastRun) {
 				GPT2.GTCCRA = (short) (FAN_AMP / battery * FAN_CYCLE);
 				GPT2.GTCCRC = (short) (FAN_AMP / battery * FAN_CYCLE);
-			} else {
+			} else if (fanMode == SearchRun) {
 				GPT2.GTCCRA = (short) (FAN_AMP2 / battery * FAN_CYCLE);
 				GPT2.GTCCRC = (short) (FAN_AMP2 / battery * FAN_CYCLE);
+			} else if (fanMode == CtrlFan) {
+				GPT2.GTCCRA = (short) (FAN_AMP3 / battery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (FAN_AMP3 / battery * FAN_CYCLE);
+			} else if (fanMode == CtrlFan2) {
+				GPT2.GTCCRA = (short) (FAN_AMP4 / battery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (FAN_AMP4 / battery * FAN_CYCLE);
 			}
 		} else {
 			GPT2.GTCCRA = GPT2.GTCCRC = 0;
@@ -336,7 +335,7 @@ void main(void) {
 	coin(100);
 	ledOn = 1;
 	os_escape = 1;
-	myprintf("%c[33m", ESC); /* 文字を黄色に */
+	// myprintf("%c[33m", ESC); /* 文字を黄色に */
 	operation();
 	os_escape = 0;
 }

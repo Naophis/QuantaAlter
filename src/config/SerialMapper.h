@@ -48,13 +48,11 @@ char writeParam(int key, float val);
 void assing(long id, float val);
 void setA(long key, long id, float val);
 void mapping() {
-	const char* keyBuffer = &(keys.buffer);
-	const char* valueBuffer = &(values.buffer);
+	const char *keyBuffer = &(keys.buffer);
+	const char *valueBuffer = &(values.buffer);
 	long key = atoi(keyBuffer);
 	double value = atof(valueBuffer);
-//	myprintf("%d	%f\r\n", key, value);
 	assing(key, value);
-//	flushData();
 }
 void applyRecieveData(char type, char data) {
 	if (type == KEY) {
@@ -106,18 +104,13 @@ void setA(long key, long id, float val) {
 		flash_err_t ret = R_FLASH_Erase((flash_block_address_t) address, 1);
 		flash_err_t ret2 = R_FLASH_Write((uint32_t) backup, key,
 				sizeof(backup));
-//		myprintf("%d	%d\r\n", ret, ret2);
 		char check = true;
 		for (char i = 0; i < 16; i++) {
-//			myprintf("%d	%d	%f	%f\r\n", i, (address + 4 * i), backup[i],
-//					*(float *) (address + 4 * i));
 			if (backup[i] != *(float *) (address + 4 * i)) {
 				check = false;
 			}
 		}
-//		if (check) {
 		break;
-//		}
 		cmt_wait(10);
 	}
 	cmtMusic(C3_, 20);

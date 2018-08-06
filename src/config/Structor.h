@@ -8,17 +8,6 @@
 #ifndef STRUCTOR_H_
 #define STRUCTOR_H_
 
-//typedef struct {
-//	unsigned int north :1;	//1bit使用				//map_info[][]
-//	unsigned int south :1;			//	|  w  |  e  |  s  |  n  | step | dist |
-//	unsigned int east :1;			//	| 1bit|1bit |1bit |1bit | 4bit | 8bit |
-//	unsigned int west :1;							//詰め込みすぎ？
-//	unsigned int step :4;	//踏襲フラグ
-//	unsigned int dist :8;
-//	unsigned int goal :1;
-//} map_init;
-//volatile map_init map_info[16][16];
-
 typedef struct {			//センサ情報用
 	float on;				//LEDがON
 	float off;			//LEDがOFF
@@ -60,14 +49,14 @@ typedef struct {
 	float before;
 } t_Errors;
 volatile t_Errors Se, Se2, Se3, Vr, Vl, Gy, Velocity, W_enc, Wl, Angle, SeFrntL,
-		SeFrnt, SeFrntAngle;
+		SeFrnt, SeFrntAngle, Distance;
 typedef struct {
 	float Kp;
 	float Ki;
 	float Kd;
 } t_PID;
 volatile t_PID Vel_r, Vel_l, Gyro, Sen, Sen_Dia, Sen_Dia_Side, Vel, Omega,
-		Angles, Backs, FrontCtrl, FrontCtrlAngle;
+		Angles, Backs, FrontCtrl, FrontCtrlAngle, Dists;
 typedef struct {
 	float r;
 	float l;

@@ -420,7 +420,7 @@ void updateVectorMap(int x, int y, char isSearch, char isFull) {
 		for (int k = 0; k < 3; k++) {
 			c++;
 			if (!existWall(X + i, Y + j, d2[k])
-					&& (isSearch | isStep(X + i, Y + j, d2[k]))) {
+					&& (isSearch || isStep(X + i, Y + j, d2[k]))) {
 				int v = haveVectorLv(X, Y, d[k]);
 				int tmp = now;
 				if (dir == d2[k]) {
@@ -640,6 +640,31 @@ char checkSearchVector(int Gx, int Gy, int dir) {
 	return false;
 }
 
+volatile int motionLog[motionLogLength][5];
+
+volatile int motionLogCount = 0;
+
+void pushMotionLog(int x, int y, int dist, int wall, int dir) {
+	motionLog[motionLogCount][0] = x;
+	motionLog[motionLogCount][1] = y;
+	motionLog[motionLogCount][2] = dist;
+	motionLog[motionLogCount][3] = wall;
+	motionLog[motionLogCount][4] = dir;
+	motionLogCount++;
+}
+
+volatile void showMotionLog() {
+	int x = 0, y = 0, dist = 0, wall = 0, dir = 0;
+	for (int i = 0; i < motionLogLength; i++) {
+		x = motionLog[i][0];
+		y = motionLog[i][1];
+		dist = motionLog[i][2];
+		wall = motionLog[i][3];
+		dir = motionLog[i][4];
+		myprintf("(%d,%d)\t%d\t%d\t%d\t%d\r\n", x, y, dist, wall, dir);
+	}
+}
+
 char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 	char known = false;
 	char next_dir = now_dir;
@@ -738,8 +763,8 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 						updateDist(GoalX, GoalY, 0, isFull);
 						if (GoalX == 0 && GoalY == 0) {
 							lock = true;
-							break;
-//							continue;
+//							break;
+							continue;
 						}
 					}
 				} else {
@@ -775,44 +800,44 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 				setNextDirection(x, y, x, y + 1, North);
 				setNextDirection(x, y, x + 1, y, East);
 				setNextDirection(x, y, x - 1, y, West);
-				setNextDirection(x, y, x, y - 1, South);
+//				setNextDirection(x, y, x, y - 1, South);
 			} else if (now_dir == East) {
 				setNextDirection(x, y, x + 1, y, East);
 				setNextDirection(x, y, x, y - 1, South);
 				setNextDirection(x, y, x, y + 1, North);
-				setNextDirection(x, y, x - 1, y, West);
+//				setNextDirection(x, y, x - 1, y, West);
 			} else if (now_dir == West) {
 				setNextDirection(x, y, x - 1, y, West);
 				setNextDirection(x, y, x, y + 1, North);
 				setNextDirection(x, y, x, y - 1, South);
-				setNextDirection(x, y, x + 1, y, East);
+//				setNextDirection(x, y, x + 1, y, East);
 			} else if (now_dir == South) {
 				setNextDirection(x, y, x, y - 1, South);
 				setNextDirection(x, y, x - 1, y, West);
 				setNextDirection(x, y, x + 1, y, East);
-				setNextDirection(x, y, x, y + 1, North);
+//				setNextDirection(x, y, x, y + 1, North);
 			}
 		} else {
 			if (now_dir == North) {
 				setNextDirection(x, y, x, y + 1, North);
 				setNextDirection(x, y, x + 1, y, East);
 				setNextDirection(x, y, x - 1, y, West);
-				setNextDirection(x, y, x, y - 1, South);
+//				setNextDirection(x, y, x, y - 1, South);
 			} else if (now_dir == East) {
 				setNextDirection(x, y, x + 1, y, East);
 				setNextDirection(x, y, x, y - 1, South);
 				setNextDirection(x, y, x, y + 1, North);
-				setNextDirection(x, y, x - 1, y, West);
+//				setNextDirection(x, y, x - 1, y, West);
 			} else if (now_dir == West) {
 				setNextDirection(x, y, x - 1, y, West);
 				setNextDirection(x, y, x, y + 1, North);
 				setNextDirection(x, y, x, y - 1, South);
-				setNextDirection(x, y, x + 1, y, East);
+//				setNextDirection(x, y, x + 1, y, East);
 			} else if (now_dir == South) {
 				setNextDirection(x, y, x, y - 1, South);
 				setNextDirection(x, y, x - 1, y, West);
 				setNextDirection(x, y, x + 1, y, East);
-				setNextDirection(x, y, x, y + 1, North);
+//				setNextDirection(x, y, x, y + 1, North);
 			}
 		}
 		if (nextDirection != 255) {
@@ -850,16 +875,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 		} else {
 			if (known) {
 				known = false;
-//				largePath(false);
-//				diagonalPath(false, false);
-
-//				Sen.Kp = 0.015;
-//				Sen.Ki = 0.0025;
 				check = runForKnownPath(velocity2, acc, diac);
-//				Sen.Kp = 0.01;
-//				Sen.Ki = 0.001;
-//				Sen.Kp = 0.01;
-//				Sen.Ki = 0.00125;
 				pathClear();
 				p = 0;
 				if (check == 0) {
@@ -887,11 +903,10 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 				break;
 			case Back:
 				if (Front_SEN.now > wallhosei) {
+					fanMode = CtrlFan2;
 					realRun(velocity, acc, diac, 100, 100);
 					mtu_stop();
-//					gyroRoll(R, 180, 60, 100);
 					gyroRollTest(R, 180, 60, 100);
-//					back(-300, -diac, 50, 1);
 					if (isStepped(firstGoalX, firstGoalY)) {
 						if (nextMotion == Back && !lock
 								&& !(isStepped(GoalX, GoalY)
@@ -913,6 +928,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 						tmpSave = true;
 						gyroZeroCheck(false);
 					}
+					fanMode = SearchRun;
 					mtu_start();
 					check = runForWallOff(velocity, acc, 115, 1);
 				} else {
@@ -957,298 +973,21 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 			return false;
 		}
 	}
-	realRun(velocity, acc, diac, 90, 50);
+	fanMode = CtrlFan2;
+	realRun(velocity, acc, diac, 100, 50);
+	frontCtrl3();
 	mtu_stop();
 	gyroRollTest(R, 180, 60, 100);
-	back(-100, -diac, 50, 1);
+	back(-100, -diac / 500, 50, 1);
+	V_now = 0;
+	cmt_wait(500);
 	mtu_stop2();
 	if (saveFcuBlock(FLASH_DF_BLOCK_4)) {
 		oneUp(100);
-	} else {
-//		coin(100);
 	}
 	return true;
 }
-char Adachi3(int GoalX, int GoalY, char Zen, char isFull) {
-	char known = false;
-	char next_dir = now_dir;
-	char nextMotion = 0;
-	char check = 1;
-	char backFlg = 0;
-	char goal = 0;
-	char firstGoalX = GoalX;
-	char firstGoalY = GoalY;
-	char limit = 16;
-	char lock = false;
-	char skip = false;
-	char lastMotion = Straight;
-	char oflg = true;
-	char tmpSave = false;
-	char goaled = false;
-	float velocity = 500;
-	sensingMode = SearchMode;
-	map[0][0] |= 0xf0;
-	updateDist(GoalX, GoalY, 0, isFull);
-//	back(-100, -2000, 60, 0);
-	gyroZeroCheck(true);
-//	startVacume2(70);
-	mtu_start();
 
-//	running(500, 2000, 90.0 + 56, 1);
-
-	runForWallOff(velocity, 3000, 90.0 + 56, 1);
-
-	next_dir = direction(now_dir, Straight);
-	while (true) {
-		now_dir = next_dir;
-		if (known == false) {
-			wallJudge2(now_dir, x, y);
-			map[x][y] |= 0xf0;
-			time = 0;
-			updateDist(GoalX, GoalY, 0, isFull);
-		}
-		Value = 255;
-		nextDirection = 255;
-		if (Zen == Kata) {
-			lock = true;
-			if (GoalX == x && GoalY == y) {
-				goaled = true;
-			}
-		} else if (Zen == Oufuku) {
-			if (oflg) {
-				if (firstGoalX == x && firstGoalY == y) {
-					GoalX = 0;
-					GoalY = 0;
-					oflg = false;
-				}
-			} else {
-				lock = true;
-				if (GoalX == x && GoalY == y) {
-					goaled = true;
-				}
-			}
-		} else {
-			if (GoalX == 0 && GoalY == 0) {
-				Zen = Oufuku;
-				oflg = false;
-//				lock = true;
-				if (GoalX == x && GoalY == y) {
-					goaled = true;
-				}
-			}
-			if (!skip && isStepped(firstGoalX, firstGoalY) && !known) {
-				oflg = false;
-				if (lock) {
-					if ((isStepped(GoalX, GoalY) || candicateDead(GoalX, GoalY))) {
-						lock = false;
-//						goal = distiny2(x, y, isFull);
-						goal = searchGoalPosition(firstGoalX, firstGoalY, true,
-								isFull);
-						GoalX = (goal & 0xf0) >> 4;
-						GoalY = goal & 0x0f;
-						updateDist(GoalX, GoalY, 0, isFull);
-						if (GoalX == 0 && GoalY == 0) {
-							lock = true;
-							break;
-							continue;
-						}
-					}
-				} else {
-					if (lastMotion == Back && !lock) {
-					} else {
-						if ((isStepped(GoalX, GoalY)
-								|| candicateDead(GoalX, GoalY)
-								|| dist[x][y] > limit)) {
-							lock = false;
-//							goal = distiny2(x, y, isFull);
-							goal = searchGoalPosition(firstGoalX, firstGoalY,
-									true, isFull);
-							GoalX = (goal & 0xf0) >> 4;
-							GoalY = goal & 0x0f;
-							updateDist(GoalX, GoalY, 0, isFull);
-							if (GoalX == 0 && GoalY == 0) {
-								lock = true;
-								continue;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		if (goaled) {
-			break;	//既知区間の時、コメントアウトすること
-		}
-		skip = false;
-
-		if ((checkSearchVector(GoalX, GoalY, now_dir) || dist[x][y] > 15)) {
-			if (now_dir == North) {
-				setNextDirection(x, y, x, y + 1, North);
-				setNextDirection(x, y, x + 1, y, East);
-				setNextDirection(x, y, x - 1, y, West);
-				setNextDirection(x, y, x, y - 1, South);
-			} else if (now_dir == East) {
-				setNextDirection(x, y, x + 1, y, East);
-				setNextDirection(x, y, x, y - 1, South);
-				setNextDirection(x, y, x, y + 1, North);
-				setNextDirection(x, y, x - 1, y, West);
-			} else if (now_dir == West) {
-				setNextDirection(x, y, x - 1, y, West);
-				setNextDirection(x, y, x, y + 1, North);
-				setNextDirection(x, y, x, y - 1, South);
-				setNextDirection(x, y, x + 1, y, East);
-			} else if (now_dir == South) {
-				setNextDirection(x, y, x, y - 1, South);
-				setNextDirection(x, y, x - 1, y, West);
-				setNextDirection(x, y, x + 1, y, East);
-				setNextDirection(x, y, x, y + 1, North);
-			}
-		} else {
-			if (now_dir == North) {
-				setNextDirection(x, y, x, y + 1, North);
-				setNextDirection(x, y, x + 1, y, East);
-				setNextDirection(x, y, x - 1, y, West);
-				setNextDirection(x, y, x, y - 1, South);
-			} else if (now_dir == East) {
-				setNextDirection(x, y, x + 1, y, East);
-				setNextDirection(x, y, x, y - 1, South);
-				setNextDirection(x, y, x, y + 1, North);
-				setNextDirection(x, y, x - 1, y, West);
-			} else if (now_dir == West) {
-				setNextDirection(x, y, x - 1, y, West);
-				setNextDirection(x, y, x, y + 1, North);
-				setNextDirection(x, y, x, y - 1, South);
-				setNextDirection(x, y, x + 1, y, East);
-			} else if (now_dir == South) {
-				setNextDirection(x, y, x, y - 1, South);
-				setNextDirection(x, y, x - 1, y, West);
-				setNextDirection(x, y, x + 1, y, East);
-				setNextDirection(x, y, x, y + 1, North);
-			}
-		}
-		if (nextDirection != 255) {
-			nextMotion = setNextMotion(nextDirection);
-		} else {
-			nextMotion = Back;
-		}
-//		goaled = false;
-		if (goaled) {
-			cmtMusic(F3_, 1000);
-		}
-		lastMotion = nextMotion;
-		switch (nextMotion) {
-		case Straight:
-			check = runForWallOff(velocity, 0, 180.0, 1);
-			backFlg = 0;
-			break;
-		case Right:
-			check = slalom(R, Normal, velocity, velocity, 0);
-			backFlg = 0;
-			break;
-		case Left:
-			check = slalom(L, Normal, velocity, velocity, 0);
-			backFlg = 0;
-			break;
-		case Back:
-			if (Front_SEN.now > wallhosei) {
-				realRun(velocity, 3500, 3500, 100, 25);
-				mtu_stop();
-				gyroRoll(L, 180, 60, 80);
-				back(-200, -2000, 30, 1);
-				cmt_wait(50);
-				if (isStepped(firstGoalX, firstGoalY)) {
-					if (nextMotion == Back && !lock
-							&& !(isStepped(GoalX, GoalY)
-									|| candicateDead(GoalX, GoalY))) {
-						goal = searchGoalPosition(firstGoalX, firstGoalY, true,
-								isFull);
-						lock = true;
-						GoalX = (goal & 0xf0) >> 4;
-						GoalY = goal & 0x0f;
-						updateDist(GoalX, GoalY, 0, isFull);
-						skip = true;
-					}
-				}
-				if (tmpSave == false && oflg == false) {
-					char res = saveFcuBlock(FLASH_DF_BLOCK_4);
-					if (res == true) {
-						oneUp(100);
-					}
-					tmpSave = true;
-				}
-				mtu_start();
-				check = runForWallOff(velocity, 4000, 145/*115 90.0 + 56*/, 1);
-			} else {
-				realRun(velocity, 1500, 1500, 120, 25);
-				mtu_stop();
-				gyroRoll(L, 180, 60, 80);
-				if (isStepped(firstGoalX, firstGoalY)) {
-					if (nextMotion == Back && !lock
-							&& !(isStepped(GoalX, GoalY)
-									|| candicateDead(GoalX, GoalY))) {
-						goal = searchGoalPosition(firstGoalX, firstGoalY, true,
-								isFull);
-						lock = true;
-						GoalX = (goal & 0xf0) >> 4;
-						GoalY = goal & 0x0f;
-						updateDist(GoalX, GoalY, 0, isFull);
-						skip = true;
-					}
-				}
-				if (tmpSave == false && oflg == false) {
-//						int res = saveFcuBlock(BLOCK_DB0);
-//						if (res == true) {
-//							oneUp(100);
-//						}
-//						tmpSave = true;
-				}
-				mtu_start();
-				check = runForWallOff(velocity, 4000, 145/*115 90.0 + 56*/, 1);
-			}
-			backFlg++;
-			break;
-		}
-//		}
-		if (check == 0) {
-			mtu_stop();
-			return false;
-		}
-		next_dir = setNewPosition(nextDirection);
-		if (backFlg == 4) {
-			mtu_stop();
-			return false;
-		}
-	}
-	realRun(velocity, 1500, 1500, 100, 50);
-
-//	if (!dia) {
-//		frontCtrl2();
-//	}
-	frontCtrl3();
-	mtu_stop();
-	gyroRoll(L, 180, 60, 80);
-	back(-300, -500, 30, 1);
-	cmt_wait(50);
-
-	if (saveFcuBlock(FLASH_DF_BLOCK_4)) {
-		oneUp(100);
-	} else {
-//		coin(100);
-	}
-	if (now_dir == North) {
-		now_dir = South;
-	} else if (now_dir == East) {
-		now_dir = West;
-	} else if (now_dir == West) {
-		now_dir = East;
-	} else if (now_dir == South) {
-		now_dir = North;
-	}
-	if (Zen == Kata) {
-		return false;
-	}
-	return true;
-}
 void inputNaiperTurnAll1000();
 void lefthand() {
 	inputNaiperTurnAll1000();

@@ -140,6 +140,9 @@ void resetData2() {
 	Velocity.error_now = 0;
 	Velocity.error_old = 0;
 	Velocity.error_delta = 0;
+	Distance.error_now = 0;
+	Distance.error_old = 0;
+	Distance.error_delta = 0;
 	Vr.error_now = 0;
 	Vr.error_old = 0;
 	Vr.error_delta = 0;
@@ -155,11 +158,14 @@ void resetData2() {
 	ledOn = 1;
 	mode_FF = 1;
 	distance = 0;
+	img_distance = 0;
 }
 
 void resetAllData() {
 	ang = 0;
 	angle = 0;
+	V_old = 0;
+	W_old = 0;
 	V_now = 0;
 	W_now = 0;
 	w_now = 0;
@@ -171,6 +177,9 @@ void resetAllData() {
 	Velocity.error_now = 0;
 	Velocity.error_old = 0;
 	Velocity.error_delta = 0;
+	Distance.error_now = 0;
+	Distance.error_old = 0;
+	Distance.error_delta = 0;
 	W_enc.error_now = 0;
 	W_enc.error_old = 0;
 	W_enc.error_delta = 0;
@@ -183,12 +192,15 @@ void resetAllData() {
 	Gy.error_now = 0;
 	Gy.error_old = 0;
 	Gy.error_delta = 0;
+	Gy.before = 0;
 	Angle.error_now = 0;
 	Angle.error_old = 0;
 	Angle.error_delta = 0;
+	Angle.before = 0;
 	ledOn = 1;
 	mode_FF = 1;
 	distance = 0;
+	img_distance = 0;
 	resetOmegaParam();
 }
 void clearLogs();
@@ -493,17 +505,20 @@ void gyroZeroCheck(char bool) {
 long er, el;
 
 char realRun(float max, float ac, float diac, float dist, float sla);
+float FB_distance();
 void keepZeroPoint() {
 	motionCheck();
 	cmt_wait(500);
 	gyroZeroCheck(false);
 	readGyroParam();
 	readVelocityGain();
+
+//	resetVelocityGain();
 //	resetGyroParam();
+
+	resetAllData();
 	mtu_start();
 //	positionControlValueFlg = 1;
-//	V_now = 100;
-//	realRun(100, 2000, 2000, 180.0 * 5, 100);
 	ang = 0;
 	angle = 0;
 
@@ -520,13 +535,10 @@ void keepZeroPoint() {
 		myprintf("Velocity:	%f	%f\r\n", V_Enc.l, V_Enc.r);
 		myprintf("angle:	%f\r\n", ang * 180 / PI);
 		myprintf("distance:	%f\r\n", distance);
-//		myprintf(
-//				"{\"mode\":%d,\"battery\":%f,\"gyro\":%f,\"LS1\":%f,\"RS1\":%f,\"LF1\":%f,\"RF1\":%f}\r\n",
-//				ledOn, battery, settleGyro, LS_SEN1.now, RS_SEN1.now,
-//				LF_SEN1.now, RF_SEN1.now);
+		myprintf("img_distance:	%f\r\n", img_distance);
+		myprintf("FB_distance:	%f\r\n", FB_distance());
+
 		cmt_wait(100);
-//		myprintf("%f	%f	%d	%d	%f	%f\r\n", V_Enc.l, V_Enc.r, el, er, Duty_l,
-//				Duty_r);
 		if (Swich == 0) {
 			break;
 		}
@@ -541,6 +553,7 @@ void keepZeroPoint2() {
 	//	cmt_wait(500);
 	gyroZeroCheck(true);
 	readGyroParam();
+	readAngleParam();
 	readVelocityGain();
 	//	resetGyroParam();
 	mtu_start();

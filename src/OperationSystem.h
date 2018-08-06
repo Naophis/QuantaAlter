@@ -167,9 +167,11 @@ void inputNaiperTurnAll1900() {
 }
 void inputNaiperTurnAll2000() {
 	inputNaiperTurnAll1900();
-	setPrms(Large, 90, 115.0, 23.5, 20, 0, 0, 0.05917167663574219, 4, 2000);
-	setPrms3(Large, 11.0, 0, 35.5);
 	setLargeParam2000();
+}
+void inputNaiperTurnAll2100() {
+	inputNaiperTurnAll1900();
+	setLargeParam2100();
 }
 /**
  * 	t_radiusData large;
@@ -292,7 +294,23 @@ void testSlalom3() {
 	} else if (vMax == 1900) {
 		inputNaiperTurnAll1900();
 	} else if (vMax == 2000) {
-		inputNaiperTurnAll2000();
+		setLargeParam2000();
+		setOrvalParam2000();
+		setDia45Param2000();
+		setDia135Param2000();
+		setDia90Param2000();
+	} else if (vMax == 2100) {
+		setLargeParam2100();
+		setOrvalParam2100();
+		setDia45Param2100();
+		setDia135Param2100();
+		setDia90Param2100();
+	} else if (vMax == 2200) {
+		setLargeParam2200();
+		setOrvalParam2200();
+		setDia45Param2200();
+		setDia135Param2200();
+		setDia90Param2200();
 	}
 
 	char RorL = eigherRightLeft() == Right ? R : L;
@@ -300,8 +318,11 @@ void testSlalom3() {
 	motionCheck();
 	cmt_wait(500);
 	gyroZeroCheck(false);
+	resetAllData();
 	mtu_start();
+
 	readGyroParam();
+	readAngleParam();
 	readVelocityGain();
 //	resetVelocityGain();
 
@@ -325,19 +346,21 @@ void testSlalom3() {
 	globalSkipFront = test_sla_scenario2;
 
 	char type = turnType;
+	logs = 0;
+	time = 0;
+	cc = 1;
+	logs = 0;
 	if (globalSkipFront) {
 		realRun(vMax, accele, diaccele, 41 + getFirstFront(type), vMax);
 	} else {
 		realRun(vMax, accele, diaccele, 180.0 * 1.22, vMax);
 	}
-	logs = 0;
-	time = 0;
-	cc = 1;
-	logs = 0;
-
 	if (!globalSkipFront) {
 		wallOff(RorL, true);
 	}
+
+//	realRun(vMax, accele, diaccele, 90.0 * ROOT2, 50);
+//	mtu_stop2();
 //	V_now = 0;
 //	cmt_wait(1000);
 //	mtu_stop2();
@@ -400,12 +423,20 @@ void testNormalSlalom() {
 		resetAllData();
 		mtu_stop2();
 	} else {
-		runForWallOff(vMax, accele, 200, 1);
+//		runForWallOff(vMax, accele, 270, 1);
+		realRun(vMax, accele, diaccele, 180.0 * 1, vMax);
 		logs = 0;
 		time = 0;
 		cc = 1;
 		logs = 0;
 		slalom(RorL, Normal, vMax, vMax, 0);
+
+		char test_turn_times = (char) (*(float *) 1049308);
+		if (test_turn_times > 0) {
+			for (char i = 0; i < test_turn_times; i++) {
+				slalom(RorL == R ? L : R, Normal, vMax, vMax, 0);
+			}
+		}
 		cc = 0;
 		realRun(vMax, accele, diaccele, 180.0 * 1, 50);
 	}
@@ -553,8 +584,8 @@ void printRealPath();
 char makePath3(char goalX, char goalY, char isFull) {
 	Dia2 = Dia - minus + 2;
 	Dia3 = Dia - minus + 1;
-	St2 = St1 - minus;
-	St3 = St1 - minus - 1;
+	St2 = St1 - minus - 1;
+	St3 = St1 - minus - 2;
 	x = 0;
 	y = 0;
 	now_dir = North;
@@ -580,7 +611,7 @@ void makePath(char goalX, char goalY, char isFull) {
 	printMap();
 	printMap2();
 	if (cirquitMode == false) {
-		minus = 3;
+		minus = 4;
 		int minus3 = makePath3(goalX, goalY, isFull);
 	}
 	printRealPath();
@@ -588,7 +619,7 @@ void makePath(char goalX, char goalY, char isFull) {
 void makePath2() {
 	flushcheckQ();
 	if (cirquitMode == false) {
-		minus = 3;
+		minus = 4;
 		makePath4();
 	}
 	printRealPath();
@@ -794,8 +825,8 @@ void FF_print() {
 	mtu_start();
 	while (1) {
 		cmt_wait(50);
-		myprintf("%d %d \n", (int) (FF_calc(L) * 1000),
-				(int) (FF_calc(R) * 1000));
+		myprintf("%d %d \n", (int) (FF_calc(L, 0, 0) * 1000),
+				(int) (FF_calc(R, 0, 0) * 1000));
 	}
 	mtu_stop();
 }
@@ -881,14 +912,14 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 	wall_off_limit = wall_off_limit_d = 200;
 
 	if (mode == SEARCH || mode == SEARCH2) {
-//		Sen.Kp = 0.0175;
-//		Sen.Ki = 0.0065;
-//		Sen.Kd = 0.0;
+		Sen.Kp = *(float *) 1049376;
+		Sen.Ki = *(float *) 1049380;
+		Sen.Kd = *(float *) 1049384;
 		fanMode = SearchRun;
 	} else {
-//		Sen.Kp = 0.0125;
-//		Sen.Ki = 0.005;
-//		Sen.Kd = 0.0;
+		Sen.Kp = 0.035;
+		Sen.Ki = 0.0;
+		Sen.Kd = 0.0825;
 		fanMode = FastRun;
 	}
 
@@ -908,7 +939,9 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		}
 		save();
 		pathClear();
-		return Adachi2(goalX, goalY, Zentansaku, isFull, m2);
+//		return Adachi2(goalX, goalY, Zentansaku, isFull, m2);
+
+		return Adachi2(goalX, goalY, Zentansaku, isFull, m2) ? 2 : 0;
 	} else if (mode == SEARCH2) {
 		fanMode = SearchRun;
 		wall_off_limit = wall_off_limit_d = 35;
@@ -1047,9 +1080,13 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		char check = runForPath(v, 20000, 18000);
 	} else if (mode == CONFIG6) {
 	} else if (mode == CONFIG7) {
-	} else if (mode == CONFIG8) {
 		goalChangeFlg = 1;
 		operation();
+	} else if (mode == CONFIG8) {
+		showMotionLog();
+//		if (saveFcuBlock(FLASH_DF_BLOCK_4)) {
+//			oneUp(100);
+//		}
 	} else if (mode == CONFIG9) {
 		keepZeroPoint2();
 	} else if (mode == KeepZeroPoint) {
@@ -1226,14 +1263,48 @@ void frontCtrlTest2() {
 	logOutPut();
 }
 
+void testRpm1() {
+	while (1) {
+		myprintf("%c[2J", ESC); /* 画面消去 */
+		myprintf("%c[0;0H", ESC); /* 戦闘戻す*/
+		myprintf("battery=%f V\r\n", battery);
+		myprintf("Gyro=%f\r\n", settleGyro);
+		myprintf("	%f %f\r\n", LS_SEN45.now, RS_SEN45.now);
+		myprintf("%f 		%f\r\n", 0, Front_SEN.now);
+		myprintf("Duty:	%f	%f\r\n", Duty_l, Duty_r);
+		myprintf("Velocity:	%f	%f\r\n", V_Enc.l, V_Enc.r);
+		myprintf("angle:	%f\r\n", ang * 180 / PI);
+		myprintf("distance:	%f\r\n", distance);
+		myprintf("RPM_R:	%f\r\n", getRpm(R));
+		myprintf("RPM_L:	%f\r\n", getRpm(L));
+		cmt_wait(100);
+		if (!PushTop) {
+			V_now = 500;
+		}
+		if (!PushRight) {
+			W_now = 1;
+		}
+		if (!PushLeft) {
+			W_now = -1;
+		}
+		if (Swich == 0) {
+			break;
+		}
+	}
+}
+
 void operation() {
 	volatile char goalX = (char) (*(float *) 1049336);
 	volatile char goalY = (char) (*(float *) 1049340); //selectGoal();
 
+	myprintf("Goal=(%d, %d)\r\n", goalX, goalY);
 	fanMode = FastRun;
 	if (!PushBottom) {
 		goalX = 7;
 		goalY = 7;
+		coin(100);
+		coin(100);
+		coin(100);
 	}
 
 	if (goalChangeFlg == 1) {
@@ -1248,24 +1319,18 @@ void operation() {
 	enableSciUpdate = true;
 	while (PushBottom)
 		;
-//	importParam();
-//	motionCheck();
-//	mtu_start();
-//	while (PushRight)
-//		;
-//	printSensor();
 	if (!PushTop) {
 		enableSciUpdate = true;
 		while (PushBottom)
 			;
 	}
-//	motionCheck();
-//	fanMode = SearchRun;
-//	startVacume2(70);
-//	mtu_start();
-//	runForWallOff(1000, 5000, 115, 1);
-//	mtu_stop2();
 	char testCmd = (char) (*(float *) 1049260);
+
+//	keepZeroPoint();
+
+	resetAllData();
+
+//	testRpm1();
 
 	if (testCmd > 0) {
 		switch (testCmd) {
@@ -1301,6 +1366,10 @@ void operation() {
 			cmtMusic(D3_, 100);
 			checkIsoukeisu();
 			break;
+		case 9:
+			cmtMusic(E3_, 100);
+			cirquit();
+			break;
 		}
 	} else {
 		cmtMusic(C2_, 100);
@@ -1309,7 +1378,6 @@ void operation() {
 		if (!PushTop) {
 			printSensor();
 		}
-//		testWallOffSeach();
 	}
 
 	cirquit();

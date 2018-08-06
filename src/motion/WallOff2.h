@@ -78,6 +78,7 @@ char wallOff_v2(char RorL) {
 	ang = 0;
 	angle = 0;
 	distance = 0;
+	img_distance = 0;
 	if (RorL == R) {
 		if (SEN_R < existRightWall4) {
 			walloff1(R);
@@ -158,6 +159,7 @@ char wallOff_D_v2(char RorL) {
 	ang = 0;
 	angle = 0;
 	distance = 0;
+	img_distance = 0;
 	sensingMode = AtackDia;
 	if (RorL == R) {
 		if (SEN_R < existRightWall5) {

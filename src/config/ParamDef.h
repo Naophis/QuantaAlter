@@ -21,6 +21,7 @@ float Mass = 0.106f;
 float Lm = 0.001f;
 float friction = 0.00125f;
 float friction2 = 0.001925f;
+float Tread = 0.074;
 
 float running_wall_off_r = 500;
 float running_wall_off_l = 500;
@@ -68,7 +69,7 @@ int strBias = 3;
 int diaBias = 3;
 int Dia = 5;
 int St1 = 7;
-int minus = 3;
+int minus = 4;
 int Dia2;
 int Dia3;
 int St2;
@@ -161,6 +162,29 @@ void importFromDataFlash() {
 	myprintf("FrontCtrl.Kp	%f	%d\r\n", FrontCtrl.Kp, 1049400);
 	FrontCtrl.Ki = *(float *) 1049404;
 	myprintf("FrontCtrl.Ki	%f	%d\r\n", FrontCtrl.Ki, 1049404);
+//	autostart=*(float *)1049408;myprintf("autostart	%f	%d\r\n",autostart,1049408);
+	Angles.Kp = *(float *) 1049412;
+	myprintf("Angles.Kp	%f	%d\r\n", Angles.Kp, 1049412);
+	Angles.Ki = *(float *) 1049416;
+	myprintf("Angles.Ki	%f	%d\r\n", Angles.Ki, 1049416);
+	Angles.Kd = *(float *) 1049420;
+	myprintf("Angles.Kd	%f	%d\r\n", Angles.Kd, 1049420);
+	Dists.Kp = *(float *) 1049424;
+	myprintf("Dists.Kp	%f	%d\r\n", Dists.Kp, 1049424);
+	Dists.Ki = *(float *) 1049428;
+	myprintf("Dists.Ki	%f	%d\r\n", Dists.Ki, 1049428);
+	Dists.Kd = *(float *) 1049432;
+	myprintf("Dists.Kd	%f	%d\r\n", Dists.Kd, 1049432);
+	Tread = *(float *) 1049436;
+	myprintf("Tread	%f	%d\r\n", Tread, 1049436);
+	logterm = *(float *) 1049440;
+	myprintf("logterm	%f	%d\r\n", logterm, 1049440);
+	isouratio = *(float *) 1049444;
+	myprintf("isouratio	%f	%d\r\n", isouratio, 1049444);
+	isouzure = *(float *) 1049448;
+	myprintf("isouzure	%f	%d\r\n", isouzure, 1049448);
+	searchrange = *(float *) 1049452;
+	myprintf("searchrange	%f	%d\r\n", searchrange, 1049452);
 
 	RS_SEN45.ref = *(float *) 1049600;
 	myprintf("RS_SEN45.ref	%f	%d\r\n", RS_SEN45.ref, 1049600);
@@ -257,6 +281,14 @@ void importFromDataFlash() {
 	myprintf("DIA_N_RIGHT_WALL	%f	%d\r\n", DIA_N_RIGHT_WALL, 1049908);
 	DIA_FRONT_WALL_ORDER = *(float *) 1049912;
 	myprintf("DIA_FRONT_WALL_ORDER	%f	%d\r\n", DIA_FRONT_WALL_ORDER, 1049912);
+//	searchWallOffDistR=*(float *)1049916;myprintf("searchWallOffDistR	%f	%d\r\n",searchWallOffDistR,1049916);
+//	searchWallOffDistL=*(float *)1049920;myprintf("searchWallOffDistL	%f	%d\r\n",searchWallOffDistL,1049920);
+	testMode = *(float *) 1049924;
+	myprintf("testMode	%f	%d\r\n", testMode, 1049924);
+	L_WALL_EXIST4 = *(float *) 1049928;
+	myprintf("L_WALL_EXIST4	%f	%d\r\n", L_WALL_EXIST4, 1049928);
+	R_WALL_EXIST4 = *(float *) 1049932;
+	myprintf("R_WALL_EXIST4	%f	%d\r\n", R_WALL_EXIST4, 1049932);
 
 }
 

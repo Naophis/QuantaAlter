@@ -132,17 +132,24 @@ void enc_to_vel(void) {
 
 	Velocity.error_delta = (V_now - (V_Enc.l + V_Enc.r) / 2) - temp;
 
-	rpmR = V_Enc.r * 60 / (PI * TIRE);
-	rpmL = V_Enc.l * 60 / (PI * TIRE);
+	rpmR_old = rpmR;
+	rpmL_old = rpmL;
+
+	rpmR = ((V_now - Tread * 500 * W_now) / (TIRE / 2)) * 60.0 / (2.0 * PI);
+	rpmL = ((V_now + Tread * 500 * W_now) / (TIRE / 2)) * 60.0 / (2.0 * PI);
+
 	Velocity.error_now = V_now - (V_Enc.r + V_Enc.l) / 2;
-	distance += ABS(V_Enc.r + V_Enc.l) * dt / 2;
+
+	px += V_now * sinf(ABS(ang)) * dt;
+	py += V_now * cosf(ABS(ang)) * dt;
+
 }
-#define KIREME_R 9 //11/12
-#define KIREME_L 9
+#define KIREME_R 11 //11/12
+#define KIREME_L 11
 #define KIREME_R2 10
 #define KIREME_L2 10
-unsigned int R_WALL = 820; //820; //#define R_WALL 4000	//サーキット用
-unsigned int L_WALL = 700; //600;	//制御壁閾値
+unsigned int R_WALL = 880; //820; //#define R_WALL 4000	//サーキット用
+unsigned int L_WALL = 750; //600;	//制御壁閾値
 volatile float FRONT_OUT = 2250;	//袋小路時前センサー閾値
 
 int checkStr = 0;
@@ -151,13 +158,15 @@ float check_sen_error(void) {
 	char check = 0;
 	if (Front_SEN.now < FRONT_OUT) {
 		if (ABS(RS_SEN45.now - RS_SEN45.old) < KIREME_R) {
-			if (RS_SEN45.now > R_WALL) {
+//			if (RS_SEN45.now > R_WALL) {
+			if (RS_SEN45.now > (RS_SEN45.ref - 15)) {
 				error += RS_SEN45.now - RS_SEN45.ref;
 				check++;
 			}
 		}
 		if (ABS(LS_SEN45.now - LS_SEN45.old) < KIREME_L) {
-			if (LS_SEN45.now > L_WALL) {
+//			if (LS_SEN45.now > L_WALL) {
+			if (LS_SEN45.now > (LS_SEN45.ref - 15)) {
 				error -= LS_SEN45.now - LS_SEN45.ref;
 				check++;
 			}
@@ -168,9 +177,11 @@ float check_sen_error(void) {
 	} else {
 		if (!TRANSAM) {
 			Gy.error_old = 0;
+			Angle.error_old = 0;
 		}
 		if (gyroErrResetEnable) {
 			Gy.error_old = 0;
+			Angle.error_old = 0;
 		}
 		angle = 0;
 		ang = 0;
@@ -213,6 +224,7 @@ void resetAngleError(void) {
 	}
 	if (check > 0) {
 		Gy.error_old = 0;
+		Angle.error_old = 0;
 		angle = 0;
 		ang = 0;
 	}
@@ -227,21 +239,6 @@ volatile int errorOld_dia_side = 0;
 float check_sen_error_dia_side(void) {
 	float error = 0;
 	char check = 0;
-//
-//	if (lastPeekR > R_WALL_DIA) {
-//		error += lastPeekR - RS_SEN45.ref2;
-//		check++;
-//	} else if (lastPeekR2 > R_WALL_DIA2) {
-//		error += lastPeekR2 - RS_SEN2.ref2;
-//		check++;
-//	}
-//	if (lastPeekL > L_WALL_DIA) {
-//		error -= lastPeekL - LS_SEN45.ref2;
-//		check++;
-//	} else if (lastPeekL2 > L_WALL_DIA2) {
-//		error -= lastPeekL2 - LS_SEN2.ref2;
-//		check++;
-//	}
 
 	if (RS_SEN45.now > R_WALL_DIA && lastPeekR < R_WALL_DIA) {
 		error += RS_SEN45.now - RS_SEN45.ref2;
@@ -355,6 +352,20 @@ void errorVelocity(void) {
 
 	C.g = Gyro.Kp * Gy.error_now + Gyro.Ki * Gy.error_old
 			+ Gyro.Kd * Gy.error_delta;
+
+	Angle.error_now = (angle - ang);
+	Angle.error_old += Angle.error_now;
+	if (Angle.before != 0) {
+		Angle.error_delta = Angle.error_now - Angle.before;
+	} else {
+		Angle.error_delta = 0;
+	}
+
+	Angle.before = Angle.error_now;
+
+	C.angles = Angles.Kp * Angle.error_now + Angles.Ki * Angle.error_old
+			+ Angles.Kd * Angle.error_delta;
+
 }
 
 float checkDuty(float duty) {
@@ -388,41 +399,62 @@ float feadforward(char RorL) {
 }
 float feadforward_para(char RorL) {
 	if (RorL == R) {
-		return Lm * (-alpha) * WHEEL * Resist / (GEAR * Km);
+		return Lm * (-alpha) * WHEEL * Resist / (GEAR * Km) / Tread;
 	}
-	return Lm * (alpha) * WHEEL * Resist / (GEAR * Km);
+	return Lm * (alpha) * WHEEL * Resist / (GEAR * Km) / Tread;
 }
 
-float FF_calc(char RorL) {
-	float rpm = getRpm(RorL);
-	float resist_str = friction_str ? Resist * friction / Km : 0;
-	float resist_roll = friction_roll ? Resist * friction2 / Km : 0;
+float wheel_lm(char RorL) {
+	if (RorL == R) {
+		return (rpmR - rpmR_old) / dt / 2 * Mass * WHEEL * WHEEL * Resist / Km;
+	}
+	return (rpmL - rpmL_old) / dt / 2 * Mass * WHEEL * WHEEL * Resist / Km;
+}
 
-	if (V_now != 0) {
+float FF_calc(char RorL, float w, float al) {
+	float rpm = getRpm(RorL);
+	float resist_str = 0;  //friction_str ? Resist * friction / Km : 0;
+	float resist_roll = friction_roll ? ABS(Resist * friction2 / Km) : 0;
+	float whrlm = 0;
+	float counterV = ABS((Ke + friction) * rpm);
+	float subal = 0;
+	float ff = feadforward(RorL);
+	float ffp = feadforward_para(RorL);
+//	if (globalState == SLA_TURN) {
+//		if (RorL == R) {
+//			subal = Lm * (-al) * WHEEL * Resist / (GEAR * Km) / Tread;
+//			float rpmR2 = ((V_now - Tread * 500 * w) / (TIRE / 2)) * 30 / PI;
+//			rpm = rpm * (isouratio) + rpmR2 * (1 - isouratio);
+//			counterV = (Ke + friction) * rpm;
+//		} else {
+//			subal = Lm * (al) * WHEEL * Resist / (GEAR * Km) / Tread;
+//			float rpmL2 = ((V_now + Tread * 500 * w) / (TIRE / 2)) * 30 / PI;
+//			rpm = rpm * (isouratio) + rpmL2 * (1 - isouratio);
+//			counterV = ABS((Ke + friction) * rpm);
+//		}
+//		ffp = ffp * (isouratio) + subal * (1 - isouratio);
+//	}
+
+	if (V_now == 0) {
 		resist_str = 0;
 	}
-	if (W_now != 0) {
+	if (W_now == 0) {
 		resist_roll = 0;
 	}
 	if (RorL == R) {
 		if (rotate_r) {
-			return ((feadforward(RorL) + feadforward_para(RorL)) / 2
-					+ ABS(Ke * rpm) + resist_str + resist_roll);
+			return ((ff + ffp) / 2 + counterV + resist_roll) + whrlm;
 		} else {
-			return ((feadforward(RorL) + feadforward_para(RorL)) / 2
-					- ABS(Ke * rpm) - resist_str - resist_roll);
+			return ((ff + ffp) / 2 - counterV - resist_roll) - whrlm;
 		}
 	} else {
 		if (rotate_l) {
-			return ((feadforward(RorL) + feadforward_para(RorL)) / 2
-					+ ABS(Ke * rpm) + resist_str + resist_roll);
+			return ((ff + ffp) / 2 + counterV + resist_roll) + whrlm;
 		} else {
-			return ((feadforward(RorL) + feadforward_para(RorL)) / 2
-					- ABS(Ke * rpm) - resist_str - resist_roll);
+			return ((ff + ffp) / 2 - counterV - resist_roll) - whrlm;
 		}
 	}
-	return ((feadforward(RorL) + feadforward_para(RorL)) / 2 + Ke * rpm
-			+ resist_str);
+	return ((ff + ffp) / 2 + Ke * rpm + resist_str) + whrlm;
 }
 float FB_calc(char RorL) {
 	float duty;
@@ -443,9 +475,26 @@ float FB_calc_omega() {
 			+ Omega.Kd * (W_enc.error_now - W_enc.error_delta);
 }
 
+float FB_velocity() {
+	return (Vel.Kp * Velocity.error_now + Vel.Ki * Velocity.error_old
+			+ Vel.Kd * Velocity.error_delta);
+}
+
+float FB_distance() {
+	float dist_before = (img_distance - distance);
+
+	img_distance += V_now * dt;
+	distance += (V_Enc.r + V_Enc.l) * dt / 2;
+
+	Distance.error_now = (img_distance - distance);
+	Distance.error_old += Distance.error_now;
+	Distance.error_delta = Distance.error_now - dist_before;
+	return (Dists.Kp * Distance.error_now + Dists.Ki * Distance.error_old
+			+ Dists.Kd * Distance.error_delta);
+}
+
 float FB_calc_straight() {
-	return Vel.Kp * Velocity.error_now + Vel.Ki * Velocity.error_old
-			+ Vel.Kd * Velocity.error_delta;
+	return FB_velocity() + FB_distance();
 }
 
 float FB_calc_pararell() {
@@ -456,9 +505,16 @@ void dutyCalcuration2(void) {
 	float dutyR = 0, dutyL = 0;
 	float FB_straight_duty = FB_calc_straight();
 	float FB_pararell_duty = FB_calc_pararell();
+	float w, al;
 
-	ffR = FF_calc(R);
-	ffL = FF_calc(L);
+//	if (globalState == SLA_TURN) {
+//		for (int i = 0; i < isouzure; i++) {
+//			al = alphaTemp * Et2(dt * (sinCount + i), slaTerm, etN);
+//			w += al * dt;
+//		}
+//	}
+	ffR = FF_calc(R, w, al);
+	ffL = FF_calc(L, w, al);
 
 	dutyR = (ffL + FB_straight_duty + FB_pararell_duty) / battery * 100;
 	dutyL = (ffR + FB_straight_duty - FB_pararell_duty) / battery * 100;
@@ -486,7 +542,6 @@ void dutyCalcuration2(void) {
 	} else {
 		GPT0.GTCCRA = GPT0.GTCCRC = GPT1.GTCCRA = GPT1.GTCCRC = 0;
 	}
-
 }
 
 //物理量ベース計算
@@ -511,12 +566,17 @@ void Physical_Basement(void) {
 		}
 	}
 	errorVelocity();
+
+	V_old = V_now;
+	W_old = W_now;
 	V_now += acc * dt;
 	W_now += alpha * dt;
+
 	ang += settleGyro * dt;
 	angle += W_now * dt;
 
 	enc_to_vel();
+
 	dutyCalcuration2();
 }
 #endif /* PHYSICALBASEMENT_H_ */

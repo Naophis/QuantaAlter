@@ -43,8 +43,12 @@ char fanStart = false;
 char fanStart2 = false;
 //#define FAN_AMP2 10.50
 //#define FAN_AMP 10.50
+
+#define FAN_AMP4 0.0f
+#define FAN_AMP3 0.0f
 #define FAN_AMP2 5.0f
-#define FAN_AMP 8.0f	//11.35
+#define FAN_AMP 8.5f	//11.35
+
 volatile float myVacumeDuty = FAN_AMP;
 //#define FAN_AMP 11.0	//11.35
 const float PI = 3.141592653589793;
@@ -60,6 +64,7 @@ volatile double W_now = 0;
 volatile double alpha = 0.0;			//	[rad/s^2]
 volatile double ang = 0.0;				//角度 rad
 volatile double distance = 0.0;		//距離 mm
+volatile double img_distance = 0.0;		//距離 mm
 #define North 1
 #define East 2
 #define West 4
@@ -81,7 +86,8 @@ volatile float V_l = 0;
 volatile float V_max = 600.0;	//最高速度
 volatile float acc = 4000;		//加速度
 volatile float V_now = Vo;		//現在速度
-
+volatile float V_old = 0;
+volatile float W_old = 0;
 volatile unsigned short x = 0, y = 0;		//座標保持変数
 volatile unsigned char path_s[pathLength];	//直進パス
 volatile unsigned char path_t[pathLength];	//ターンパス
@@ -97,8 +103,8 @@ volatile float v_sla[8];
 volatile char os_escape;
 volatile char fail = 0;
 volatile unsigned int sinCount = 0;
-volatile char sw;
-volatile int time = 0;
+volatile unsigned char sw;
+volatile unsigned int time = 0;
 volatile short gyro_temp[5];
 volatile float gyro = 0;
 volatile float tempGyro = 0;
@@ -119,10 +125,16 @@ volatile unsigned long gra_r, gra_l;
 volatile unsigned int meloTimer = 0;
 volatile int DutyR, DutyL;
 volatile float rpmR = 0, rpmL = 0;
+volatile float rpmR_old = 0, rpmL_old = 0;
+
+volatile float logterm = 5;
+volatile float isouratio = 0;
+volatile float isouzure = 0;
+volatile float searchrange = 0;
 volatile float angle = 0;
 volatile char gyroErrResetEnable = false;
-int cc = 0;
-int logs = 0;
+volatile unsigned int cc = 0;
+volatile unsigned int logs = 0;
 volatile float ffR, ffL;
 volatile float angle_enc;
 volatile char slaFLG = 0;
@@ -159,7 +171,7 @@ volatile char isKnown = 0;
 
 volatile float tmpData = 0;
 #define MAZE_SIZE  16
-char dist[MAZE_SIZE][MAZE_SIZE];
+volatile char dist[MAZE_SIZE][MAZE_SIZE];
 
 volatile unsigned int c = 0;
 volatile unsigned int timer = 0;
@@ -268,8 +280,10 @@ unsigned char recieved_data;
 #define SCI_RX_BUF_SIZE   (1<<SCI_RX_BUF_SHIFT)
 #define SCI_RX_BUF_MASK   (SCI_RX_BUF_SIZE-1)
 
+#define motionLogLength 2048
+
 int nextDirection = 0;
-unsigned char map[MAZE_SIZE][MAZE_SIZE];
+volatile unsigned char map[MAZE_SIZE][MAZE_SIZE];
 
 typedef struct {
 	unsigned int n :10;
@@ -292,7 +306,7 @@ volatile vector_map m[MAZE_SIZE][MAZE_SIZE];
 
 #define Q_LENGTH 2048
 int que[Q_LENGTH][3];
-#define L_Length 3000
+#define L_Length 2800
 volatile int log1[L_Length];
 volatile float logs2[L_Length];
 volatile float log3[L_Length];
@@ -339,6 +353,8 @@ volatile float log33[L_Length];
 #define FastRun 0
 #define SearchRun 1
 #define TestRun 2
+#define CtrlFan 3
+#define CtrlFan2 4
 
 volatile char fanMode = SearchRun;
 
@@ -353,7 +369,7 @@ volatile char enableSciUpdate = false;
 
 volatile char swTop, swBottom, swLeft, swRight, swCenter;
 
-volatile char globalState = 0;
+volatile unsigned int globalState = 0;
 #define NONE 0
 #define STRAIGHT 1
 #define PIVOT 2
@@ -364,12 +380,15 @@ volatile char globalState = 0;
 #define FRONT_ctrl 7
 #define PARAREL 8
 #define DIA_STRAIGHT 9
+#define WALL_OFF_WAIT 10
 
 #define SEN_R RS_SEN45.now
 #define SEN_L LS_SEN45.now
 #define SEN_R2 RS_SEN2.now
 #define SEN_L2 LS_SEN2.now
 #define SEN_FRONT Front_SEN.now
+
+char testMode = true;
 
 float R_WALL_EXIST2 = 1600;  //探索時壁判定
 float L_WALL_EXIST2 = 1500;  //探索時壁判定
@@ -378,5 +397,14 @@ float FRONT_WALL_EXIST2 = 740; //探索時壁判定
 float R_WALL_EXIST3 = 420;  //探索時壁判定
 float L_WALL_EXIST3 = 300;  //探索時壁判定
 float FRONT_WALL_EXIST3 = 300; //探索時壁判定
+
+float px = 0, py = 0;
+float px2 = 0, py2 = 0;
+
+float R_WALL_EXIST = 600;  //探索時壁判定
+float L_WALL_EXIST = 500;  //探索時壁判定
+float FRONT_WALL_EXIST = 800; //探索時壁判定
+float R_WALL_EXIST4 = 220;  //探索時壁判定
+float L_WALL_EXIST4 = 220;  //探索時壁判定
 
 #endif /* DEFINES_H_ */

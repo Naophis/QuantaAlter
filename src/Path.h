@@ -130,6 +130,7 @@ float drawChangePathRoot(char goalX, char goalY, char isFull) {
 	unsigned int turnLisk[4];
 	int tempLisk = 0;
 	deadEnd(goalX, goalY);
+//	updateVectorMap(goalX, goalY, false, isFull);
 	vectorDistUpdate(goalX, goalY, isFull);
 	for (i = 0; checkQ[i] != 0; i++) {
 		pathVariation[0] = 255;
@@ -149,6 +150,7 @@ float drawChangePathRoot(char goalX, char goalY, char isFull) {
 		if (checkMap[x][y] != 0 && (checkMap[x][y] & 0xf0) == 0) {
 			if ((checkMap[x][y] & 0x01) == 0x01) {
 				pathVariation[0] = pathCreateChange(goalX, goalY, x, y, North);
+				// myprintf("north(%d,%d) %f\r\n", x, y, pathVariation[0]);
 				if (checkTurningPoint) {
 					checkPoint[0] = North;
 				}
@@ -165,6 +167,7 @@ float drawChangePathRoot(char goalX, char goalY, char isFull) {
 			}
 			if ((checkMap[x][y] & 0x02) == 0x02) {
 				pathVariation[1] = pathCreateChange(goalX, goalY, x, y, East);
+				// myprintf("east(%d,%d) %f\r\n", x, y, pathVariation[1]);
 				if (checkTurningPoint) {
 					checkPoint[0] = East;
 				}
@@ -181,6 +184,7 @@ float drawChangePathRoot(char goalX, char goalY, char isFull) {
 			}
 			if ((checkMap[x][y] & 0x04) == 0x04) {
 				pathVariation[2] = pathCreateChange(goalX, goalY, x, y, West);
+				// myprintf("west(%d,%d) %f\r\n", x, y, pathVariation[2]);
 				if (checkTurningPoint) {
 					checkPoint[0] = West;
 				}
@@ -197,6 +201,7 @@ float drawChangePathRoot(char goalX, char goalY, char isFull) {
 			}
 			if ((checkMap[x][y] & 0x08) == 0x08) {
 				pathVariation[3] = pathCreateChange(goalX, goalY, x, y, South);
+				// myprintf("south(%d,%d) %f\r\n", x, y, pathVariation[3]);
 				if (checkTurningPoint) {
 					checkPoint[0] = South;
 				}
@@ -574,17 +579,44 @@ float countPathLength(char bool) {
 		largePath(true);
 		diagonalPath(true, true);
 		for (i = 0; path_t[i] != 255; i++) {
+			// j++;
 			if (path_t[i] == 7 || path_t[i] == 8 || path_t[i] == 9
 					|| path_t[i] == 10) {
 				if ((path_s[i + 1] * 0.5 - 1) > 0) {
-					j += 0.5;
+					j += 1;
 				} else {
 					j += 1;
 				}
 			} else if (path_t[i] == 11 || path_t[i] == 12) {
-				j += 0.5;
-			} else {
 				j += 1;
+			} else {
+				j += 0.5;
+			}
+		}
+//		float tmp = j;
+		for (i = 0; path_t[i] != 255; i++) {
+			j++;
+			if (path_t[i] == 7 || path_t[i] == 8 || path_t[i] == 9
+					|| path_t[i] == 10) {
+				char check = false;
+				for (int k = i + 1; path_t[k] != 255; k++) {
+					if ((path_s[i + 1] * 0.5 - 1) > 0.5) {
+						check = true;
+					}
+					if (path_t[k] == 255) {
+						check = true;
+					} else if (path_t[k] == 7 || path_t[k] == 8
+							|| path_t[i] == 9 || path_t[i] == 10) {
+						break;
+					} else if (path_t[k] == 11 || path_t[k] == 12) {
+						check = false;
+						break;
+					}
+					i = k;
+				}
+				if (check) {
+					j -= 1;
+				}
 			}
 		}
 		return j;
@@ -640,6 +672,7 @@ float pathCreateChange(int Goal_X, int Goal_Y, int qX, int qY, int fixedMove) {
 	path_s[0] += 1;
 	while (true) {
 		if (p == 255) {
+			myprintf("(%d,%d) is overflow \r\n", qX, qY);
 			return 255;
 		}
 		now_dir = next_dir;
@@ -660,6 +693,7 @@ float pathCreateChange(int Goal_X, int Goal_Y, int qX, int qY, int fixedMove) {
 		} else {
 			if ((x == Goal_X && y == Goal_Y)) {
 				b1 = true;
+				bool = true;
 			}
 		}
 		if (now_dir == North) {
