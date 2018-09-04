@@ -462,6 +462,8 @@ char frontCtrl() {
 		Distance.error_now = 0;
 		Distance.error_old = 0;
 		Distance.error_delta = 0;
+	} else {
+		return 0;
 	}
 	return 1;
 }
@@ -595,10 +597,12 @@ char runForWallOff(float vmax, float ACC, float dist, char control);
 char runForWallOff2(float vmax, float ACC, float dist, char control, char type,
 		char dir);
 void back(float v1, float ac, float dist, char control);
+char runForWallforNormalOff(float vmax, float ACC, float dist, char control);
+
 char slalom(char dir, char type, float Velocity, float vel2, float ac) {
-	float radius = getRadius(type);
+	float radius = getRadius(type, dir);
 	float rad = toRadians(getTargetAngle(type));
-	float time = getNaiperTime(type);
+	float time = getNaiperTime(type, dir);
 	etN = getNaiperN(type);
 	w_now = W_now = 0;
 	cc = 1;
@@ -702,7 +706,7 @@ char slalom(char dir, char type, float Velocity, float vel2, float ac) {
 	char returnStatus = true;
 	if (dia == 0) {
 		if (type == Normal && getBackDist(type, dir) > 25) {
-			returnStatus = runForWallOff(vel2, ac, back, true);
+			returnStatus = runForWallforNormalOff(vel2, ac, back, true);
 		} else if (type == Dia45 || type == Dia135) {
 			returnStatus = runForWallOff2(vel2, ac, back, true, type, dir);
 		} else {
@@ -760,11 +764,11 @@ void front(float vmax, float ACC, float dist, char control) {
 #define DIACCELE 2
 #define FIX 3
 
-#define R_over_side 900
-#define L_over_side 800
+#define R_over_side 1700
+#define L_over_side 1800
 
-#define R_over_front 2200
-#define L_over_front 2000
+#define R_over_front 3800
+#define L_over_front 3150
 
 char checkStablly() {
 	char flg = false;
@@ -777,8 +781,8 @@ char checkStablly() {
 	if (flg == true) {
 		cmtMusic(C3_, 500);
 	}
-	return flg;
-//	return 0;
+//	return flg;
+	return 0;
 }
 
 char asc(float d, float d2) {
@@ -1142,6 +1146,108 @@ char runForWallOff(float vmax, float ACC, float dist, char control) {
 
 	while (distance < dist) {
 
+		if (gyroErrResetEnable && (dist - distance) < 100) {
+			gyroErrResetEnable = false;
+		}
+
+		if (ACC > 0) {
+			if (V_now < V_max) {
+			} else if (V_now >= V_max) {
+				ACC = 0;
+				acc = 0;
+				V_now = V_max;
+			}
+		} else if (ACC < 0) {
+			if (V_now > V_max) {
+			} else if (V_now <= V_max) {
+				ACC = 0;
+				acc = 0;
+				V_now = V_max;
+			}
+		}
+		if (bool) {
+			if (bool2) {
+				if (checkSensor2Off(R, false)) {
+				} else {
+					bool = false;
+					cmtMusic(G2_, 100);
+					distance = img_distance = 0;
+					Distance.error_now = 0;
+					Distance.error_old = 0;
+					Distance.error_delta = 0;
+					dist = *(float *) 1049916;
+					continue;
+				}
+			}
+			if (bool3) {
+				if (checkSensor2Off(L, false)) {
+				} else {
+					bool = false;
+					cmtMusic(G2_, 100);
+					distance = img_distance = 0;
+					Distance.error_now = 0;
+					Distance.error_old = 0;
+					Distance.error_delta = 0;
+					dist = *(float *) 1049920;
+					continue;
+				}
+			}
+		}
+		if (!fail) {
+			positionControlValueFlg = 0;
+			runFlg = 0;
+			return 0;
+		}
+	}
+	alpha = 0;
+	acc = 0;
+	positionControlValueFlg = 0;
+	V_now = V_max;
+	W_now = 0;
+	runFlg = 0;
+	return 1;
+}
+
+char runForWallforNormalOff(float vmax, float ACC, float dist, char control) {
+	globalState = SLA_AFTER;
+	readGyroParam();
+	if (!gyroOn) {
+		resetGyroParam();
+	} else {
+		readGyroParam();
+	}
+
+	rotate_r = rotate_l = true;
+	friction_str = true;
+	friction_roll = false;
+	errorOld_dia = errorOld_dia_side = 0;
+	readGyroParam();
+	readAngleParam();
+
+	if (testMode) {
+		distance = 0;
+		img_distance = 0;
+	} else {
+		distance = distance - img_distance;
+		img_distance = 0;
+	}
+	alpha = 0;
+	W_now = 0;
+	W_now2 = 0;
+	acc = ACC;
+	sinCount = 0;
+	positionControlValueFlg = control;
+	V_max = vmax;
+//	G.th = gyroTh_R;
+	runFlg = 1;
+	char bool2 = RS_SEN2.now > search_wall_off_r; // checkSensorOff(R, false);
+	char bool3 = LS_SEN2.now > search_wall_off_l; // checkSensorOff(L, false);
+	char bool = bool2 | bool3;
+
+	resetAngleError();
+	gyroErrResetEnable = dist >= 180;
+
+	while ((distance < dist)/* && (Front_SEN.now < FRONT_CTRL_1)*/) {
 		if (gyroErrResetEnable && (dist - distance) < 100) {
 			gyroErrResetEnable = false;
 		}

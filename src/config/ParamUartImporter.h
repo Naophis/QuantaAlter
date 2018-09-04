@@ -1,1348 +1,419 @@
 #ifndef CONFIG_PARAMUARTIMPORTER_H_
 #define CONFIG_PARAMUARTIMPORTER_H_
 void setNormalParam500() {
-	myprintf("----turn=Normal   v=500-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050112;
-	myprintf("ang	%f	%d\r\n", ang, 1050112);
-	radius = *(float *) 1050116;
-	myprintf("radius	%f	%d\r\n", radius, 1050116);
-	front1 = *(float *) 1050120;
-	myprintf("front1	%f	%d\r\n", front1, 1050120);
-	back1 = *(float *) 1050124;
-	myprintf("back1	%f	%d\r\n", back1, 1050124);
-	front2 = *(float *) 1050128;
-	myprintf("front2	%f	%d\r\n", front2, 1050128);
-	back2 = *(float *) 1050132;
-	myprintf("back2	%f	%d\r\n", back2, 1050132);
-	time = *(float *) 1050136;
-	myprintf("time	%f	%d\r\n", time, 1050136);
-	n = *(float *) 1050140;
-	myprintf("n	%f	%d\r\n", n, 1050140);
-	v = *(float *) 1050144;
-	myprintf("v	%f	%d\r\n", v, 1050144);
-	frontleft1 = *(float *) 1050148;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050148);
-	frontleft2 = *(float *) 1050152;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050152);
-	firstfront = *(float *) 1050156;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050156);
-	setPrms(Normal, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Normal, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050112 + 4 * i);
+	}
+	setPrms(Normal, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Normal, p[9], p[10], p[11]);
 }
 void setNormalParam1000() {
-	myprintf("----turn=Normal   v=1000-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050176;
-	myprintf("ang	%f	%d\r\n", ang, 1050176);
-	radius = *(float *) 1050180;
-	myprintf("radius	%f	%d\r\n", radius, 1050180);
-	front1 = *(float *) 1050184;
-	myprintf("front1	%f	%d\r\n", front1, 1050184);
-	back1 = *(float *) 1050188;
-	myprintf("back1	%f	%d\r\n", back1, 1050188);
-	front2 = *(float *) 1050192;
-	myprintf("front2	%f	%d\r\n", front2, 1050192);
-	back2 = *(float *) 1050196;
-	myprintf("back2	%f	%d\r\n", back2, 1050196);
-	time = *(float *) 1050200;
-	myprintf("time	%f	%d\r\n", time, 1050200);
-	n = *(float *) 1050204;
-	myprintf("n	%f	%d\r\n", n, 1050204);
-	v = *(float *) 1050208;
-	myprintf("v	%f	%d\r\n", v, 1050208);
-	frontleft1 = *(float *) 1050212;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050212);
-	frontleft2 = *(float *) 1050216;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050216);
-	firstfront = *(float *) 1050220;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050220);
-	setPrms(Normal, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Normal, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050176 + 4 * i);
+	}
+	setPrms(Normal, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Normal, p[9], p[10], p[11]);
 }
 void setLargeParam1000() {
-	myprintf("----turn=Large   v=1000-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050240;
-	myprintf("ang	%f	%d\r\n", ang, 1050240);
-	radius = *(float *) 1050244;
-	myprintf("radius	%f	%d\r\n", radius, 1050244);
-	front1 = *(float *) 1050248;
-	myprintf("front1	%f	%d\r\n", front1, 1050248);
-	back1 = *(float *) 1050252;
-	myprintf("back1	%f	%d\r\n", back1, 1050252);
-	front2 = *(float *) 1050256;
-	myprintf("front2	%f	%d\r\n", front2, 1050256);
-	back2 = *(float *) 1050260;
-	myprintf("back2	%f	%d\r\n", back2, 1050260);
-	time = *(float *) 1050264;
-	myprintf("time	%f	%d\r\n", time, 1050264);
-	n = *(float *) 1050268;
-	myprintf("n	%f	%d\r\n", n, 1050268);
-	v = *(float *) 1050272;
-	myprintf("v	%f	%d\r\n", v, 1050272);
-	frontleft1 = *(float *) 1050276;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050276);
-	frontleft2 = *(float *) 1050280;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050280);
-	firstfront = *(float *) 1050284;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050284);
-	setPrms(Large, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Large, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050240 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
 }
 void setOrvalParam1000() {
-	myprintf("----turn=Orval   v=1000-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050304;
-	myprintf("ang	%f	%d\r\n", ang, 1050304);
-	radius = *(float *) 1050308;
-	myprintf("radius	%f	%d\r\n", radius, 1050308);
-	front1 = *(float *) 1050312;
-	myprintf("front1	%f	%d\r\n", front1, 1050312);
-	back1 = *(float *) 1050316;
-	myprintf("back1	%f	%d\r\n", back1, 1050316);
-	front2 = *(float *) 1050320;
-	myprintf("front2	%f	%d\r\n", front2, 1050320);
-	back2 = *(float *) 1050324;
-	myprintf("back2	%f	%d\r\n", back2, 1050324);
-	time = *(float *) 1050328;
-	myprintf("time	%f	%d\r\n", time, 1050328);
-	n = *(float *) 1050332;
-	myprintf("n	%f	%d\r\n", n, 1050332);
-	v = *(float *) 1050336;
-	myprintf("v	%f	%d\r\n", v, 1050336);
-	frontleft1 = *(float *) 1050340;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050340);
-	frontleft2 = *(float *) 1050344;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050344);
-	firstfront = *(float *) 1050348;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050348);
-	setPrms(Orval, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Orval, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050304 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
 }
 void setDia45Param1000() {
-	myprintf("----turn=Dia45   v=1000-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050368;
-	myprintf("ang	%f	%d\r\n", ang, 1050368);
-	radius = *(float *) 1050372;
-	myprintf("radius	%f	%d\r\n", radius, 1050372);
-	front1 = *(float *) 1050376;
-	myprintf("front1	%f	%d\r\n", front1, 1050376);
-	back1 = *(float *) 1050380;
-	myprintf("back1	%f	%d\r\n", back1, 1050380);
-	front2 = *(float *) 1050384;
-	myprintf("front2	%f	%d\r\n", front2, 1050384);
-	back2 = *(float *) 1050388;
-	myprintf("back2	%f	%d\r\n", back2, 1050388);
-	time = *(float *) 1050392;
-	myprintf("time	%f	%d\r\n", time, 1050392);
-	n = *(float *) 1050396;
-	myprintf("n	%f	%d\r\n", n, 1050396);
-	v = *(float *) 1050400;
-	myprintf("v	%f	%d\r\n", v, 1050400);
-	frontleft1 = *(float *) 1050404;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050404);
-	frontleft2 = *(float *) 1050408;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050408);
-	firstfront = *(float *) 1050412;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050412);
-	setPrms(Dia45, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia45, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050368 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
 }
 void setDia135Param1000() {
-	myprintf("----turn=Dia135   v=1000-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050432;
-	myprintf("ang	%f	%d\r\n", ang, 1050432);
-	radius = *(float *) 1050436;
-	myprintf("radius	%f	%d\r\n", radius, 1050436);
-	front1 = *(float *) 1050440;
-	myprintf("front1	%f	%d\r\n", front1, 1050440);
-	back1 = *(float *) 1050444;
-	myprintf("back1	%f	%d\r\n", back1, 1050444);
-	front2 = *(float *) 1050448;
-	myprintf("front2	%f	%d\r\n", front2, 1050448);
-	back2 = *(float *) 1050452;
-	myprintf("back2	%f	%d\r\n", back2, 1050452);
-	time = *(float *) 1050456;
-	myprintf("time	%f	%d\r\n", time, 1050456);
-	n = *(float *) 1050460;
-	myprintf("n	%f	%d\r\n", n, 1050460);
-	v = *(float *) 1050464;
-	myprintf("v	%f	%d\r\n", v, 1050464);
-	frontleft1 = *(float *) 1050468;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050468);
-	frontleft2 = *(float *) 1050472;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050472);
-	firstfront = *(float *) 1050476;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050476);
-	setPrms(Dia135, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia135, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050432 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
 }
 void setDia90Param1000() {
-	myprintf("----turn=Dia90   v=1000-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050496;
-	myprintf("ang	%f	%d\r\n", ang, 1050496);
-	radius = *(float *) 1050500;
-	myprintf("radius	%f	%d\r\n", radius, 1050500);
-	front1 = *(float *) 1050504;
-	myprintf("front1	%f	%d\r\n", front1, 1050504);
-	back1 = *(float *) 1050508;
-	myprintf("back1	%f	%d\r\n", back1, 1050508);
-	front2 = *(float *) 1050512;
-	myprintf("front2	%f	%d\r\n", front2, 1050512);
-	back2 = *(float *) 1050516;
-	myprintf("back2	%f	%d\r\n", back2, 1050516);
-	time = *(float *) 1050520;
-	myprintf("time	%f	%d\r\n", time, 1050520);
-	n = *(float *) 1050524;
-	myprintf("n	%f	%d\r\n", n, 1050524);
-	v = *(float *) 1050528;
-	myprintf("v	%f	%d\r\n", v, 1050528);
-	frontleft1 = *(float *) 1050532;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050532);
-	frontleft2 = *(float *) 1050536;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050536);
-	firstfront = *(float *) 1050540;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050540);
-	setPrms(Dia90, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia90, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050496 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
 }
 void setLargeParam1500() {
-	myprintf("----turn=Large   v=1500-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050560;
-	myprintf("ang	%f	%d\r\n", ang, 1050560);
-	radius = *(float *) 1050564;
-	myprintf("radius	%f	%d\r\n", radius, 1050564);
-	front1 = *(float *) 1050568;
-	myprintf("front1	%f	%d\r\n", front1, 1050568);
-	back1 = *(float *) 1050572;
-	myprintf("back1	%f	%d\r\n", back1, 1050572);
-	front2 = *(float *) 1050576;
-	myprintf("front2	%f	%d\r\n", front2, 1050576);
-	back2 = *(float *) 1050580;
-	myprintf("back2	%f	%d\r\n", back2, 1050580);
-	time = *(float *) 1050584;
-	myprintf("time	%f	%d\r\n", time, 1050584);
-	n = *(float *) 1050588;
-	myprintf("n	%f	%d\r\n", n, 1050588);
-	v = *(float *) 1050592;
-	myprintf("v	%f	%d\r\n", v, 1050592);
-	frontleft1 = *(float *) 1050596;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050596);
-	frontleft2 = *(float *) 1050600;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050600);
-	firstfront = *(float *) 1050604;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050604);
-	setPrms(Large, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Large, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050560 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
 }
 void setOrvalParam1500() {
-	myprintf("----turn=Orval   v=1500-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050624;
-	myprintf("ang	%f	%d\r\n", ang, 1050624);
-	radius = *(float *) 1050628;
-	myprintf("radius	%f	%d\r\n", radius, 1050628);
-	front1 = *(float *) 1050632;
-	myprintf("front1	%f	%d\r\n", front1, 1050632);
-	back1 = *(float *) 1050636;
-	myprintf("back1	%f	%d\r\n", back1, 1050636);
-	front2 = *(float *) 1050640;
-	myprintf("front2	%f	%d\r\n", front2, 1050640);
-	back2 = *(float *) 1050644;
-	myprintf("back2	%f	%d\r\n", back2, 1050644);
-	time = *(float *) 1050648;
-	myprintf("time	%f	%d\r\n", time, 1050648);
-	n = *(float *) 1050652;
-	myprintf("n	%f	%d\r\n", n, 1050652);
-	v = *(float *) 1050656;
-	myprintf("v	%f	%d\r\n", v, 1050656);
-	frontleft1 = *(float *) 1050660;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050660);
-	frontleft2 = *(float *) 1050664;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050664);
-	firstfront = *(float *) 1050668;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050668);
-	setPrms(Orval, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Orval, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050624 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
 }
 void setDia45Param1500() {
-	myprintf("----turn=Dia45   v=1500-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050688;
-	myprintf("ang	%f	%d\r\n", ang, 1050688);
-	radius = *(float *) 1050692;
-	myprintf("radius	%f	%d\r\n", radius, 1050692);
-	front1 = *(float *) 1050696;
-	myprintf("front1	%f	%d\r\n", front1, 1050696);
-	back1 = *(float *) 1050700;
-	myprintf("back1	%f	%d\r\n", back1, 1050700);
-	front2 = *(float *) 1050704;
-	myprintf("front2	%f	%d\r\n", front2, 1050704);
-	back2 = *(float *) 1050708;
-	myprintf("back2	%f	%d\r\n", back2, 1050708);
-	time = *(float *) 1050712;
-	myprintf("time	%f	%d\r\n", time, 1050712);
-	n = *(float *) 1050716;
-	myprintf("n	%f	%d\r\n", n, 1050716);
-	v = *(float *) 1050720;
-	myprintf("v	%f	%d\r\n", v, 1050720);
-	frontleft1 = *(float *) 1050724;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050724);
-	frontleft2 = *(float *) 1050728;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050728);
-	firstfront = *(float *) 1050732;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050732);
-	setPrms(Dia45, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia45, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050688 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
 }
 void setDia135Param1500() {
-	myprintf("----turn=Dia135   v=1500-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050752;
-	myprintf("ang	%f	%d\r\n", ang, 1050752);
-	radius = *(float *) 1050756;
-	myprintf("radius	%f	%d\r\n", radius, 1050756);
-	front1 = *(float *) 1050760;
-	myprintf("front1	%f	%d\r\n", front1, 1050760);
-	back1 = *(float *) 1050764;
-	myprintf("back1	%f	%d\r\n", back1, 1050764);
-	front2 = *(float *) 1050768;
-	myprintf("front2	%f	%d\r\n", front2, 1050768);
-	back2 = *(float *) 1050772;
-	myprintf("back2	%f	%d\r\n", back2, 1050772);
-	time = *(float *) 1050776;
-	myprintf("time	%f	%d\r\n", time, 1050776);
-	n = *(float *) 1050780;
-	myprintf("n	%f	%d\r\n", n, 1050780);
-	v = *(float *) 1050784;
-	myprintf("v	%f	%d\r\n", v, 1050784);
-	frontleft1 = *(float *) 1050788;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050788);
-	frontleft2 = *(float *) 1050792;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050792);
-	firstfront = *(float *) 1050796;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050796);
-	setPrms(Dia135, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia135, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050752 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
 }
 void setDia90Param1500() {
-	myprintf("----turn=Dia90   v=1500-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050816;
-	myprintf("ang	%f	%d\r\n", ang, 1050816);
-	radius = *(float *) 1050820;
-	myprintf("radius	%f	%d\r\n", radius, 1050820);
-	front1 = *(float *) 1050824;
-	myprintf("front1	%f	%d\r\n", front1, 1050824);
-	back1 = *(float *) 1050828;
-	myprintf("back1	%f	%d\r\n", back1, 1050828);
-	front2 = *(float *) 1050832;
-	myprintf("front2	%f	%d\r\n", front2, 1050832);
-	back2 = *(float *) 1050836;
-	myprintf("back2	%f	%d\r\n", back2, 1050836);
-	time = *(float *) 1050840;
-	myprintf("time	%f	%d\r\n", time, 1050840);
-	n = *(float *) 1050844;
-	myprintf("n	%f	%d\r\n", n, 1050844);
-	v = *(float *) 1050848;
-	myprintf("v	%f	%d\r\n", v, 1050848);
-	frontleft1 = *(float *) 1050852;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050852);
-	frontleft2 = *(float *) 1050856;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050856);
-	firstfront = *(float *) 1050860;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050860);
-	setPrms(Dia90, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia90, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050816 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
 }
 void setLargeParam1700() {
-	myprintf("----turn=Large   v=1700-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050880;
-	myprintf("ang	%f	%d\r\n", ang, 1050880);
-	radius = *(float *) 1050884;
-	myprintf("radius	%f	%d\r\n", radius, 1050884);
-	front1 = *(float *) 1050888;
-	myprintf("front1	%f	%d\r\n", front1, 1050888);
-	back1 = *(float *) 1050892;
-	myprintf("back1	%f	%d\r\n", back1, 1050892);
-	front2 = *(float *) 1050896;
-	myprintf("front2	%f	%d\r\n", front2, 1050896);
-	back2 = *(float *) 1050900;
-	myprintf("back2	%f	%d\r\n", back2, 1050900);
-	time = *(float *) 1050904;
-	myprintf("time	%f	%d\r\n", time, 1050904);
-	n = *(float *) 1050908;
-	myprintf("n	%f	%d\r\n", n, 1050908);
-	v = *(float *) 1050912;
-	myprintf("v	%f	%d\r\n", v, 1050912);
-	frontleft1 = *(float *) 1050916;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050916);
-	frontleft2 = *(float *) 1050920;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050920);
-	firstfront = *(float *) 1050924;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050924);
-	setPrms(Large, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Large, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050880 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
 }
 void setOrvalParam1700() {
-	myprintf("----turn=Orval   v=1700-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1050944;
-	myprintf("ang	%f	%d\r\n", ang, 1050944);
-	radius = *(float *) 1050948;
-	myprintf("radius	%f	%d\r\n", radius, 1050948);
-	front1 = *(float *) 1050952;
-	myprintf("front1	%f	%d\r\n", front1, 1050952);
-	back1 = *(float *) 1050956;
-	myprintf("back1	%f	%d\r\n", back1, 1050956);
-	front2 = *(float *) 1050960;
-	myprintf("front2	%f	%d\r\n", front2, 1050960);
-	back2 = *(float *) 1050964;
-	myprintf("back2	%f	%d\r\n", back2, 1050964);
-	time = *(float *) 1050968;
-	myprintf("time	%f	%d\r\n", time, 1050968);
-	n = *(float *) 1050972;
-	myprintf("n	%f	%d\r\n", n, 1050972);
-	v = *(float *) 1050976;
-	myprintf("v	%f	%d\r\n", v, 1050976);
-	frontleft1 = *(float *) 1050980;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1050980);
-	frontleft2 = *(float *) 1050984;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1050984);
-	firstfront = *(float *) 1050988;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1050988);
-	setPrms(Orval, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Orval, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1050944 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
 }
 void setDia45Param1700() {
-	myprintf("----turn=Dia45   v=1700-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051008;
-	myprintf("ang	%f	%d\r\n", ang, 1051008);
-	radius = *(float *) 1051012;
-	myprintf("radius	%f	%d\r\n", radius, 1051012);
-	front1 = *(float *) 1051016;
-	myprintf("front1	%f	%d\r\n", front1, 1051016);
-	back1 = *(float *) 1051020;
-	myprintf("back1	%f	%d\r\n", back1, 1051020);
-	front2 = *(float *) 1051024;
-	myprintf("front2	%f	%d\r\n", front2, 1051024);
-	back2 = *(float *) 1051028;
-	myprintf("back2	%f	%d\r\n", back2, 1051028);
-	time = *(float *) 1051032;
-	myprintf("time	%f	%d\r\n", time, 1051032);
-	n = *(float *) 1051036;
-	myprintf("n	%f	%d\r\n", n, 1051036);
-	v = *(float *) 1051040;
-	myprintf("v	%f	%d\r\n", v, 1051040);
-	frontleft1 = *(float *) 1051044;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051044);
-	frontleft2 = *(float *) 1051048;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051048);
-	firstfront = *(float *) 1051052;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051052);
-	setPrms(Dia45, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia45, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051008 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
 }
 void setDia135Param1700() {
-	myprintf("----turn=Dia135   v=1700-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051072;
-	myprintf("ang	%f	%d\r\n", ang, 1051072);
-	radius = *(float *) 1051076;
-	myprintf("radius	%f	%d\r\n", radius, 1051076);
-	front1 = *(float *) 1051080;
-	myprintf("front1	%f	%d\r\n", front1, 1051080);
-	back1 = *(float *) 1051084;
-	myprintf("back1	%f	%d\r\n", back1, 1051084);
-	front2 = *(float *) 1051088;
-	myprintf("front2	%f	%d\r\n", front2, 1051088);
-	back2 = *(float *) 1051092;
-	myprintf("back2	%f	%d\r\n", back2, 1051092);
-	time = *(float *) 1051096;
-	myprintf("time	%f	%d\r\n", time, 1051096);
-	n = *(float *) 1051100;
-	myprintf("n	%f	%d\r\n", n, 1051100);
-	v = *(float *) 1051104;
-	myprintf("v	%f	%d\r\n", v, 1051104);
-	frontleft1 = *(float *) 1051108;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051108);
-	frontleft2 = *(float *) 1051112;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051112);
-	firstfront = *(float *) 1051116;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051116);
-	setPrms(Dia135, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia135, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051072 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
 }
 void setDia90Param1700() {
-	myprintf("----turn=Dia90   v=1700-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051136;
-	myprintf("ang	%f	%d\r\n", ang, 1051136);
-	radius = *(float *) 1051140;
-	myprintf("radius	%f	%d\r\n", radius, 1051140);
-	front1 = *(float *) 1051144;
-	myprintf("front1	%f	%d\r\n", front1, 1051144);
-	back1 = *(float *) 1051148;
-	myprintf("back1	%f	%d\r\n", back1, 1051148);
-	front2 = *(float *) 1051152;
-	myprintf("front2	%f	%d\r\n", front2, 1051152);
-	back2 = *(float *) 1051156;
-	myprintf("back2	%f	%d\r\n", back2, 1051156);
-	time = *(float *) 1051160;
-	myprintf("time	%f	%d\r\n", time, 1051160);
-	n = *(float *) 1051164;
-	myprintf("n	%f	%d\r\n", n, 1051164);
-	v = *(float *) 1051168;
-	myprintf("v	%f	%d\r\n", v, 1051168);
-	frontleft1 = *(float *) 1051172;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051172);
-	frontleft2 = *(float *) 1051176;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051176);
-	firstfront = *(float *) 1051180;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051180);
-	setPrms(Dia90, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia90, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051136 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
 }
 void setLargeParam1800() {
-	myprintf("----turn=Large   v=1800-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051200;
-	myprintf("ang	%f	%d\r\n", ang, 1051200);
-	radius = *(float *) 1051204;
-	myprintf("radius	%f	%d\r\n", radius, 1051204);
-	front1 = *(float *) 1051208;
-	myprintf("front1	%f	%d\r\n", front1, 1051208);
-	back1 = *(float *) 1051212;
-	myprintf("back1	%f	%d\r\n", back1, 1051212);
-	front2 = *(float *) 1051216;
-	myprintf("front2	%f	%d\r\n", front2, 1051216);
-	back2 = *(float *) 1051220;
-	myprintf("back2	%f	%d\r\n", back2, 1051220);
-	time = *(float *) 1051224;
-	myprintf("time	%f	%d\r\n", time, 1051224);
-	n = *(float *) 1051228;
-	myprintf("n	%f	%d\r\n", n, 1051228);
-	v = *(float *) 1051232;
-	myprintf("v	%f	%d\r\n", v, 1051232);
-	frontleft1 = *(float *) 1051236;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051236);
-	frontleft2 = *(float *) 1051240;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051240);
-	firstfront = *(float *) 1051244;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051244);
-	setPrms(Large, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Large, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051200 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
 }
 void setOrvalParam1800() {
-	myprintf("----turn=Orval   v=1800-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051264;
-	myprintf("ang	%f	%d\r\n", ang, 1051264);
-	radius = *(float *) 1051268;
-	myprintf("radius	%f	%d\r\n", radius, 1051268);
-	front1 = *(float *) 1051272;
-	myprintf("front1	%f	%d\r\n", front1, 1051272);
-	back1 = *(float *) 1051276;
-	myprintf("back1	%f	%d\r\n", back1, 1051276);
-	front2 = *(float *) 1051280;
-	myprintf("front2	%f	%d\r\n", front2, 1051280);
-	back2 = *(float *) 1051284;
-	myprintf("back2	%f	%d\r\n", back2, 1051284);
-	time = *(float *) 1051288;
-	myprintf("time	%f	%d\r\n", time, 1051288);
-	n = *(float *) 1051292;
-	myprintf("n	%f	%d\r\n", n, 1051292);
-	v = *(float *) 1051296;
-	myprintf("v	%f	%d\r\n", v, 1051296);
-	frontleft1 = *(float *) 1051300;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051300);
-	frontleft2 = *(float *) 1051304;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051304);
-	firstfront = *(float *) 1051308;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051308);
-	setPrms(Orval, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Orval, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051264 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
 }
 void setDia45Param1800() {
-	myprintf("----turn=Dia45   v=1800-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051328;
-	myprintf("ang	%f	%d\r\n", ang, 1051328);
-	radius = *(float *) 1051332;
-	myprintf("radius	%f	%d\r\n", radius, 1051332);
-	front1 = *(float *) 1051336;
-	myprintf("front1	%f	%d\r\n", front1, 1051336);
-	back1 = *(float *) 1051340;
-	myprintf("back1	%f	%d\r\n", back1, 1051340);
-	front2 = *(float *) 1051344;
-	myprintf("front2	%f	%d\r\n", front2, 1051344);
-	back2 = *(float *) 1051348;
-	myprintf("back2	%f	%d\r\n", back2, 1051348);
-	time = *(float *) 1051352;
-	myprintf("time	%f	%d\r\n", time, 1051352);
-	n = *(float *) 1051356;
-	myprintf("n	%f	%d\r\n", n, 1051356);
-	v = *(float *) 1051360;
-	myprintf("v	%f	%d\r\n", v, 1051360);
-	frontleft1 = *(float *) 1051364;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051364);
-	frontleft2 = *(float *) 1051368;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051368);
-	firstfront = *(float *) 1051372;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051372);
-	setPrms(Dia45, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia45, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051328 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
 }
 void setDia135Param1800() {
-	myprintf("----turn=Dia135   v=1800-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051392;
-	myprintf("ang	%f	%d\r\n", ang, 1051392);
-	radius = *(float *) 1051396;
-	myprintf("radius	%f	%d\r\n", radius, 1051396);
-	front1 = *(float *) 1051400;
-	myprintf("front1	%f	%d\r\n", front1, 1051400);
-	back1 = *(float *) 1051404;
-	myprintf("back1	%f	%d\r\n", back1, 1051404);
-	front2 = *(float *) 1051408;
-	myprintf("front2	%f	%d\r\n", front2, 1051408);
-	back2 = *(float *) 1051412;
-	myprintf("back2	%f	%d\r\n", back2, 1051412);
-	time = *(float *) 1051416;
-	myprintf("time	%f	%d\r\n", time, 1051416);
-	n = *(float *) 1051420;
-	myprintf("n	%f	%d\r\n", n, 1051420);
-	v = *(float *) 1051424;
-	myprintf("v	%f	%d\r\n", v, 1051424);
-	frontleft1 = *(float *) 1051428;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051428);
-	frontleft2 = *(float *) 1051432;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051432);
-	firstfront = *(float *) 1051436;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051436);
-	setPrms(Dia135, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia135, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051392 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
 }
 void setDia90Param1800() {
-	myprintf("----turn=Dia90   v=1800-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051456;
-	myprintf("ang	%f	%d\r\n", ang, 1051456);
-	radius = *(float *) 1051460;
-	myprintf("radius	%f	%d\r\n", radius, 1051460);
-	front1 = *(float *) 1051464;
-	myprintf("front1	%f	%d\r\n", front1, 1051464);
-	back1 = *(float *) 1051468;
-	myprintf("back1	%f	%d\r\n", back1, 1051468);
-	front2 = *(float *) 1051472;
-	myprintf("front2	%f	%d\r\n", front2, 1051472);
-	back2 = *(float *) 1051476;
-	myprintf("back2	%f	%d\r\n", back2, 1051476);
-	time = *(float *) 1051480;
-	myprintf("time	%f	%d\r\n", time, 1051480);
-	n = *(float *) 1051484;
-	myprintf("n	%f	%d\r\n", n, 1051484);
-	v = *(float *) 1051488;
-	myprintf("v	%f	%d\r\n", v, 1051488);
-	frontleft1 = *(float *) 1051492;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051492);
-	frontleft2 = *(float *) 1051496;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051496);
-	firstfront = *(float *) 1051500;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051500);
-	setPrms(Dia90, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia90, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051456 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
 }
 void setLargeParam1900() {
-	myprintf("----turn=Large   v=1900-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051520;
-	myprintf("ang	%f	%d\r\n", ang, 1051520);
-	radius = *(float *) 1051524;
-	myprintf("radius	%f	%d\r\n", radius, 1051524);
-	front1 = *(float *) 1051528;
-	myprintf("front1	%f	%d\r\n", front1, 1051528);
-	back1 = *(float *) 1051532;
-	myprintf("back1	%f	%d\r\n", back1, 1051532);
-	front2 = *(float *) 1051536;
-	myprintf("front2	%f	%d\r\n", front2, 1051536);
-	back2 = *(float *) 1051540;
-	myprintf("back2	%f	%d\r\n", back2, 1051540);
-	time = *(float *) 1051544;
-	myprintf("time	%f	%d\r\n", time, 1051544);
-	n = *(float *) 1051548;
-	myprintf("n	%f	%d\r\n", n, 1051548);
-	v = *(float *) 1051552;
-	myprintf("v	%f	%d\r\n", v, 1051552);
-	frontleft1 = *(float *) 1051556;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051556);
-	frontleft2 = *(float *) 1051560;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051560);
-	firstfront = *(float *) 1051564;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051564);
-	setPrms(Large, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Large, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051520 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
 }
 void setOrvalParam1900() {
-	myprintf("----turn=Orval   v=1900-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051584;
-	myprintf("ang	%f	%d\r\n", ang, 1051584);
-	radius = *(float *) 1051588;
-	myprintf("radius	%f	%d\r\n", radius, 1051588);
-	front1 = *(float *) 1051592;
-	myprintf("front1	%f	%d\r\n", front1, 1051592);
-	back1 = *(float *) 1051596;
-	myprintf("back1	%f	%d\r\n", back1, 1051596);
-	front2 = *(float *) 1051600;
-	myprintf("front2	%f	%d\r\n", front2, 1051600);
-	back2 = *(float *) 1051604;
-	myprintf("back2	%f	%d\r\n", back2, 1051604);
-	time = *(float *) 1051608;
-	myprintf("time	%f	%d\r\n", time, 1051608);
-	n = *(float *) 1051612;
-	myprintf("n	%f	%d\r\n", n, 1051612);
-	v = *(float *) 1051616;
-	myprintf("v	%f	%d\r\n", v, 1051616);
-	frontleft1 = *(float *) 1051620;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051620);
-	frontleft2 = *(float *) 1051624;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051624);
-	firstfront = *(float *) 1051628;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051628);
-	setPrms(Orval, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Orval, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051584 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
 }
 void setDia45Param1900() {
-	myprintf("----turn=Dia45   v=1900-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051648;
-	myprintf("ang	%f	%d\r\n", ang, 1051648);
-	radius = *(float *) 1051652;
-	myprintf("radius	%f	%d\r\n", radius, 1051652);
-	front1 = *(float *) 1051656;
-	myprintf("front1	%f	%d\r\n", front1, 1051656);
-	back1 = *(float *) 1051660;
-	myprintf("back1	%f	%d\r\n", back1, 1051660);
-	front2 = *(float *) 1051664;
-	myprintf("front2	%f	%d\r\n", front2, 1051664);
-	back2 = *(float *) 1051668;
-	myprintf("back2	%f	%d\r\n", back2, 1051668);
-	time = *(float *) 1051672;
-	myprintf("time	%f	%d\r\n", time, 1051672);
-	n = *(float *) 1051676;
-	myprintf("n	%f	%d\r\n", n, 1051676);
-	v = *(float *) 1051680;
-	myprintf("v	%f	%d\r\n", v, 1051680);
-	frontleft1 = *(float *) 1051684;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051684);
-	frontleft2 = *(float *) 1051688;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051688);
-	firstfront = *(float *) 1051692;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051692);
-	setPrms(Dia45, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia45, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051648 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
 }
 void setDia135Param1900() {
-	myprintf("----turn=Dia135   v=1900-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051712;
-	myprintf("ang	%f	%d\r\n", ang, 1051712);
-	radius = *(float *) 1051716;
-	myprintf("radius	%f	%d\r\n", radius, 1051716);
-	front1 = *(float *) 1051720;
-	myprintf("front1	%f	%d\r\n", front1, 1051720);
-	back1 = *(float *) 1051724;
-	myprintf("back1	%f	%d\r\n", back1, 1051724);
-	front2 = *(float *) 1051728;
-	myprintf("front2	%f	%d\r\n", front2, 1051728);
-	back2 = *(float *) 1051732;
-	myprintf("back2	%f	%d\r\n", back2, 1051732);
-	time = *(float *) 1051736;
-	myprintf("time	%f	%d\r\n", time, 1051736);
-	n = *(float *) 1051740;
-	myprintf("n	%f	%d\r\n", n, 1051740);
-	v = *(float *) 1051744;
-	myprintf("v	%f	%d\r\n", v, 1051744);
-	frontleft1 = *(float *) 1051748;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051748);
-	frontleft2 = *(float *) 1051752;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051752);
-	firstfront = *(float *) 1051756;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051756);
-	setPrms(Dia135, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia135, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051712 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
 }
 void setDia90Param1900() {
-	myprintf("----turn=Dia90   v=1900-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051776;
-	myprintf("ang	%f	%d\r\n", ang, 1051776);
-	radius = *(float *) 1051780;
-	myprintf("radius	%f	%d\r\n", radius, 1051780);
-	front1 = *(float *) 1051784;
-	myprintf("front1	%f	%d\r\n", front1, 1051784);
-	back1 = *(float *) 1051788;
-	myprintf("back1	%f	%d\r\n", back1, 1051788);
-	front2 = *(float *) 1051792;
-	myprintf("front2	%f	%d\r\n", front2, 1051792);
-	back2 = *(float *) 1051796;
-	myprintf("back2	%f	%d\r\n", back2, 1051796);
-	time = *(float *) 1051800;
-	myprintf("time	%f	%d\r\n", time, 1051800);
-	n = *(float *) 1051804;
-	myprintf("n	%f	%d\r\n", n, 1051804);
-	v = *(float *) 1051808;
-	myprintf("v	%f	%d\r\n", v, 1051808);
-	frontleft1 = *(float *) 1051812;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051812);
-	frontleft2 = *(float *) 1051816;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051816);
-	firstfront = *(float *) 1051820;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051820);
-	setPrms(Dia90, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia90, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051776 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
 }
 void setLargeParam2000() {
-	myprintf("----turn=Large   v=2000-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051840;
-	myprintf("ang	%f	%d\r\n", ang, 1051840);
-	radius = *(float *) 1051844;
-	myprintf("radius	%f	%d\r\n", radius, 1051844);
-	front1 = *(float *) 1051848;
-	myprintf("front1	%f	%d\r\n", front1, 1051848);
-	back1 = *(float *) 1051852;
-	myprintf("back1	%f	%d\r\n", back1, 1051852);
-	front2 = *(float *) 1051856;
-	myprintf("front2	%f	%d\r\n", front2, 1051856);
-	back2 = *(float *) 1051860;
-	myprintf("back2	%f	%d\r\n", back2, 1051860);
-	time = *(float *) 1051864;
-	myprintf("time	%f	%d\r\n", time, 1051864);
-	n = *(float *) 1051868;
-	myprintf("n	%f	%d\r\n", n, 1051868);
-	v = *(float *) 1051872;
-	myprintf("v	%f	%d\r\n", v, 1051872);
-	frontleft1 = *(float *) 1051876;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051876);
-	frontleft2 = *(float *) 1051880;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051880);
-	firstfront = *(float *) 1051884;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051884);
-	setPrms(Large, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Large, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051840 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
 }
 void setOrvalParam2000() {
-	myprintf("----turn=Orval   v=2000-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051904;
-	myprintf("ang	%f	%d\r\n", ang, 1051904);
-	radius = *(float *) 1051908;
-	myprintf("radius	%f	%d\r\n", radius, 1051908);
-	front1 = *(float *) 1051912;
-	myprintf("front1	%f	%d\r\n", front1, 1051912);
-	back1 = *(float *) 1051916;
-	myprintf("back1	%f	%d\r\n", back1, 1051916);
-	front2 = *(float *) 1051920;
-	myprintf("front2	%f	%d\r\n", front2, 1051920);
-	back2 = *(float *) 1051924;
-	myprintf("back2	%f	%d\r\n", back2, 1051924);
-	time = *(float *) 1051928;
-	myprintf("time	%f	%d\r\n", time, 1051928);
-	n = *(float *) 1051932;
-	myprintf("n	%f	%d\r\n", n, 1051932);
-	v = *(float *) 1051936;
-	myprintf("v	%f	%d\r\n", v, 1051936);
-	frontleft1 = *(float *) 1051940;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1051940);
-	frontleft2 = *(float *) 1051944;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1051944);
-	firstfront = *(float *) 1051948;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1051948);
-	setPrms(Orval, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Orval, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051904 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
 }
 void setDia45Param2000() {
-	myprintf("----turn=Dia45   v=2000-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1051968;
-	myprintf("ang	%f	%d\r\n", ang, 1051968);
-	radius = *(float *) 1051972;
-	myprintf("radius	%f	%d\r\n", radius, 1051972);
-	front1 = *(float *) 1051976;
-	myprintf("front1	%f	%d\r\n", front1, 1051976);
-	back1 = *(float *) 1051980;
-	myprintf("back1	%f	%d\r\n", back1, 1051980);
-	front2 = *(float *) 1051984;
-	myprintf("front2	%f	%d\r\n", front2, 1051984);
-	back2 = *(float *) 1051988;
-	myprintf("back2	%f	%d\r\n", back2, 1051988);
-	time = *(float *) 1051992;
-	myprintf("time	%f	%d\r\n", time, 1051992);
-	n = *(float *) 1051996;
-	myprintf("n	%f	%d\r\n", n, 1051996);
-	v = *(float *) 1052000;
-	myprintf("v	%f	%d\r\n", v, 1052000);
-	frontleft1 = *(float *) 1052004;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052004);
-	frontleft2 = *(float *) 1052008;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052008);
-	firstfront = *(float *) 1052012;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052012);
-	setPrms(Dia45, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia45, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1051968 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
 }
 void setDia135Param2000() {
-	myprintf("----turn=Dia135   v=2000-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1052032;
-	myprintf("ang	%f	%d\r\n", ang, 1052032);
-	radius = *(float *) 1052036;
-	myprintf("radius	%f	%d\r\n", radius, 1052036);
-	front1 = *(float *) 1052040;
-	myprintf("front1	%f	%d\r\n", front1, 1052040);
-	back1 = *(float *) 1052044;
-	myprintf("back1	%f	%d\r\n", back1, 1052044);
-	front2 = *(float *) 1052048;
-	myprintf("front2	%f	%d\r\n", front2, 1052048);
-	back2 = *(float *) 1052052;
-	myprintf("back2	%f	%d\r\n", back2, 1052052);
-	time = *(float *) 1052056;
-	myprintf("time	%f	%d\r\n", time, 1052056);
-	n = *(float *) 1052060;
-	myprintf("n	%f	%d\r\n", n, 1052060);
-	v = *(float *) 1052064;
-	myprintf("v	%f	%d\r\n", v, 1052064);
-	frontleft1 = *(float *) 1052068;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052068);
-	frontleft2 = *(float *) 1052072;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052072);
-	firstfront = *(float *) 1052076;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052076);
-	setPrms(Dia135, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia135, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052032 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
 }
 void setDia90Param2000() {
-	myprintf("----turn=Dia90   v=2000-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1052096;
-	myprintf("ang	%f	%d\r\n", ang, 1052096);
-	radius = *(float *) 1052100;
-	myprintf("radius	%f	%d\r\n", radius, 1052100);
-	front1 = *(float *) 1052104;
-	myprintf("front1	%f	%d\r\n", front1, 1052104);
-	back1 = *(float *) 1052108;
-	myprintf("back1	%f	%d\r\n", back1, 1052108);
-	front2 = *(float *) 1052112;
-	myprintf("front2	%f	%d\r\n", front2, 1052112);
-	back2 = *(float *) 1052116;
-	myprintf("back2	%f	%d\r\n", back2, 1052116);
-	time = *(float *) 1052120;
-	myprintf("time	%f	%d\r\n", time, 1052120);
-	n = *(float *) 1052124;
-	myprintf("n	%f	%d\r\n", n, 1052124);
-	v = *(float *) 1052128;
-	myprintf("v	%f	%d\r\n", v, 1052128);
-	frontleft1 = *(float *) 1052132;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052132);
-	frontleft2 = *(float *) 1052136;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052136);
-	firstfront = *(float *) 1052140;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052140);
-	setPrms(Dia90, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia90, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052096 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
 }
 void setLargeParam2100() {
-	myprintf("----turn=Large   v=2100-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1052160;
-	myprintf("ang	%f	%d\r\n", ang, 1052160);
-	radius = *(float *) 1052164;
-	myprintf("radius	%f	%d\r\n", radius, 1052164);
-	front1 = *(float *) 1052168;
-	myprintf("front1	%f	%d\r\n", front1, 1052168);
-	back1 = *(float *) 1052172;
-	myprintf("back1	%f	%d\r\n", back1, 1052172);
-	front2 = *(float *) 1052176;
-	myprintf("front2	%f	%d\r\n", front2, 1052176);
-	back2 = *(float *) 1052180;
-	myprintf("back2	%f	%d\r\n", back2, 1052180);
-	time = *(float *) 1052184;
-	myprintf("time	%f	%d\r\n", time, 1052184);
-	n = *(float *) 1052188;
-	myprintf("n	%f	%d\r\n", n, 1052188);
-	v = *(float *) 1052192;
-	myprintf("v	%f	%d\r\n", v, 1052192);
-	frontleft1 = *(float *) 1052196;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052196);
-	frontleft2 = *(float *) 1052200;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052200);
-	firstfront = *(float *) 1052204;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052204);
-	setPrms(Large, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Large, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052160 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
 }
 void setOrvalParam2100() {
-	myprintf("----turn=Orval   v=2100-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1052224;
-	myprintf("ang	%f	%d\r\n", ang, 1052224);
-	radius = *(float *) 1052228;
-	myprintf("radius	%f	%d\r\n", radius, 1052228);
-	front1 = *(float *) 1052232;
-	myprintf("front1	%f	%d\r\n", front1, 1052232);
-	back1 = *(float *) 1052236;
-	myprintf("back1	%f	%d\r\n", back1, 1052236);
-	front2 = *(float *) 1052240;
-	myprintf("front2	%f	%d\r\n", front2, 1052240);
-	back2 = *(float *) 1052244;
-	myprintf("back2	%f	%d\r\n", back2, 1052244);
-	time = *(float *) 1052248;
-	myprintf("time	%f	%d\r\n", time, 1052248);
-	n = *(float *) 1052252;
-	myprintf("n	%f	%d\r\n", n, 1052252);
-	v = *(float *) 1052256;
-	myprintf("v	%f	%d\r\n", v, 1052256);
-	frontleft1 = *(float *) 1052260;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052260);
-	frontleft2 = *(float *) 1052264;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052264);
-	firstfront = *(float *) 1052268;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052268);
-	setPrms(Orval, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Orval, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052224 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
 }
 void setDia45Param2100() {
-	myprintf("----turn=Dia45   v=2100-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1052288;
-	myprintf("ang	%f	%d\r\n", ang, 1052288);
-	radius = *(float *) 1052292;
-	myprintf("radius	%f	%d\r\n", radius, 1052292);
-	front1 = *(float *) 1052296;
-	myprintf("front1	%f	%d\r\n", front1, 1052296);
-	back1 = *(float *) 1052300;
-	myprintf("back1	%f	%d\r\n", back1, 1052300);
-	front2 = *(float *) 1052304;
-	myprintf("front2	%f	%d\r\n", front2, 1052304);
-	back2 = *(float *) 1052308;
-	myprintf("back2	%f	%d\r\n", back2, 1052308);
-	time = *(float *) 1052312;
-	myprintf("time	%f	%d\r\n", time, 1052312);
-	n = *(float *) 1052316;
-	myprintf("n	%f	%d\r\n", n, 1052316);
-	v = *(float *) 1052320;
-	myprintf("v	%f	%d\r\n", v, 1052320);
-	frontleft1 = *(float *) 1052324;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052324);
-	frontleft2 = *(float *) 1052328;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052328);
-	firstfront = *(float *) 1052332;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052332);
-	setPrms(Dia45, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia45, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052288 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
 }
 void setDia135Param2100() {
-	myprintf("----turn=Dia135   v=2100-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1052352;
-	myprintf("ang	%f	%d\r\n", ang, 1052352);
-	radius = *(float *) 1052356;
-	myprintf("radius	%f	%d\r\n", radius, 1052356);
-	front1 = *(float *) 1052360;
-	myprintf("front1	%f	%d\r\n", front1, 1052360);
-	back1 = *(float *) 1052364;
-	myprintf("back1	%f	%d\r\n", back1, 1052364);
-	front2 = *(float *) 1052368;
-	myprintf("front2	%f	%d\r\n", front2, 1052368);
-	back2 = *(float *) 1052372;
-	myprintf("back2	%f	%d\r\n", back2, 1052372);
-	time = *(float *) 1052376;
-	myprintf("time	%f	%d\r\n", time, 1052376);
-	n = *(float *) 1052380;
-	myprintf("n	%f	%d\r\n", n, 1052380);
-	v = *(float *) 1052384;
-	myprintf("v	%f	%d\r\n", v, 1052384);
-	frontleft1 = *(float *) 1052388;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052388);
-	frontleft2 = *(float *) 1052392;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052392);
-	firstfront = *(float *) 1052396;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052396);
-	setPrms(Dia135, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia135, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052352 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
 }
 void setDia90Param2100() {
-	myprintf("----turn=Dia90   v=2100-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1052416;
-	myprintf("ang	%f	%d\r\n", ang, 1052416);
-	radius = *(float *) 1052420;
-	myprintf("radius	%f	%d\r\n", radius, 1052420);
-	front1 = *(float *) 1052424;
-	myprintf("front1	%f	%d\r\n", front1, 1052424);
-	back1 = *(float *) 1052428;
-	myprintf("back1	%f	%d\r\n", back1, 1052428);
-	front2 = *(float *) 1052432;
-	myprintf("front2	%f	%d\r\n", front2, 1052432);
-	back2 = *(float *) 1052436;
-	myprintf("back2	%f	%d\r\n", back2, 1052436);
-	time = *(float *) 1052440;
-	myprintf("time	%f	%d\r\n", time, 1052440);
-	n = *(float *) 1052444;
-	myprintf("n	%f	%d\r\n", n, 1052444);
-	v = *(float *) 1052448;
-	myprintf("v	%f	%d\r\n", v, 1052448);
-	frontleft1 = *(float *) 1052452;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052452);
-	frontleft2 = *(float *) 1052456;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052456);
-	firstfront = *(float *) 1052460;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052460);
-	setPrms(Dia90, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia90, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052416 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
 }
 void setLargeParam2200() {
-	myprintf("----turn=Large   v=2200-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1052480;
-	myprintf("ang	%f	%d\r\n", ang, 1052480);
-	radius = *(float *) 1052484;
-	myprintf("radius	%f	%d\r\n", radius, 1052484);
-	front1 = *(float *) 1052488;
-	myprintf("front1	%f	%d\r\n", front1, 1052488);
-	back1 = *(float *) 1052492;
-	myprintf("back1	%f	%d\r\n", back1, 1052492);
-	front2 = *(float *) 1052496;
-	myprintf("front2	%f	%d\r\n", front2, 1052496);
-	back2 = *(float *) 1052500;
-	myprintf("back2	%f	%d\r\n", back2, 1052500);
-	time = *(float *) 1052504;
-	myprintf("time	%f	%d\r\n", time, 1052504);
-	n = *(float *) 1052508;
-	myprintf("n	%f	%d\r\n", n, 1052508);
-	v = *(float *) 1052512;
-	myprintf("v	%f	%d\r\n", v, 1052512);
-	frontleft1 = *(float *) 1052516;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052516);
-	frontleft2 = *(float *) 1052520;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052520);
-	firstfront = *(float *) 1052524;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052524);
-	setPrms(Large, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Large, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052480 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
 }
 void setOrvalParam2200() {
-	myprintf("----turn=Orval   v=2200-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1052544;
-	myprintf("ang	%f	%d\r\n", ang, 1052544);
-	radius = *(float *) 1052548;
-	myprintf("radius	%f	%d\r\n", radius, 1052548);
-	front1 = *(float *) 1052552;
-	myprintf("front1	%f	%d\r\n", front1, 1052552);
-	back1 = *(float *) 1052556;
-	myprintf("back1	%f	%d\r\n", back1, 1052556);
-	front2 = *(float *) 1052560;
-	myprintf("front2	%f	%d\r\n", front2, 1052560);
-	back2 = *(float *) 1052564;
-	myprintf("back2	%f	%d\r\n", back2, 1052564);
-	time = *(float *) 1052568;
-	myprintf("time	%f	%d\r\n", time, 1052568);
-	n = *(float *) 1052572;
-	myprintf("n	%f	%d\r\n", n, 1052572);
-	v = *(float *) 1052576;
-	myprintf("v	%f	%d\r\n", v, 1052576);
-	frontleft1 = *(float *) 1052580;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052580);
-	frontleft2 = *(float *) 1052584;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052584);
-	firstfront = *(float *) 1052588;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052588);
-	setPrms(Orval, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Orval, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052544 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
 }
 void setDia45Param2200() {
-	myprintf("----turn=Dia45   v=2200-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1052608;
-	myprintf("ang	%f	%d\r\n", ang, 1052608);
-	radius = *(float *) 1052612;
-	myprintf("radius	%f	%d\r\n", radius, 1052612);
-	front1 = *(float *) 1052616;
-	myprintf("front1	%f	%d\r\n", front1, 1052616);
-	back1 = *(float *) 1052620;
-	myprintf("back1	%f	%d\r\n", back1, 1052620);
-	front2 = *(float *) 1052624;
-	myprintf("front2	%f	%d\r\n", front2, 1052624);
-	back2 = *(float *) 1052628;
-	myprintf("back2	%f	%d\r\n", back2, 1052628);
-	time = *(float *) 1052632;
-	myprintf("time	%f	%d\r\n", time, 1052632);
-	n = *(float *) 1052636;
-	myprintf("n	%f	%d\r\n", n, 1052636);
-	v = *(float *) 1052640;
-	myprintf("v	%f	%d\r\n", v, 1052640);
-	frontleft1 = *(float *) 1052644;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052644);
-	frontleft2 = *(float *) 1052648;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052648);
-	firstfront = *(float *) 1052652;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052652);
-	setPrms(Dia45, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia45, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052608 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
 }
 void setDia135Param2200() {
-	myprintf("----turn=Dia135   v=2200-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1052672;
-	myprintf("ang	%f	%d\r\n", ang, 1052672);
-	radius = *(float *) 1052676;
-	myprintf("radius	%f	%d\r\n", radius, 1052676);
-	front1 = *(float *) 1052680;
-	myprintf("front1	%f	%d\r\n", front1, 1052680);
-	back1 = *(float *) 1052684;
-	myprintf("back1	%f	%d\r\n", back1, 1052684);
-	front2 = *(float *) 1052688;
-	myprintf("front2	%f	%d\r\n", front2, 1052688);
-	back2 = *(float *) 1052692;
-	myprintf("back2	%f	%d\r\n", back2, 1052692);
-	time = *(float *) 1052696;
-	myprintf("time	%f	%d\r\n", time, 1052696);
-	n = *(float *) 1052700;
-	myprintf("n	%f	%d\r\n", n, 1052700);
-	v = *(float *) 1052704;
-	myprintf("v	%f	%d\r\n", v, 1052704);
-	frontleft1 = *(float *) 1052708;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052708);
-	frontleft2 = *(float *) 1052712;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052712);
-	firstfront = *(float *) 1052716;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052716);
-	setPrms(Dia135, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia135, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052672 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
 }
 void setDia90Param2200() {
-	myprintf("----turn=Dia90   v=2200-----------\r\n");
-	float ang, radius, front1, back1, front2, back2, time, n, v, frontleft1,
-			frontleft2, firstfront;
-	ang = *(float *) 1052736;
-	myprintf("ang	%f	%d\r\n", ang, 1052736);
-	radius = *(float *) 1052740;
-	myprintf("radius	%f	%d\r\n", radius, 1052740);
-	front1 = *(float *) 1052744;
-	myprintf("front1	%f	%d\r\n", front1, 1052744);
-	back1 = *(float *) 1052748;
-	myprintf("back1	%f	%d\r\n", back1, 1052748);
-	front2 = *(float *) 1052752;
-	myprintf("front2	%f	%d\r\n", front2, 1052752);
-	back2 = *(float *) 1052756;
-	myprintf("back2	%f	%d\r\n", back2, 1052756);
-	time = *(float *) 1052760;
-	myprintf("time	%f	%d\r\n", time, 1052760);
-	n = *(float *) 1052764;
-	myprintf("n	%f	%d\r\n", n, 1052764);
-	v = *(float *) 1052768;
-	myprintf("v	%f	%d\r\n", v, 1052768);
-	frontleft1 = *(float *) 1052772;
-	myprintf("frontleft1	%f	%d\r\n", frontleft1, 1052772);
-	frontleft2 = *(float *) 1052776;
-	myprintf("frontleft2	%f	%d\r\n", frontleft2, 1052776);
-	firstfront = *(float *) 1052780;
-	myprintf("firstfront	%f	%d\r\n", firstfront, 1052780);
-	setPrms(Dia90, ang, radius, front1, back1, front2, back2, time, n, v);
-	setPrms3(Dia90, frontleft1, frontleft2, firstfront);
-	myprintf("----------------------------------\r\n");
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052736 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
 }
-
+void setLargeParam2300() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052480 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
+}
+void setOrvalParam2300() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052544 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
+}
+void setDia45Param2300() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052608 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
+}
+void setDia135Param2300() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052672 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
+}
+void setDia90Param2300() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052736 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
+}
+void setLargeParam2400() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052480 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
+}
+void setOrvalParam2400() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052544 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
+}
+void setDia45Param2400() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052608 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
+}
+void setDia135Param2400() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052672 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
+}
+void setDia90Param2400() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1052736 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
+}
 #endif

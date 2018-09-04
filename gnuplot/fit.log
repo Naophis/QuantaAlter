@@ -1,0 +1,92 @@
+
+
+*******************************************************************************
+Thu Aug 09 15:21:03 2018
+
+
+FIT:    data read from 'data\r45.txt'
+        format = z
+        #datapoints = 13
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x)=a*x**6 + b*x**5 +c*x**4 +d*x**3 +e*x**2 +f*x +g
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b             c             d             e             f             g            
+   0 2.6826908789e+42   0.00e+00  1.72e+20    1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00
+  27 2.1025919021e+00  -1.08e-07  1.72e-07    1.186706e-17  -1.573219e-13   8.506611e-10  -2.401906e-06   3.742943e-03  -3.089122e+00   1.171285e+03
+
+After 27 iterations the fit converged.
+final sum of squares of residuals : 2.10259
+rel. change during last iteration : -1.07992e-12
+
+degrees of freedom    (FIT_NDF)                        : 6
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.591973
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.350432
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 1.18671e-17      +/- 4.175e-18    (35.18%)
+b               = -1.57322e-13     +/- 5.45e-14     (34.65%)
+c               = 8.50661e-10      +/- 2.892e-10    (34%)
+d               = -2.40191e-06     +/- 7.972e-07    (33.19%)
+e               = 0.00374294       +/- 0.001202     (32.12%)
+f               = -3.08912         +/- 0.9396       (30.42%)
+g               = 1171.28          +/- 297          (25.36%)
+
+correlation matrix of the fit parameters:
+                a      b      c      d      e      f      g      
+a               1.000 
+b              -0.999  1.000 
+c               0.997 -0.999  1.000 
+d              -0.992  0.996 -0.999  1.000 
+e               0.985 -0.991  0.996 -0.999  1.000 
+f              -0.976  0.984 -0.990  0.996 -0.999  1.000 
+g               0.965 -0.974  0.983 -0.990  0.995 -0.999  1.000 
+
+
+*******************************************************************************
+Thu Aug 09 15:21:04 2018
+
+
+FIT:    data read from 'data\l45.txt'
+        format = z
+        #datapoints = 13
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x)=a*x**6 + b*x**5 +c*x**4 +d*x**3 +e*x**2 +f*x +g
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b             c             d             e             f             g            
+   0 7.0634945293e+42   0.00e+00  2.79e+20    1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00   1.000000e+00
+  27 1.2672184232e+00  -3.38e-07  2.79e-07    1.495335e-18  -2.347944e-14   1.523106e-10  -5.232899e-07   1.008702e-03  -1.060878e+00   5.808875e+02
+
+After 27 iterations the fit converged.
+final sum of squares of residuals : 1.26722
+rel. change during last iteration : -3.37811e-12
+
+degrees of freedom    (FIT_NDF)                        : 6
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.459568
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.211203
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 1.49533e-18      +/- 1.876e-18    (125.5%)
+b               = -2.34794e-14     +/- 2.66e-14     (113.3%)
+c               = 1.52311e-10      +/- 1.533e-10    (100.6%)
+d               = -5.2329e-07      +/- 4.585e-07    (87.62%)
+e               = 0.0010087        +/- 0.0007499    (74.35%)
+f               = -1.06088         +/- 0.6351       (59.87%)
+g               = 580.887          +/- 217.4        (37.43%)
+
+correlation matrix of the fit parameters:
+                a      b      c      d      e      f      g      
+a               1.000 
+b              -0.999  1.000 
+c               0.997 -0.999  1.000 
+d              -0.992  0.996 -0.999  1.000 
+e               0.985 -0.991  0.996 -0.999  1.000 
+f              -0.976  0.984 -0.991  0.996 -0.999  1.000 
+g               0.965 -0.975  0.983 -0.990  0.995 -0.999  1.000 

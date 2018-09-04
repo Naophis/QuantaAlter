@@ -131,6 +131,10 @@ char runForPath(float max, float ac, float diac) {
 	}
 	cc = 0;
 
+
+	if (!dia) {
+		frontCtrl();
+	}
 	running(150, -diac, 90, 1);
 
 	if (!dia) {

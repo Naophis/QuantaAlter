@@ -11,6 +11,8 @@
 void operation();
 char encorderOperation();
 
+char transam = false;
+
 void sensourCheck() {
 	positionControlValueFlg = 1;
 	ledOn = 1;
@@ -52,7 +54,7 @@ void testRun() {
 	V_now = 0;
 
 	mtu_start();
-	dia = test_dia > 0;
+	dia = test_dia == 1;
 
 	if (dia == 1) {
 		float targetDistDia = *(float *) 1049300;
@@ -121,19 +123,18 @@ void inputNaiperTurnAll1000() {
 	setDia90Param1000();
 }
 
-void inputNaiperTurnAll1200() {
-	setPrms(Large, 90, 115.0, 33.5, 20, 0, 0, 0.07889556884765625, 4, 1500);
-	setPrms3(Large, 13.5, 0, 40);
-	setPrms(Orval, 180, 88.5, 20, 35, 0, 0, 0.1214303970336914, 4, 1500);
-	setPrms3(Orval, 20, 38, 35);
-	setPrms(Dia45, 45, 125, 13, 40, 57, 10, 0.042878150939941406, 4, 1500);
-	setPrms3(Dia45, 8.0, 47.0, 26);
-	setPrms(Dia135, 135, 85, 26, 20, 17.25, 25, 0.08747100830078125, 4, 1500);
-	setPrms3(Dia135, 25, 6.5, 28);
-	setPrms(Dia90, 90, 85.0, 16.75, 22.0, 0, 0, 0.05831432342529297, 4, 1500);
-	setPrms3(Dia90, 11.0, 0, 0);
-
-}
+//void inputNaiperTurnAll1200() {
+//	setPrms(Large, 90, 115.0, 33.5, 20, 0, 0, 0.07889556884765625, 4, 1500);
+//	setPrms3(Large, 13.5, 0, 40);
+//	setPrms(Orval, 180, 88.5, 20, 35, 0, 0, 0.1214303970336914, 4, 1500);
+//	setPrms3(Orval, 20, 38, 35);
+//	setPrms(Dia45, 45, 125, 13, 40, 57, 10, 0.042878150939941406, 4, 1500);
+//	setPrms3(Dia45, 8.0, 47.0, 26);
+//	setPrms(Dia135, 135, 85, 26, 20, 17.25, 25, 0.08747100830078125, 4, 1500);
+//	setPrms3(Dia135, 25, 6.5, 28);
+//	setPrms(Dia90, 90, 85.0, 16.75, 22.0, 0, 0, 0.05831432342529297, 4, 1500);
+//	setPrms3(Dia90, 11.0, 0, 0);
+//}
 
 void inputNaiperTurnAll1500() {
 	setLargeParam1500();
@@ -273,18 +274,46 @@ void testDia90Turn(char RorL, float vMax, float maxVelocity, float accele,
 //	}
 }
 
-void testSlalom3() {
-	float vMax = *(float *) 1049264;
-	char test_dia = (char) (*(float *) 1049276);
-	char turnType = (char) (*(float *) 1049280);
-	char test_sla_scenario2 = (char) (*(float *) 1049284);
+void callParamForCircit(float vMax) {
+	RS_SEN45.ref = *(float *) 1049944;
+	myprintf("RS_SEN45.ref2	%f	%d\r\n", RS_SEN45.ref, 1049944);
+	LS_SEN45.ref = *(float *) 1049948;
+	myprintf("LS_SEN45.ref2	%f	%d\r\n", LS_SEN45.ref, 1049948);
+	R_WALL_OFF = *(float *) 1049952;
+	myprintf("R_WALL_OFF3	%f	%d\r\n", R_WALL_OFF, 1049952);
+	FRONT_WALL_ON = *(float *) 1049956;
+	myprintf("FrontCtrl111	%f	%d\r\n", FRONT_WALL_ON, 1049956);
+	if (vMax == 2000) {
+		setPrms(Large, 90, 180, 16, 10, 0, 0, 0.09261608123779297, 4, vMax);
+		setPrms3(Large, 13.5, 0, 40);
+	} else if (vMax == 2100) {
+		setPrms(Large, 90, 180, 13, 10, 0, 0, 0.08820629119873047, 4, vMax);
+		setPrms3(Large, 13.5, 0, 40);
+	} else if (vMax == 2200) {
+		setPrms(Large, 90, 180, 9, 10, 0, 0, 0.0841970443725586, 4, vMax);
+		setPrms3(Large, 13.5, 0, 40);
+	} else if (vMax == 2300) {
+		setPrms(Large, 90, 180, 6, 10, 0, 0, 0.080535888671875, 4, vMax);
+		setPrms3(Large, 13.5, 0, 40);
+	} else if (vMax == 2400) {
+		setPrms(Large, 90, 170, 15, 10, 0, 0, 0.0728921890258789, 4, vMax);
+		setPrms3(Large, 13.5, 0, 40);
+	} else if (vMax == 2500) {
+		setPrms(Large, 90, 170, 12, 10, 0, 0, 0.069976806640625, 4, vMax);
+		setPrms3(Large, 13.5, 0, 40);
+	} else if (vMax == 2600) {
+		setPrms(Large, 90, 170, 6.0, 10, 0, 0, 0.06728553771972656, 4, vMax);
+		setPrms3(Large, 13.5, 0, 40);
+	} else if (vMax == 2800) {
+		setPrms(Large, 90, 170, 6.0, 10, 0, 0, 0.06728553771972656, 4, vMax);
+		setPrms3(Large, 13.5, 0, 40);
+	} else if (vMax == 3000) {
+		setPrms(Large, 90, 160, 0.0, 10, 0, 0, 0.05488395690917969, 4, vMax);
+		setPrms3(Large, 13.5, 0, 40);
+	}
+}
 
-	char test_sla_return_flg = (char) (*(float *) 1049288);
-	char test_sla_return_scenario = (char) (*(float *) 1049292);
-
-	float accele = *(float *) 1049268;
-	float diaccele = *(float *) 1049268;
-
+void callParam(float vMax) {
 	if (vMax == 1500) {
 		inputNaiperTurnAll1500();
 	} else if (vMax == 1700) {
@@ -311,6 +340,38 @@ void testSlalom3() {
 		setDia45Param2200();
 		setDia135Param2200();
 		setDia90Param2200();
+	} else if (vMax == 2300) {
+		setLargeParam2300();
+		setOrvalParam2300();
+		setDia45Param2300();
+		setDia135Param2300();
+		setDia90Param2300();
+	} else if (vMax == 2400) {
+		setLargeParam2400();
+		setOrvalParam2400();
+		setDia45Param2400();
+		setDia135Param2400();
+		setDia90Param2400();
+	}
+}
+
+void testSlalom3() {
+	float vMax = *(float *) 1049264;
+//	char test_dia = (char) (*(float *) 1049276);
+	char turnType = (char) (*(float *) 1049280);
+	char test_sla_scenario2 = (char) (*(float *) 1049284);
+
+	char test_sla_return_flg = (char) (*(float *) 1049288);
+	char test_sla_return_scenario = (char) (*(float *) 1049292);
+
+	float accele = *(float *) 1049268;
+	float diaccele = *(float *) 1049268;
+
+	char test_dia = (char) (*(float *) 1049276);
+	if (transam) {
+		callParamForCircit(vMax);
+	} else {
+		callParam(vMax);
 	}
 
 	char RorL = eigherRightLeft() == Right ? R : L;
@@ -330,16 +391,14 @@ void testSlalom3() {
 		TRANSAM = true;
 		startVacume2(90);
 	}
-	Sen_Dia_Side.Kp = 0.0;
-	Sen_Dia_Side.Ki = 0.0;
-	Sen_Dia_Side.Kd = 0.0;
+	Sen_Dia_Side.Kp = Sen_Dia_Side.Ki = Sen_Dia_Side.Kd = 0.0;
 
 	ang = 0;
 	angle = 0;
 	Gy.error_old = 0;
 	mode_FF = 1;
 
-	dia = (char) test_dia > 0;
+	dia = (char) test_dia == 1;
 
 	save();
 
@@ -393,6 +452,7 @@ void testNormalSlalom() {
 	float accele = *(float *) 1049324;
 	float diaccele = *(float *) 1049328;
 	float vMax = *(float *) 1049320;
+	float test_dia = *(float *) 1049276;
 
 	char RorL = eigherRightLeft() == Right ? R : L;
 
@@ -424,12 +484,19 @@ void testNormalSlalom() {
 		mtu_stop2();
 	} else {
 //		runForWallOff(vMax, accele, 270, 1);
-		realRun(vMax, accele, diaccele, 180.0 * 1, vMax);
+
+		if (test_dia > 0) {
+			runForWallOff(vMax, accele, 360, 1);
+		} else {
+			realRun(vMax, accele, diaccele, 180.0 * 1, vMax);
+		}
+
 		logs = 0;
 		time = 0;
 		cc = 1;
 		logs = 0;
 		slalom(RorL, Normal, vMax, vMax, 0);
+//		slalom(RorL, Normal, vMax, vMax, 0);
 
 		char test_turn_times = (char) (*(float *) 1049308);
 		if (test_turn_times > 0) {
@@ -470,14 +537,16 @@ void testWallOff() {
 	if (vMax > 1200) {
 		startVacume2(70);
 	}
+
+	Sen_Dia_Side.Kp = Sen_Dia_Side.Ki = Sen_Dia_Side.Kd = 0.0;
 	ang = angle = Gy.error_old = 0;
 	mode_FF = 1;
-	dia = test_dia > 0;
+	dia = test_dia == 1;
 
-	realRun(maxVelocity, accele, diaccele, 200.0, vMax);
-//	runForWallOff(maxVelocity, accele, 180, 1);
 	logs = time = 0;
 	cc = 1;
+	realRun(maxVelocity, accele, diaccele, 200.0, vMax);
+//	runForWallOff(maxVelocity, accele, 180, 1);
 
 	wallOff(RorL, !dia);
 
@@ -503,7 +572,7 @@ void testWallOffSeach() {
 	mtu_start();
 	readGyroParam();
 	readVelocityGain();
-
+	globalState = STRAIGHT;
 	if (vMax >= 1000) {
 		fanMode = SearchRun;
 		startVacume2(70);
@@ -514,7 +583,7 @@ void testWallOffSeach() {
 	Gy.error_old = 0;
 	mode_FF = 1;
 	cc = 1;
-	runForWallOff(vMax, accele, 200, 1);
+	runForWallOff(vMax, accele, 360, 1);
 	realRun(vMax, accele, diaccele, 90.0 * 1, 50);
 	mtu_stop2();
 	stopVacume();
@@ -704,6 +773,7 @@ char modeCheck() {
 }
 char encorderOperation() {
 	volatile signed char mode = SEARCH;
+	globalState = MODE_SELECT;
 	os_escape = 0;
 	MTU1.TCNT = 4500;
 	MTU2.TCNT = 30000;
@@ -917,9 +987,12 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		Sen.Kd = *(float *) 1049384;
 		fanMode = SearchRun;
 	} else {
-		Sen.Kp = 0.035;
-		Sen.Ki = 0.0;
-		Sen.Kd = 0.0825;
+		Sen.Kp = *(float *) 1049376;
+		Sen.Ki = *(float *) 1049380;
+		Sen.Kd = *(float *) 1049384;
+//		Sen.Kp = 0.035;
+//		Sen.Ki = 0.0;
+//		Sen.Kd = 0.0825;
 		fanMode = FastRun;
 	}
 
@@ -939,8 +1012,6 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		}
 		save();
 		pathClear();
-//		return Adachi2(goalX, goalY, Zentansaku, isFull, m2);
-
 		return Adachi2(goalX, goalY, Zentansaku, isFull, m2) ? 2 : 0;
 	} else if (mode == SEARCH2) {
 		fanMode = SearchRun;
@@ -981,7 +1052,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1700();
 		save();
-		inputNaiperTurnAll1500();
+		inputNaiperTurnAll1700();
 		save2();
 		if (!fastMode) {
 			motionCheck();
@@ -995,7 +1066,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1800();
 		save();
-		inputNaiperTurnAll1500();
+		inputNaiperTurnAll1700();
 		save2();
 		if (!fastMode) {
 			motionCheck();
@@ -1005,8 +1076,11 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		float v = eigherRightLeft() == Right ? 5000 : 4500;
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1900();
+		if (transam) {
+			callParamForCircit(2400);
+		}
 		save();
-		inputNaiperTurnAll1500();
+		inputNaiperTurnAll1700();
 		save2();
 		if (!fastMode) {
 			motionCheck();
@@ -1016,8 +1090,12 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		float v = eigherRightLeft() == Right ? 5100 : 4700;
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll2000();
+		if (transam) {
+			callParamForCircit(2500);
+		}
+
 		save();
-		inputNaiperTurnAll1500();
+		inputNaiperTurnAll1700();
 		save2();
 		if (!fastMode) {
 			motionCheck();
@@ -1026,9 +1104,12 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 	} else if (mode == CONFIG) {
 		float v = eigherRightLeft() == Right ? 5100 : 5000;
 		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll1900();
+		inputNaiperTurnAll2000();
+		if (transam) {
+			callParamForCircit(2600);
+		}
 		save();
-		inputNaiperTurnAll1500();
+		inputNaiperTurnAll1700();
 		save2();
 		if (!fastMode) {
 			motionCheck();
@@ -1039,7 +1120,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1900();
 		save();
-		inputNaiperTurnAll1500();
+		inputNaiperTurnAll1700();
 		save2();
 		if (!fastMode) {
 			motionCheck();
@@ -1049,7 +1130,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1900();
 		save();
-		inputNaiperTurnAll1500();
+		inputNaiperTurnAll1700();
 		save2();
 		if (!fastMode) {
 			motionCheck();
@@ -1060,7 +1141,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1900();
 		save();
-		inputNaiperTurnAll1500();
+		inputNaiperTurnAll1700();
 		save2();
 		float v = getMaxVeloctiy();
 		if (!fastMode) {
@@ -1071,7 +1152,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1900();
 		save();
-		inputNaiperTurnAll1500();
+		inputNaiperTurnAll1700();
 		save2();
 		float v = getMaxVeloctiy();
 		if (!fastMode) {
@@ -1315,8 +1396,12 @@ void operation() {
 	if (!PushTop) {
 		printSensor();
 	}
+	if (!PushRight) {
+		transam = true;
+	}
 
 	enableSciUpdate = true;
+	globalState = IMPORT_PARM;
 	while (PushBottom)
 		;
 	if (!PushTop) {
@@ -1324,13 +1409,14 @@ void operation() {
 		while (PushBottom)
 			;
 	}
+
+	if (transam) {
+		ashLikeSnow(180);
+	}
+
 	char testCmd = (char) (*(float *) 1049260);
 
-//	keepZeroPoint();
-
 	resetAllData();
-
-//	testRpm1();
 
 	if (testCmd > 0) {
 		switch (testCmd) {
@@ -1370,23 +1456,19 @@ void operation() {
 			cmtMusic(E3_, 100);
 			cirquit();
 			break;
+		case 10:
+			cmtMusic(F3_, 100);
+			cirquitFull();
+			break;
 		}
 	} else {
 		cmtMusic(C2_, 100);
 	}
-	if (PushLeft) {
-		if (!PushTop) {
-			printSensor();
-		}
+
+	if (testCmd != 9 && testCmd != 10) {
+		checkMemory(goalX, goalY);
 	}
 
-	cirquit();
-	checkMemory(goalX, goalY);
-
-//	while(1){
-//		gyroZeroCheck(true);
-//	}
-//	cirquit();
 	wall_off_limit = 25;
 	wall_off_limit_d = 25;
 

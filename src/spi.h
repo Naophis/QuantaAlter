@@ -87,7 +87,6 @@ void Init_SPI(void) {
 	RSPI1.SPCMD2.BIT.SSLKP = 0;	//CSをnegativeにする
 
 	RSPI1.SPBR = 4;
-	;
 	RSPI1.SPCMD0.BIT.BRDV = 2;
 
 	IEN(RSPI1, SPTI1) = 1;
@@ -111,14 +110,10 @@ void Init_SPI(void) {
 	PORTE.PMR.BIT.B6 = 1;
 	PORTE.PMR.BIT.B7 = 1;
 
-//	RSPI1.SPCKD.BIT.SCKDL = 1;	//0:SPI動作(4線式)
-
 	RSPI1.SPCR.BIT.SPMS = 0;	//0:SPI動作(4線式)
 	RSPI1.SPCR.BIT.TXMD = 0;	//0:全二重同期式シリアル通信
 	RSPI1.SPCR.BIT.MODFEN = 0;	//0:モードフォルトエラー検出を禁止
 	RSPI1.SPCR.BIT.MSTR = 1;	//1:マスタモード
-
-//	RSPI1.SPCR.BIT.SPE = 1;
 
 	SYSTEM.PRCR.WORD = 0xA500;
 

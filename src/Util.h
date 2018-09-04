@@ -373,15 +373,17 @@ void printSensor() {
 //	sensingMode = CtrlMode;
 
 	gyroZeroCheck(true);
+	globalState = STRAIGHT;
 //	dia = 1;
 	ang = 0;
 	enableSciUpdate = true;
 	while (1) {
 		if (!skipPrint) {
 			myprintf(
-					"{\"battery\":%f,\"gyro\":%f,\"left\":%d,\"right\":%d,\"front\":%d,\"left90\":%d,\"right90\":%d}\r\n",
+					"{\"battery\":%f,\"gyro\":%f,\"left\":%d,\"right\":%d,\"front\":%d,\"left90\":%d,\"right90\":%d,\"rightdist\":%d,\"leftdist\":%d}\r\n",
 					battery, settleGyro, (int) LS_SEN45.now, (int) RS_SEN45.now,
-					(int) Front_SEN.now, (int) LS_SEN2.now, (int) RS_SEN2.now);
+					(int) Front_SEN.now, (int) LS_SEN2.now, (int) RS_SEN2.now,
+					(int) RS_SEN45.dist, (int) LS_SEN45.dist);
 //			myprintf(
 //					"\"LS1_2\":%d,\"RS1_2\":%d,\"LF1_2\":%d,\"RF1_2\":%d,\"LS2_2\":%d,\"RS2_2\":%d,\"BATT\":%d}\r\n",
 //					(int) LS_SEN45.dist, (int) RS_SEN45.dist, (int) 0,
@@ -436,6 +438,7 @@ void checkIsoukeisu() {
 char motionCheck() {
 	int tmp = sensingMode;
 	sensingMode = SearchMode;
+	globalState = START_WAIT;
 	ledOn = 1;
 	while (1) {
 		if (Front_SEN.now > CHECK_ORDER_RIGHT) {
@@ -459,6 +462,8 @@ char motionCheck() {
 			LED3 = 0;
 		}
 	}
+
+	globalState = STRAIGHT;
 	ledOn = 0;
 }
 
@@ -491,7 +496,7 @@ void gyroZeroCheck(char bool) {
 		if (ABS(tmpData) < 0.01) {
 			while (!setupMpu6500())
 				;
-		} else if (ABS(tmpData) < 50) {
+		} else if (ABS(tmpData) < 70) {
 			break;
 		}
 //		break;
@@ -765,6 +770,7 @@ void waitforprint() {
 }
 
 void logOutPut() {
+	globalState = PIVOT;
 	while (Swich == 1)
 		;
 	for (c = 0; c < L_Length; c++) {
@@ -784,6 +790,7 @@ void logOutPut() {
 				log28[c] * 100, log29[c]);
 		myprintf(" %f %f %f %f\r\n", log30[c], log31[c], log32[c], log33[c]);
 	}
+	globalState = STRAIGHT;
 }
 
 void logOutput3() {

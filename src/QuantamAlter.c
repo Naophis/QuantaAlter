@@ -26,7 +26,7 @@
 #include "motion/Run.h"
 #include "motion/DistCalc.h"
 #include "motion/WallOff.h"
-#include "motion/WallOff2.h"
+//#include "motion/WallOff2.h"
 #include "search/Map.h"
 #include "search/Search.h"
 #include "search/VectorSearch.h"
@@ -41,7 +41,7 @@
 #include "search/Adachi.h"
 #include "search/cirkit.h"
 
-#include "config/ParamImporter.h"
+//#include "config/ParamImporter.h"
 
 #include "config/Setting.h"
 //#include "Mram.h"
@@ -162,21 +162,33 @@ void mtu4_A() {
 		if (mpu) {
 			callMpu(0x47);
 		}
+//		if (globalState != PIVOT && globalState != SLA_TURN
+//				&& globalState != DIA_STRAIGHT && globalState != MODE_SELECT
+//				&& globalState != IMPORT_PARM) {
 		PORTD.PODR.BIT.B6 = 1; //Front
+//		}
 		break;
 	case 2:
 		if (mpu) {
 			callMpu(0x47);
 		}
+//		if (globalState != PIVOT && globalState != SLA_TURN
+//				&& globalState != MODE_SELECT && globalState != START_WAIT
+//				&& globalState != IMPORT_PARM) {
 		PORTE.PODR.BIT.B0 = 1; //Right45
 		PORT2.PODR.BIT.B5 = 1; //Left45
+//		}
 		break;
 	case 3:
 		if (mpu) {
 			callMpu(0x47);
 		}
-		PORTE.PODR.BIT.B1 = 1; //Right
-		PORT2.PODR.BIT.B4 = 1; //Left
+//		if (globalState != PIVOT && globalState != SLA_TURN
+//				&& globalState != MODE_SELECT && globalState != START_WAIT
+//				&& globalState != IMPORT_PARM && globalState != DIA_STRAIGHT) {
+		PORTE.PODR.BIT.B1 = 1; //Right90
+		PORT2.PODR.BIT.B4 = 1; //Left90
+//		}
 		break;
 	case 4:
 		if (mpu) {
@@ -320,6 +332,7 @@ void printErrorEnum() {
 
 void main(void) {
 	initRX64M();
+
 	batteryCheck();
 	setupCmt = enableMPU = os_escape = true;
 

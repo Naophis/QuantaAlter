@@ -765,10 +765,18 @@ volatile void wallJudge4(short dir, short X, short Y) {
 	char flag1 = tmpSearchRange & 0x01;
 	char flag2 = tmpSearchRange & 0x02;
 	char flag3 = tmpSearchRange & 0x04;
+	char flag4 = tmpSearchRange & 0x08;
 
 	if (dir == North) {
-		wallW = LS_SEN2.now > L_WALL_EXIST2;
-		wallE = RS_SEN2.now > R_WALL_EXIST2;
+
+		if (flag4) {
+			wallW = LS_SEN2.now > L_WALL_EXIST2;
+			wallE = RS_SEN2.now > R_WALL_EXIST2;
+		} else {
+			wallW = LS_SEN45.now > L_WALL_EXIST;
+			wallE = RS_SEN45.now > R_WALL_EXIST;
+		}
+
 		wallN = Front_SEN.now > FRONT_WALL_EXIST2;
 		if (flag) {
 			if (!wallW) {
@@ -805,8 +813,14 @@ volatile void wallJudge4(short dir, short X, short Y) {
 		}
 
 	} else if (dir == East) {
-		wallN = LS_SEN2.now > L_WALL_EXIST2;
-		wallS = RS_SEN2.now > R_WALL_EXIST2;
+
+		if (flag4) {
+			wallN = LS_SEN2.now > L_WALL_EXIST2;
+			wallS = RS_SEN2.now > R_WALL_EXIST2;
+		} else {
+			wallN = LS_SEN45.now > L_WALL_EXIST;
+			wallS = RS_SEN45.now > R_WALL_EXIST;
+		}
 		wallE = Front_SEN.now > FRONT_WALL_EXIST2;
 		if (flag) {
 			if (!wallN) {
@@ -842,8 +856,13 @@ volatile void wallJudge4(short dir, short X, short Y) {
 			}
 		}
 	} else if (dir == West) {
-		wallS = LS_SEN2.now > L_WALL_EXIST2;
-		wallN = RS_SEN2.now > R_WALL_EXIST2;
+		if (flag4) {
+			wallS = LS_SEN2.now > L_WALL_EXIST2;
+			wallN = RS_SEN2.now > R_WALL_EXIST2;
+		} else {
+			wallS = LS_SEN45.now > L_WALL_EXIST;
+			wallN = RS_SEN45.now > R_WALL_EXIST;
+		}
 		wallW = Front_SEN.now > FRONT_WALL_EXIST2;
 		if (flag) {
 			if (!wallS) {
@@ -880,8 +899,13 @@ volatile void wallJudge4(short dir, short X, short Y) {
 			}
 		}
 	} else if (dir == South) {
-		wallE = LS_SEN2.now > L_WALL_EXIST2;
-		wallW = RS_SEN2.now > R_WALL_EXIST2;
+		if (flag4) {
+			wallE = LS_SEN2.now > L_WALL_EXIST2;
+			wallW = RS_SEN2.now > R_WALL_EXIST2;
+		} else {
+			wallE = LS_SEN45.now > L_WALL_EXIST;
+			wallW = RS_SEN45.now > R_WALL_EXIST;
+		}
 		wallS = Front_SEN.now > FRONT_WALL_EXIST2;
 		if (flag) {
 			if (!wallE) {

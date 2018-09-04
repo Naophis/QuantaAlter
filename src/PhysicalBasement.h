@@ -34,7 +34,7 @@ float lastPeekR2 = 0;
 float lastPeekL2 = 0;
 
 float peekOrderR = 1800;
-float peekOrderL = 1100;
+float peekOrderL = 1800;
 void pushLatestSensor(float r, float l) {
 	if (r > peekOrderR) {
 		if (peekRight < r) {
@@ -60,8 +60,8 @@ void pushLatestSensor(float r, float l) {
 	}
 }
 
-float peekOrderR2 = 1400;
-float peekOrderL2 = 1000;
+float peekOrderR2 = 2000;
+float peekOrderL2 = 2000;
 void pushLatestSensor2(float r, float l) {
 	if (r > peekOrderR2) {
 		if (peekRight2 < r) {
@@ -158,15 +158,13 @@ float check_sen_error(void) {
 	char check = 0;
 	if (Front_SEN.now < FRONT_OUT) {
 		if (ABS(RS_SEN45.now - RS_SEN45.old) < KIREME_R) {
-//			if (RS_SEN45.now > R_WALL) {
-			if (RS_SEN45.now > (RS_SEN45.ref - 15)) {
+			if (RS_SEN45.now > (RS_SEN45.ref - 50)) {
 				error += RS_SEN45.now - RS_SEN45.ref;
 				check++;
 			}
 		}
 		if (ABS(LS_SEN45.now - LS_SEN45.old) < KIREME_L) {
-//			if (LS_SEN45.now > L_WALL) {
-			if (LS_SEN45.now > (LS_SEN45.ref - 15)) {
+			if (LS_SEN45.now > (LS_SEN45.ref - 40)) {
 				error -= LS_SEN45.now - LS_SEN45.ref;
 				check++;
 			}
@@ -243,27 +241,22 @@ float check_sen_error_dia_side(void) {
 	if (RS_SEN45.now > R_WALL_DIA && lastPeekR < R_WALL_DIA) {
 		error += RS_SEN45.now - RS_SEN45.ref2;
 		check++;
-	} else if (lastPeekR > R_WALL_DIA) {
-		error += lastPeekR - RS_SEN45.ref2;
-		check++;
-	} else if (RS_SEN2.now > R_WALL_DIA && lastPeekR2 < R_WALL_DIA2) {
+//	} else if (lastPeekR > R_WALL_DIA) {
+//		error += lastPeekR - RS_SEN45.ref2;
+//		check++;
+	} else if (RS_SEN2.now > R_WALL_DIA) {
 		error += RS_SEN2.now - RS_SEN2.ref2;
-	} else if (lastPeekR2 > R_WALL_DIA2) {
-		error += lastPeekR2 - RS_SEN2.ref2;
 		check++;
 	}
 
 	if (LS_SEN45.now > L_WALL_DIA && lastPeekL < L_WALL_DIA) {
 		error -= LS_SEN45.now - LS_SEN45.ref2;
 		check++;
-	} else if (lastPeekL > L_WALL_DIA) {
-		error -= lastPeekL - LS_SEN45.ref2;
-		check++;
-	} else if (LS_SEN2.now > L_WALL_DIA2 && lastPeekL2 < L_WALL_DIA2) {
+//	} else if (lastPeekL > L_WALL_DIA) {
+//		error -= lastPeekL - LS_SEN45.ref2;
+//		check++;
+	} else if (LS_SEN2.now > L_WALL_DIA2) {
 		error -= LS_SEN2.now - LS_SEN2.ref2;
-		check++;
-	} else if (lastPeekL2 > L_WALL_DIA2) {
-		error -= lastPeekL2 - LS_SEN2.ref2;
 		check++;
 	}
 
@@ -309,6 +302,8 @@ float P = 100;
 void errorVelocity(void) {
 	C.s2 = 0;
 	C.s = 0;
+	const float CsLimit = *(float *) 1049456;
+	const float CsLimitDia = *(float *) 1049460;
 
 	if (positionControlValueFlg == 1) {
 		if (dia == 0) {
@@ -320,6 +315,13 @@ void errorVelocity(void) {
 			}
 			C.s = Sen.Kp * Se.error_now + Sen.Ki * Se.error_old
 					+ Sen.Kd * Se.error_delta;
+
+			if (C.s > CsLimit) {
+				C.s = CsLimit;
+			} else if (C.s < -CsLimit) {
+				C.s = -CsLimit;
+			}
+
 			Se.before = Se.error_now;
 			Se.error_old += Se.error_now;
 		} else if (dia == 1) {
@@ -332,6 +334,11 @@ void errorVelocity(void) {
 			C.s = Sen_Dia_Side.Kp * Se2.error_now
 					+ Sen_Dia_Side.Ki * Se2.error_old
 					+ Sen_Dia_Side.Kd * Se2.error_delta;
+			if (C.s > CsLimitDia) {
+				C.s = CsLimitDia;
+			} else if (C.s < -CsLimitDia) {
+				C.s = -CsLimitDia;
+			}
 			Se2.before = Se2.error_now;
 			Se2.error_old += Se2.error_now;
 		}
@@ -417,23 +424,8 @@ float FF_calc(char RorL, float w, float al) {
 	float resist_roll = friction_roll ? ABS(Resist * friction2 / Km) : 0;
 	float whrlm = 0;
 	float counterV = ABS((Ke + friction) * rpm);
-	float subal = 0;
 	float ff = feadforward(RorL);
 	float ffp = feadforward_para(RorL);
-//	if (globalState == SLA_TURN) {
-//		if (RorL == R) {
-//			subal = Lm * (-al) * WHEEL * Resist / (GEAR * Km) / Tread;
-//			float rpmR2 = ((V_now - Tread * 500 * w) / (TIRE / 2)) * 30 / PI;
-//			rpm = rpm * (isouratio) + rpmR2 * (1 - isouratio);
-//			counterV = (Ke + friction) * rpm;
-//		} else {
-//			subal = Lm * (al) * WHEEL * Resist / (GEAR * Km) / Tread;
-//			float rpmL2 = ((V_now + Tread * 500 * w) / (TIRE / 2)) * 30 / PI;
-//			rpm = rpm * (isouratio) + rpmL2 * (1 - isouratio);
-//			counterV = ABS((Ke + friction) * rpm);
-//		}
-//		ffp = ffp * (isouratio) + subal * (1 - isouratio);
-//	}
 
 	if (V_now == 0) {
 		resist_str = 0;
@@ -507,12 +499,6 @@ void dutyCalcuration2(void) {
 	float FB_pararell_duty = FB_calc_pararell();
 	float w, al;
 
-//	if (globalState == SLA_TURN) {
-//		for (int i = 0; i < isouzure; i++) {
-//			al = alphaTemp * Et2(dt * (sinCount + i), slaTerm, etN);
-//			w += al * dt;
-//		}
-//	}
 	ffR = FF_calc(R, w, al);
 	ffL = FF_calc(L, w, al);
 

@@ -87,13 +87,11 @@ void initSci1() {
 	MPC.PWPR.BIT.B0WI = 0;
 	MPC.PWPR.BIT.PFSWE = 1;
 	MSTP (SCI1) = 0;
-	//SCI
-	SCI1.SMR.BYTE = 0; // 8 bit,non-parity,1 stop bit
+	SCI1.SMR.BYTE = 0;
 	SCI1.SCR.BYTE = 0;
 	SCI1.SEMR.BIT.BGDM = 0;
 	SCI1.SEMR.BIT.ABCS = 0;
-	// CKS =0 -> n =0;
-	SCI1.BRR = 7; // 230400  31 or 32 baurate.xlsx 参照
+	SCI1.BRR = 7; // 230400  baurate.xlsx 参照
 	SCI1.SCR.BIT.RIE = 1; // 受信割込み:許可(1)/禁止(0)
 	SCI1.SCR.BIT.TE = 1; //送信許可
 	SCI1.SCR.BIT.RE = 1; //受信許可
@@ -251,28 +249,6 @@ void initGPT01() {
 
 	SYSTEM.PRCR.WORD = 0xA500;	// protext off
 }
-void init_Mtu4_2() {
-	SYSTEM.PRCR.WORD = 0xA503; // Protect off
-	/*	P257でベクタテーブルの説明	*/
-	MSTP (MTU4) = 0;
-	MTU4.TCR.BIT.TPSC = 0;
-	MTU4.TCR.BIT.CCLR = 2;				// TGRBコンペアマッチでTCNTクリア
-	MTU4.TIER.BIT.TGIEA = 1;				// TGRAの割り込み許可
-	MTU4.TGRA = (int) (_PCLKA / MTU_CYCLE) - 3000 - 1;	// TGRB - TGRA
-	MTU4.TIER.BIT.TGIEB = 1;				// TGRBの割り込み許可
-	MTU4.TGRB = (int) (_PCLKA / MTU_CYCLE) - 1;	// 96MHz 1/96M =0.0104166us 0.0104166*19200=0.2ms
-	//割り込み許可
-	IEN(PERIA, INTA210) = 1;
-	ICU.SLIAR210.BYTE = 0x15U;
-	IPR(PERIA, INTA210) = 13;
-
-	ICU.SLIAR211.BYTE = 0x16U;
-	IEN(PERIA, INTA211) = 1;
-	IPR(PERIA, INTA211) = 12;
-
-	MTU.TSTRA.BIT.CST4 = 1;				//MTU0のカウントスタート p460
-	SYSTEM.PRCR.WORD = 0xA500; // Protect off
-}
 
 void stopVacume() {
 	GPT2.GTCCRA = GPT2.GTCCRC = 0;
@@ -355,13 +331,20 @@ float getDiaDistL() {
 }
 
 void calcdist() {
-	RS_SEN45.dist = 189 - 17 * logf(RS_SEN45.now);
-	LS_SEN45.dist = 575 - 66.76 * logf(LS_SEN45.now);
+	float a[7] = { 1.50E-18, -2.35E-14, 1.52E-10, -5.23E-07, 0.0010087,
+			-1.06088, 580 - 2 };
+	float b[7] = { 1.50E-18, -2.35E-14, 1.52E-10, -5.23E-07, 0.0010087,
+			-1.06088, 578 + 6 };
+	RS_SEN45.dist = a[0];
+	LS_SEN45.dist = b[0];
+	for (int i = 1; i <= 6; i++) {
+		RS_SEN45.dist = RS_SEN45.dist * RS_SEN45.now + a[i];
+		LS_SEN45.dist = LS_SEN45.dist * LS_SEN45.now + b[i];
+	}
 
-	Front_SEN.dist = 737 - 82.58 * logf(Front_SEN.now);
-
-	RS_SEN2.dist = 694 - 82.25 * logf(RS_SEN2.now);
-	LS_SEN2.dist = 798 - 95.27 * logf(LS_SEN2.now);
+//	Front_SEN.dist = 737 - 82.58 * logf(Front_SEN.now);
+//	RS_SEN2.dist = 694 - 82.25 * logf(RS_SEN2.now);
+//	LS_SEN2.dist = 798 - 95.27 * logf(LS_SEN2.now);
 }
 void getSensorData() {
 
@@ -393,12 +376,12 @@ void getSensorData() {
 	} else {
 		Front_SEN.now = 0;
 	}
-	calcdist();
-//	if (LF_SEN1.on > LF_SEN1.off) {
-//		LF_SEN1.now = 0.1 * (LF_SEN1.on - LF_SEN1.off) + 0.9 * LF_SEN1.old;
-//	} else {
-//		LF_SEN1.now = 0;
-//	}
+//	RS_SEN45.now = RS_SEN45.on;
+//	LS_SEN45.now = LS_SEN45.on;
+//	RS_SEN2.now = RS_SEN2.on;
+//	LS_SEN2.now = LS_SEN2.on;
+//	Front_SEN.now = Front_SEN.on;
 
+	calcdist();
 }
 #endif /* INIT_H_ */

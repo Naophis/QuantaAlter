@@ -101,9 +101,6 @@ float L_WALL_DIA = 1500;
 float R_WALL_DIA2 = 1900;
 float L_WALL_DIA2 = 1500;
 
-float R_WALL_DIA3 = 1900;
-float L_WALL_DIA3 = 1500;
-
 float FRONT_CTRL_1 = 1275;   //前壁補正
 
 void importFromDataFlash() {
@@ -198,14 +195,11 @@ void importFromDataFlash() {
 	myprintf("Front_SEN.ref	%f	%d\r\n", Front_SEN.ref, 1049616);
 	Front_SEN.ref2 = *(float *) 1049620;
 	myprintf("Front_SEN.ref2	%f	%d\r\n", Front_SEN.ref2, 1049620);
-//	LF_SEN1.ref = *(float *) 1049624;
-//	myprintf("LF_SEN1.ref	%f	%d\r\n", LF_SEN1.ref, 1049624);
-//	LF_SEN1.ref2 = *(float *) 1049628;
-//	myprintf("LF_SEN1.ref2	%f	%d\r\n", LF_SEN1.ref2, 1049628);
+//	LF_SEN1.ref=*(float *)1049624;myprintf("LF_SEN1.ref	%f	%d\r\n",LF_SEN1.ref,1049624);
+//	LF_SEN1.ref2=*(float *)1049628;myprintf("LF_SEN1.ref2	%f	%d\r\n",LF_SEN1.ref2,1049628);
 	Front_SEN.ref3 = *(float *) 1049632;
 	myprintf("Front_SEN.ref3	%f	%d\r\n", Front_SEN.ref3, 1049632);
-//	LF_SEN1.ref3 = *(float *) 1049636;
-//	myprintf("LF_SEN1.ref3	%f	%d\r\n", LF_SEN1.ref3, 1049636);
+//	LF_SEN1.ref3=*(float *)1049636;myprintf("LF_SEN1.ref3	%f	%d\r\n",LF_SEN1.ref3,1049636);
 	wallhosei = *(float *) 1049640;
 	myprintf("wallhosei	%f	%d\r\n", wallhosei, 1049640);
 	FrontCtrl.Kp = *(float *) 1049644;
@@ -224,10 +218,10 @@ void importFromDataFlash() {
 	myprintf("R_WALL_DIA2	%f	%d\r\n", R_WALL_DIA2, 1049668);
 	L_WALL_DIA2 = *(float *) 1049672;
 	myprintf("L_WALL_DIA2	%f	%d\r\n", L_WALL_DIA2, 1049672);
-	R_WALL_DIA3 = *(float *) 1049676;
-	myprintf("R_WALL_DIA3	%f	%d\r\n", R_WALL_DIA3, 1049676);
-	R_WALL_DIA3 = *(float *) 1049680;
-	myprintf("R_WALL_DIA3	%f	%d\r\n", R_WALL_DIA3, 1049680);
+	R_WALL_EXIST = *(float *) 1049676;
+	myprintf("R_WALL_EXIST	%f	%d\r\n", R_WALL_EXIST, 1049676);
+	L_WALL_EXIST = *(float *) 1049680;
+	myprintf("L_WALL_EXIST	%f	%d\r\n", L_WALL_EXIST, 1049680);
 	L_WALL_EXIST2 = *(float *) 1049684;
 	myprintf("L_WALL_EXIST2	%f	%d\r\n", L_WALL_EXIST2, 1049684);
 	R_WALL_EXIST2 = *(float *) 1049688;
@@ -251,6 +245,7 @@ void importFromDataFlash() {
 	FRONT_CTRL_1 = *(float *) 1049724;
 	myprintf("FRONT_CTRL_1	%f	%d\r\n", FRONT_CTRL_1, 1049724);
 
+	float fastRunFan, seachFan;
 	R_WALL_OFF = *(float *) 1049856;
 	myprintf("R_WALL_OFF	%f	%d\r\n", R_WALL_OFF, 1049856);
 	L_WALL_OFF = *(float *) 1049860;
@@ -289,7 +284,13 @@ void importFromDataFlash() {
 	myprintf("L_WALL_EXIST4	%f	%d\r\n", L_WALL_EXIST4, 1049928);
 	R_WALL_EXIST4 = *(float *) 1049932;
 	myprintf("R_WALL_EXIST4	%f	%d\r\n", R_WALL_EXIST4, 1049932);
+	seachFan = *(float *) 1049936;
+	myprintf("seachFan	%f	%d\r\n", seachFan, 1049936);
+	fastRunFan = *(float *) 1049940;
+	myprintf("fastRunFan	%f	%d\r\n", fastRunFan, 1049940);
 
+	FAN_AMP = fastRunFan;
+	FAN_AMP2 = seachFan;
 }
 
 void override() {

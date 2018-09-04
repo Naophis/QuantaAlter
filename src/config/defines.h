@@ -14,8 +14,8 @@
 #define false 0
 volatile char setupCmt = false;
 volatile int tpu_count = 0;
-#define M_CYCLE 550
-#define FAN_CYCLE 500
+#define M_CYCLE 450
+#define FAN_CYCLE 450
 
 #define FRONT_AD S12AD.ADDR3 //front P43
 #define RS2 S12AD.ADDR5	 //P45
@@ -46,10 +46,10 @@ char fanStart2 = false;
 
 #define FAN_AMP4 0.0f
 #define FAN_AMP3 0.0f
-#define FAN_AMP2 5.0f
-#define FAN_AMP 8.5f	//11.35
+float FAN_AMP2 = 6.5f;	//5.0
+float FAN_AMP = 9.0f;	//11.35
 
-volatile float myVacumeDuty = FAN_AMP;
+volatile float myVacumeDuty = 6.5;
 //#define FAN_AMP 11.0	//11.35
 const float PI = 3.141592653589793;
 
@@ -373,14 +373,19 @@ volatile unsigned int globalState = 0;
 #define NONE 0
 #define STRAIGHT 1
 #define PIVOT 2
+//#define SLA_TURN 2
 #define SLA_TURN 3
 #define SLA_BEFORE 4
 #define SLA_AFTER 5
 #define WALL_OFF 6
 #define FRONT_ctrl 7
 #define PARAREL 8
+//#define DIA_STRAIGHT 2
 #define DIA_STRAIGHT 9
 #define WALL_OFF_WAIT 10
+#define MODE_SELECT 11
+#define START_WAIT 12
+#define IMPORT_PARM 13
 
 #define SEN_R RS_SEN45.now
 #define SEN_L LS_SEN45.now
@@ -389,6 +394,9 @@ volatile unsigned int globalState = 0;
 #define SEN_FRONT Front_SEN.now
 
 char testMode = true;
+
+float R_WALL_EXIST = 1900;
+float L_WALL_EXIST = 1500;
 
 float R_WALL_EXIST2 = 1600;  //探索時壁判定
 float L_WALL_EXIST2 = 1500;  //探索時壁判定
@@ -401,8 +409,6 @@ float FRONT_WALL_EXIST3 = 300; //探索時壁判定
 float px = 0, py = 0;
 float px2 = 0, py2 = 0;
 
-float R_WALL_EXIST = 600;  //探索時壁判定
-float L_WALL_EXIST = 500;  //探索時壁判定
 float FRONT_WALL_EXIST = 800; //探索時壁判定
 float R_WALL_EXIST4 = 220;  //探索時壁判定
 float L_WALL_EXIST4 = 220;  //探索時壁判定

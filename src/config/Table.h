@@ -25,17 +25,6 @@ volatile char isDebug = true;
 #define Left 2
 #define Back 3
 
-#define MODE1 5000
-#define MODE2 7500
-#define MODE3 10000
-#define MODE4 12500
-#define MODE5 15000
-#define MODE6 17500
-#define MODE7 20000
-#define MODE8 22500
-#define MODE9 25000
-#define MODE10 27500
-#define MODE11 30000
 #define OVERFLOW 32500
 #define UNDERFLOW 2500
 #define SEARCH 0

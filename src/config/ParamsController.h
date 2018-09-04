@@ -83,8 +83,9 @@ void inputParameters(char type, float targetAngle, float radius, float front1,
 		pOrval.targetAngle = targetAngle;
 		pOrval.radius = radius;
 		pOrval.front1 = front1;
-		pOrval.back1 = back1;
 		pOrval.front2 = front2;
+		pOrval.back1 = back1;
+		pOrval.back2 = back2;
 		pOrval.time = time;
 		pOrval.n = n;
 		pOrval.velocity = v;
@@ -284,6 +285,8 @@ void save() {
 	vs[Orval][1] = pOrval.radius;
 	vs[Orval][2] = pOrval.front1;
 	vs[Orval][3] = pOrval.back1;
+	vs[Orval][4] = pOrval.front2;
+	vs[Orval][5] = pOrval.back2;
 	vs[Orval][6] = pOrval.time;
 	vs[Orval][7] = pOrval.n;
 	vs[Orval][8] = pOrval.velocity;
@@ -371,6 +374,8 @@ void save2() {
 	vs2[Orval][1] = pOrval.radius;
 	vs2[Orval][2] = pOrval.front1;
 	vs2[Orval][3] = pOrval.back1;
+	vs2[Orval][4] = pOrval.front2;
+	vs2[Orval][5] = pOrval.back2;
 	vs2[Orval][6] = pOrval.time;
 	vs2[Orval][7] = pOrval.n;
 	vs2[Orval][8] = pOrval.velocity;
@@ -442,14 +447,8 @@ float getTargetAngle(char type) {
 	case Orval:
 		return pOrval.targetAngle;
 	case Dia45:
-		if (dia == 1) {
-//			return dia45Angle.rad2;
-		}
 		return pD45.targetAngle;
 	case Dia135:
-		if (dia == 1) {
-//			return dia135Angle.rad2;
-		}
 		return pD135.targetAngle;
 	case Dia90:
 		return pD90.targetAngle;
@@ -467,15 +466,9 @@ float getFrontDistanceLeft(char type) {
 	case Orval:
 		return pOrval.frontLeft1;
 	case Dia45:
-		if (dia == 0) {
-			return pD45.frontLeft1;
-		}
-		return pD45.frontLeft2;
+		return dia == 0 ? pD45.frontLeft1 : pD45.frontLeft2;
 	case Dia135:
-		if (dia == 0) {
-			return pD135.frontLeft1;
-		}
-		return pD135.frontLeft2;
+		return dia == 0 ? pD135.frontLeft1 : pD135.frontLeft2;
 	case Dia90:
 		return pD90.frontLeft1;
 	case Kojima:
@@ -496,15 +489,9 @@ float getFrontDistance(char type, char RorL) {
 	case Orval:
 		return pOrval.front1;
 	case Dia45:
-		if (dia == 0) {
-			return pD45.front1;
-		}
-		return pD45.front2;
+		return dia == 0 ? pD45.front1 : pD45.front2;
 	case Dia135:
-		if (dia == 0) {
-			return pD135.front1;
-		}
-		return pD135.front2;
+		return dia == 0 ? pD135.front1 : pD135.front2;
 	case Dia90:
 		return pD90.front1;
 	case Kojima:
@@ -521,15 +508,9 @@ float getBackDistanceLeft(char type) {
 	case Orval:
 		return pOrval.frontLeft2;
 	case Dia45:
-		if (dia == 1) {
-			return pD45.frontLeft1;
-		}
-		return pD45.frontLeft2;
+		return dia == 1 ? pD45.frontLeft1 : pD45.frontLeft2;
 	case Dia135:
-		if (dia == 1) {
-			return pD135.frontLeft1;
-		}
-		return pD135.frontLeft2;
+		return dia == 1 ? pD135.frontLeft1 : pD135.frontLeft2;
 	case Dia90:
 		return pD90.frontLeft2;
 	case Kojima:
@@ -549,15 +530,9 @@ float getBackDistance_v2(char type, char RorL) {
 	case Orval:
 		return pOrval.back1;
 	case Dia45:
-		if (dia == 1) {
-			return pD45.back1;
-		}
-		return pD45.back2;
+		return dia == 1 ? pD45.back1 : pD45.back2;
 	case Dia135:
-		if (dia == 1) {
-			return pD135.back1;
-		}
-		return pD135.back2;
+		return dia == 1 ? pD135.back1 : pD135.back2;
 	case Dia90:
 		return pD90.back1;
 	case Kojima:
@@ -568,27 +543,15 @@ float getBackDistance_v2(char type, char RorL) {
 float getBackDist(char type, char RorL) {
 	switch (type) {
 	case Normal:
-		if (RorL == L) {
-			return pNormal.frontLeft2;
-		}
-		return pNormal.back1;
+		return RorL == L ? pNormal.frontLeft2 : pNormal.back1;
 	case Large:
 		return pLarge.back1;
 	case Orval:
-		if (RorL == L) {
-			return pOrval.frontLeft2;
-		}
-		return pOrval.back1;
+		return RorL == L ? pOrval.frontLeft2 : pOrval.back1;
 	case Dia45:
-		if (dia == 1) {
-			return pD45.back1;
-		}
-		return pD45.back2;
+		return dia == 1 ? pD45.back1 : pD45.back2;
 	case Dia135:
-		if (dia == 1) {
-			return pD135.back1;
-		}
-		return pD135.back2;
+		return dia == 1 ? pD135.back1 : pD135.back2;
 	case Dia90:
 		return pD90.back1;
 	case Kojima:
@@ -596,14 +559,14 @@ float getBackDist(char type, char RorL) {
 	}
 	return 0;
 }
-float getNaiperTime(char type) {
+float getNaiperTime(char type, char RorL) {
 	switch (type) {
 	case Normal:
 		return pNormal.time;
 	case Large:
 		return pLarge.time;
 	case Orval:
-		return pOrval.time;
+		return RorL == R ? pOrval.time : pOrval.back2;
 	case Dia45:
 		return pD45.time;
 	case Dia135:
@@ -638,14 +601,14 @@ float getNaiperN(char type) {
 float toRadians(float data) {
 	return data * PI / 180;
 }
-float getRadius(char type) {
+float getRadius(char type, char RorL) {
 	switch (type) {
 	case Normal:
 		return pNormal.radius;
 	case Large:
 		return pLarge.radius;
 	case Orval:
-		return pOrval.radius;
+		return RorL == R ? pOrval.radius : pOrval.front2;
 	case Dia45:
 		return pD45.radius;
 	case Dia135:

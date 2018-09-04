@@ -100,9 +100,9 @@ char wallOff(char RorL, char ctrl) {
 		}
 	} else {
 		if (SEN_L < existLeftWall4) {
+			cmtMusic(C4_, 250);
 			walloff1(L);
 		} else {
-			cmtMusic(C4_, 250);
 			walloff2(L);
 		}
 	}
