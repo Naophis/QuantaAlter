@@ -689,8 +689,8 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 	float diac = *(float *) 1049328;
 
 	if (Mode == true) {
-		velocity = 1000;
-		velocity2 = 1500;
+//		velocity = 1000;
+//		velocity2 = 1500;
 		acc = 5000;
 		diac = 12000;
 	} else {

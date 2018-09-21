@@ -44,10 +44,11 @@ char fanStart2 = false;
 //#define FAN_AMP2 10.50
 //#define FAN_AMP 10.50
 
-#define FAN_AMP4 0.0f
-#define FAN_AMP3 0.0f
-float FAN_AMP2 = 6.5f;	//5.0
 float FAN_AMP = 9.0f;	//11.35
+float FAN_AMP2 = 6.5f;	//5.0
+float FAN_AMP3 = 0.0f;	//5.0
+float FAN_AMP4 = 0.0f;	//5.0
+float FAN_AMP5 = 3.0f;	//5.0
 
 volatile float myVacumeDuty = 6.5;
 //#define FAN_AMP 11.0	//11.35
@@ -340,6 +341,7 @@ volatile float log30[L_Length];
 volatile float log31[L_Length];
 volatile float log32[L_Length];
 volatile float log33[L_Length];
+volatile float log34[L_Length];
 
 #define Cycle 24000000.0f
 #define MTU_CYCLE 16000.0f	//4khz
@@ -355,6 +357,7 @@ volatile float log33[L_Length];
 #define TestRun 2
 #define CtrlFan 3
 #define CtrlFan2 4
+#define CtrlFan3 5
 
 volatile char fanMode = SearchRun;
 
@@ -386,6 +389,8 @@ volatile unsigned int globalState = 0;
 #define MODE_SELECT 11
 #define START_WAIT 12
 #define IMPORT_PARM 13
+
+char testRunMode = false;
 
 #define SEN_R RS_SEN45.now
 #define SEN_L LS_SEN45.now

@@ -451,11 +451,12 @@ char roll(char RorL, float Angle, float w_max, float al) {
 float RF_WALL_EXIST2 = 750; //前壁補正　開始
 char frontCtrl() {
 	globalState = FRONT_ctrl;
+	distance = img_distance = 0;
 	char tmp = sensingMode;
 	if (Front_SEN.now > RF_WALL_EXIST2) {
 		sensingMode = SearchMode;
 		while (Front_SEN.now < FRONT_CTRL_1)
-			;
+		;
 		sensingMode = tmp;
 		cmtMusic(D3_, 100);
 		distance = img_distance = 0;
@@ -929,8 +930,10 @@ char orignalRun(float v1, float v2, float ac, float diac, float dist) {
 
 	while (ABS(distance) < ABS(dist)) {
 
-		if (gyroErrResetEnable && (dist - distance) < 90) {
-			gyroErrResetEnable = false;
+		if (!testRunMode) {
+			if (gyroErrResetEnable && (dist - distance) < 90) {
+				gyroErrResetEnable = false;
+			}
 		}
 
 		if (startDecrease(R)) {

@@ -10,13 +10,16 @@
 
 char wallOff(char RorL, char ctrl);
 char wallOff_D(char RorL, char ctrl);
-volatile int wall_off_limit = 40;
-volatile int wall_off_limit_d = 40;
+volatile float wall_off_limit = 40;
+volatile float wall_off_limit_d = 40;
 
 void walloff1(char RorL) {
 	if (RorL == R) {
-		while (SEN_R < R_WALL_OFF && distance <= wall_off_limit
-				&& SEN_FRONT < FRONT_WALL_ON) {
+
+		while (SEN_R < R_WALL_OFF && SEN_FRONT < FRONT_WALL_ON) {
+			if (SEN_FRONT < 500 && distance > wall_off_limit) {
+				break;
+			}
 			if (!fail) {
 				positionControlValueFlg = 0;
 				break;
@@ -116,6 +119,7 @@ char wallOff(char RorL, char ctrl) {
 
 void walloff3(char RorL) {
 	if (RorL == R) {
+
 		while (SEN_R < R_WALL_OFF_D && distance <= wall_off_limit_d
 				&& SEN_L < DIA_N_LEFT_WALL && SEN_FRONT < DIA_FRONT_WALL_ORDER) {
 			if (!fail) {

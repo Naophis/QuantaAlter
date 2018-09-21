@@ -144,8 +144,9 @@ volatile void cmt() {
 			log29[logs] = Se2.error_now;
 			log30[logs] = lastPeekL;
 			log31[logs] = lastPeekR;
-			log32[logs] = lastPeekL2;
-			log33[logs] = lastPeekR2;
+			log32[logs] = distance;
+			log33[logs] = img_distance;
+			log34[logs] = C.angles;
 			logs++;
 		}
 	}
@@ -241,6 +242,9 @@ void mtu4_B() {
 			} else if (fanMode == CtrlFan2) {
 				GPT2.GTCCRA = (short) (FAN_AMP4 / battery * FAN_CYCLE);
 				GPT2.GTCCRC = (short) (FAN_AMP4 / battery * FAN_CYCLE);
+			}else if (fanMode == CtrlFan3) {
+				GPT2.GTCCRA = (short) (FAN_AMP5 / battery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (FAN_AMP5 / battery * FAN_CYCLE);
 			}
 		} else {
 			GPT2.GTCCRA = GPT2.GTCCRC = 0;
@@ -332,6 +336,18 @@ void printErrorEnum() {
 
 void main(void) {
 	initRX64M();
+//	while (true) {
+////		S12AD.ADANSA0.BIT.ANSA0 = 0x77E;
+////		S12AD.ADCSR.BIT.ADST = 1;
+////		while (S12AD.ADCSR.BIT.ADST)
+////			;
+////		S12AD1.ADANSA0.BIT.ANSA0 = 0x700;
+////		S12AD1.ADCSR.BIT.ADST = 1;
+////		while (S12AD1.ADCSR.BIT.ADST)
+////			;
+//		myprintf("%d	%d	%d	%d	%d\r\n", LS2, LS45, FRONT_AD, RS45, RS2);
+//		cmt_wait(25);
+//	}
 
 	batteryCheck();
 	setupCmt = enableMPU = os_escape = true;

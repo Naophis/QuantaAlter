@@ -201,6 +201,7 @@ void resetAllData() {
 	mode_FF = 1;
 	distance = 0;
 	img_distance = 0;
+	testRunMode = false;
 	resetOmegaParam();
 }
 void clearLogs();
@@ -574,6 +575,8 @@ void keepZeroPoint2() {
 		myprintf("battery=%f V\r\n", battery);
 		myprintf("Gyro=%f\r\n", settleGyro);
 		myprintf("	%f %f\r\n", LS_SEN45.now, RS_SEN45.now);
+		myprintf("	%f %f\r\n", LS_SEN45.on, RS_SEN45.on);
+		myprintf("	%f %f\r\n", LS_SEN45.off, RS_SEN45.off);
 		myprintf("%f 		%f\r\n", 0, Front_SEN.now);
 		myprintf("Duty:	%f	%f\r\n", Duty_l, Duty_r);
 		myprintf("Velocity:	%f	%f\r\n", V_Enc.l, V_Enc.r);
@@ -788,7 +791,8 @@ void logOutPut() {
 		cmt_wait(1);
 		myprintf(" %f %f %f %f %f", log25[c], log26[c], log27[c],
 				log28[c] * 100, log29[c]);
-		myprintf(" %f %f %f %f\r\n", log30[c], log31[c], log32[c], log33[c]);
+		myprintf(" %f %f %f %f %f\r\n", log30[c], log31[c], log32[c], log33[c],
+				log34[c]);
 	}
 	globalState = STRAIGHT;
 }

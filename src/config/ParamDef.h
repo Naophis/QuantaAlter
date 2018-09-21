@@ -245,7 +245,7 @@ void importFromDataFlash() {
 	FRONT_CTRL_1 = *(float *) 1049724;
 	myprintf("FRONT_CTRL_1	%f	%d\r\n", FRONT_CTRL_1, 1049724);
 
-	float fastRunFan, seachFan;
+	float fastRunFan, seachFan, seachFanLow;
 	R_WALL_OFF = *(float *) 1049856;
 	myprintf("R_WALL_OFF	%f	%d\r\n", R_WALL_OFF, 1049856);
 	L_WALL_OFF = *(float *) 1049860;
@@ -288,9 +288,23 @@ void importFromDataFlash() {
 	myprintf("seachFan	%f	%d\r\n", seachFan, 1049936);
 	fastRunFan = *(float *) 1049940;
 	myprintf("fastRunFan	%f	%d\r\n", fastRunFan, 1049940);
+	RS_SEN45.ref2 = *(float *) 1049944;
+	myprintf("RS_SEN45.ref2	%f	%d\r\n", RS_SEN45.ref2, 1049944);
+	LS_SEN45.ref2 = *(float *) 1049948;
+	myprintf("LS_SEN45.ref2	%f	%d\r\n", LS_SEN45.ref2, 1049948);
+//	R_WALL_OFF3=*(float *)1049952;myprintf("R_WALL_OFF3	%f	%d\r\n",R_WALL_OFF3,1049952);
+//	FrontCtrl111=*(float *)1049956;myprintf("FrontCtrl111	%f	%d\r\n",FrontCtrl111,1049956);
+//	tempdist1=*(float *)1049960;myprintf("tempdist1	%f	%d\r\n",tempdist1,1049960);
+//	rightCtrlDiff=*(float *)1049964;myprintf("rightCtrlDiff	%f	%d\r\n",rightCtrlDiff,1049964);
+//	leftCtrlDiff=*(float *)1049968;myprintf("leftCtrlDiff	%f	%d\r\n",leftCtrlDiff,1049968);
+//	kireme_R=*(float *)1049972;myprintf("kireme_R	%f	%d\r\n",kireme_R,1049972);
+//	kireme_L=*(float *)1049976;myprintf("kireme_L	%f	%d\r\n",kireme_L,1049976);
+	seachFanLow = *(float *) 1049980;
+	myprintf("seachFanLow	%f	%d\r\n", seachFanLow, 1049980);
 
 	FAN_AMP = fastRunFan;
 	FAN_AMP2 = seachFan;
+	FAN_AMP5 = seachFanLow;
 }
 
 void override() {

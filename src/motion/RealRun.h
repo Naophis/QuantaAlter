@@ -54,8 +54,13 @@ char runForPath(float max, float ac, float diac) {
 			wall_off_limit = 125000;
 			wall_off_limit_d = 125000;
 			dist = 0.5 * (path_s[i] - 1) - 1;
+			if (dist >= 0.5) {
+				const float tempdist1 = *(float *) 1049960;
+				wall_off_limit = wall_off_limit_d = tempdist1;
+			}
 		} else {
-			wall_off_limit = wall_off_limit_d = 250;
+			const float tempdist1 = *(float *) 1049960;
+			wall_off_limit = wall_off_limit_d = tempdist1;
 			dist = 0.5 * path_s[i] - 1;
 		}
 		if (dist <= 0) {
@@ -130,7 +135,6 @@ char runForPath(float max, float ac, float diac) {
 		gyroErrResetEnable = false;
 	}
 	cc = 0;
-
 
 	if (!dia) {
 		frontCtrl();
@@ -278,7 +282,9 @@ char runForKnownPath(float max, float ac, float diac) {
 
 		slaVelocity = turnVelocitySlow(turnVarys);
 		RorL = turnRoL(path_t[i]);
-		if (dist > 0) {
+		if (dist == 1) {
+			check = runForWallOff(slaVelocity, 0, 180.0, 1);
+		} else if (dist > 0) {
 			if (dia == 0) {
 				if (path_t[i] == 255 && tmp) {
 					cmtMusic(C2_, 500);

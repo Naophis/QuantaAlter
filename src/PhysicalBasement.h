@@ -156,15 +156,19 @@ int checkStr = 0;
 float check_sen_error(void) {
 	float error = 0;
 	char check = 0;
+	const float rightCtrlDiff = *(float *) 1049964;
+	const float leftCtrlDiff = *(float *) 1049968;
+	const int kireme_R = (int) (*(float *) 1049972);
+	const int kireme_L = (int) (*(float *) 1049976);
 	if (Front_SEN.now < FRONT_OUT) {
-		if (ABS(RS_SEN45.now - RS_SEN45.old) < KIREME_R) {
-			if (RS_SEN45.now > (RS_SEN45.ref - 50)) {
+		if (ABS(RS_SEN45.now - RS_SEN45.old) < kireme_R) {
+			if (RS_SEN45.now > (RS_SEN45.ref - rightCtrlDiff)) {
 				error += RS_SEN45.now - RS_SEN45.ref;
 				check++;
 			}
 		}
-		if (ABS(LS_SEN45.now - LS_SEN45.old) < KIREME_L) {
-			if (LS_SEN45.now > (LS_SEN45.ref - 40)) {
+		if (ABS(LS_SEN45.now - LS_SEN45.old) < kireme_L) {
+			if (LS_SEN45.now > (LS_SEN45.ref - leftCtrlDiff)) {
 				error -= LS_SEN45.now - LS_SEN45.ref;
 				check++;
 			}
@@ -177,12 +181,11 @@ float check_sen_error(void) {
 			Gy.error_old = 0;
 			Angle.error_old = 0;
 		}
-		if (gyroErrResetEnable) {
+		if (!testRunMode && gyroErrResetEnable) {
 			Gy.error_old = 0;
 			Angle.error_old = 0;
+			angle = ang = 0;
 		}
-		angle = 0;
-		ang = 0;
 	}
 
 	if (check != 0) {
@@ -304,6 +307,8 @@ void errorVelocity(void) {
 	C.s = 0;
 	const float CsLimit = *(float *) 1049456;
 	const float CsLimitDia = *(float *) 1049460;
+	const float CanlgesLimit = *(float *) 1049464;
+	const float CgLimit = *(float *) 1049468;
 
 	if (positionControlValueFlg == 1) {
 		if (dia == 0) {
@@ -348,20 +353,32 @@ void errorVelocity(void) {
 		C.s = 0;
 	}
 	Gy.error_now = (W_now - settleGyro);
-	Gy.error_old += Gy.error_now;
+	if (C.g > CgLimit || C.g < -CgLimit) {
+	} else {
+		Gy.error_old += Gy.error_now;
+	}
 	if (Gy.before != 0) {
 		Gy.error_delta = Gy.error_now - Gy.before;
 	} else {
 		Gy.error_delta = 0;
 	}
-
 	Gy.before = Gy.error_now;
 
 	C.g = Gyro.Kp * Gy.error_now + Gyro.Ki * Gy.error_old
 			+ Gyro.Kd * Gy.error_delta;
+	if (C.g > CgLimit) {
+		C.g = CgLimit;
+	}
+	if (C.g < -CgLimit) {
+		C.g = -CgLimit;
+	}
 
 	Angle.error_now = (angle - ang);
-	Angle.error_old += Angle.error_now;
+
+	if (C.angles > CanlgesLimit || C.angles < -CanlgesLimit) {
+	} else {
+		Angle.error_old += Angle.error_now;
+	}
 	if (Angle.before != 0) {
 		Angle.error_delta = Angle.error_now - Angle.before;
 	} else {
@@ -372,6 +389,13 @@ void errorVelocity(void) {
 
 	C.angles = Angles.Kp * Angle.error_now + Angles.Ki * Angle.error_old
 			+ Angles.Kd * Angle.error_delta;
+
+	if (C.angles > CanlgesLimit) {
+		C.angles = CanlgesLimit;
+	}
+	if (C.angles < -CanlgesLimit) {
+		C.angles = -CanlgesLimit;
+	}
 
 }
 

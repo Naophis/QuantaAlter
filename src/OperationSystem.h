@@ -169,6 +169,7 @@ void inputNaiperTurnAll1900() {
 void inputNaiperTurnAll2000() {
 	inputNaiperTurnAll1900();
 	setLargeParam2000();
+	setOrvalParam2000();
 }
 void inputNaiperTurnAll2100() {
 	inputNaiperTurnAll1900();
@@ -375,7 +376,9 @@ void testSlalom3() {
 	}
 
 	char RorL = eigherRightLeft() == Right ? R : L;
-	wall_off_limit = wall_off_limit_d = 400;
+	float tempdist1 = *(float *) 1049960;
+	myprintf("tempdist1	%f	%d\r\n", tempdist1, 1049960);
+	wall_off_limit = wall_off_limit_d = tempdist1;
 	motionCheck();
 	cmt_wait(500);
 	gyroZeroCheck(false);
@@ -410,7 +413,10 @@ void testSlalom3() {
 	cc = 1;
 	logs = 0;
 	if (globalSkipFront) {
+
+		testRunMode = true;
 		realRun(vMax, accele, diaccele, 41 + getFirstFront(type), vMax);
+		testRunMode = false;
 	} else {
 		realRun(vMax, accele, diaccele, 180.0 * 1.22, vMax);
 	}
@@ -433,6 +439,9 @@ void testSlalom3() {
 		slalom(RorL == R ? L : R, test_sla_return_scenario, vMax, vMax, 0);
 	}
 	cc = 0;
+
+	testRunMode = true;
+
 	if (dia == 1) {
 		realRun(vMax, accele, diaccele, 180.0 * ROOT2, 50);
 	} else {
@@ -475,6 +484,8 @@ void testNormalSlalom() {
 	ang = angle = Gy.error_old = 0;
 	mode_FF = 1;
 	save();
+
+	testRunMode = true;
 
 	if (test_front_ctrl) {
 		realRun(vMax, accele, diaccele, 180.0 * 1, vMax);
@@ -597,6 +608,10 @@ void testRoll(char r) {
 	char test_turn_times = (char) (*(float *) 1049308);
 	float test_turn_acc = *(float *) 1049312;
 	float test_turn_w = *(float *) 1049316;
+
+	if (test_turn_times == 0) {
+		test_turn_times = 1;
+	}
 
 	r = eigherRightLeft() == Right ? R : L;
 	gyroZeroCheck(true);
@@ -1043,7 +1058,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 18000, 18000);
+		char check = runForPath(v, 22000, 18000);
 	} else if (mode == RUN2) {
 		float v = 4700;
 		if (!fastMode) {
@@ -1057,7 +1072,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 20000, 18000);
+		char check = runForPath(v, 22000, 22000);
 	} else if (mode == RUN3) {
 		float v = 5000;
 		if (!fastMode) {
@@ -1071,7 +1086,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 20000, 18000);
+		char check = runForPath(v, 22000, 22000);
 	} else if (mode == RUN4) {
 		float v = eigherRightLeft() == Right ? 5000 : 4500;
 		makePath(goalX, goalY, isFull);
@@ -1085,7 +1100,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 20000, 18000);
+		char check = runForPath(v, 22000, 22000);
 	} else if (mode == RUN5) {
 		float v = eigherRightLeft() == Right ? 5100 : 4700;
 		makePath(goalX, goalY, isFull);
@@ -1093,18 +1108,17 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		if (transam) {
 			callParamForCircit(2500);
 		}
-
 		save();
 		inputNaiperTurnAll1700();
 		save2();
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 20000, 18000);
+		char check = runForPath(v, 22000, 22000);
 	} else if (mode == CONFIG) {
 		float v = eigherRightLeft() == Right ? 5100 : 5000;
 		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll2000();
+		inputNaiperTurnAll2100();
 		if (transam) {
 			callParamForCircit(2600);
 		}
@@ -1114,7 +1128,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 20500, 19000);
+		char check = runForPath(v, 22000, 22000);
 	} else if (mode == CONFIG2) {
 		float v = eigherRightLeft() == Right ? 5100 : 5000;
 		makePath(goalX, goalY, isFull);
@@ -1125,7 +1139,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 21000, 19500);
+		char check = runForPath(v, 22000, 22000);
 	} else if (mode == CONFIG3) {
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1900();
@@ -1136,7 +1150,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 			motionCheck();
 		}
 		float v = getMaxVeloctiy();
-		char check = runForPath(v, 20000, 18000);
+		char check = runForPath(v, 22000, 22000);
 	} else if (mode == CONFIG4) {
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1900();
@@ -1147,7 +1161,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 20000, 18000);
+		char check = runForPath(v, 22000, 22000);
 	} else if (mode == CONFIG5) {
 		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1900();
@@ -1158,7 +1172,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 20000, 18000);
+		char check = runForPath(v, 22000, 22000);
 	} else if (mode == CONFIG6) {
 	} else if (mode == CONFIG7) {
 		goalChangeFlg = 1;
@@ -1459,6 +1473,10 @@ void operation() {
 		case 10:
 			cmtMusic(F3_, 100);
 			cirquitFull();
+			break;
+		case 11:
+			cmtMusic(G3_, 100);
+			keepZeroPoint2();
 			break;
 		}
 	} else {
