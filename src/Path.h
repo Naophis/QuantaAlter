@@ -129,6 +129,7 @@ float drawChangePathRoot(char goalX, char goalY, char isFull) {
 	unsigned char checkker = 0;
 	unsigned int turnLisk[4];
 	int tempLisk = 0;
+
 	deadEnd(goalX, goalY);
 //	updateVectorMap(goalX, goalY, false, isFull);
 	vectorDistUpdate(goalX, goalY, isFull);
@@ -572,6 +573,117 @@ float drawChangePathRoot(char goalX, char goalY, char isFull) {
 	return pathCreateChange(goalX, goalY, 0, 0, 1);
 }
 
+double getStraightTime(double v1, double vmax, double v2, double ac,
+		double diac, double dist) {
+	double dt = 0.001 / 4;
+	double acc = ac;
+	double distance = 0;
+	double time = 0;
+	double V_now = v1;
+	int sequence = 1;
+	double d2;
+	while (distance < dist) {
+		time += dt;
+		d2 = ABS((V_now + v2) * (V_now - v2) / (2.0 * diac));
+		switch (sequence) {
+		case 3:
+			acc = 0;
+			break;
+		case 1:
+			sequence = asc(dist - distance, d2);
+			if (V_now >= vmax) {
+				acc = 0;
+				V_now = vmax;
+			} else {
+				acc = ac;
+			}
+			if (sequence != 3) {
+				break;
+			}
+		case 2:
+			if (V_now <= v2) {
+				acc = 0;
+				V_now = v2;
+			} else {
+				acc = -diac;
+			}
+			break;
+		}
+		V_now += acc * dt;
+		distance += V_now * dt;
+	}
+
+	return time;
+}
+
+double getGoalTime(char showTime) {
+	char turnVarys;
+	double vsla;
+	double v_now;
+	double time;
+	char RorL = R;
+	getAllPram2();
+	for (int i = 0;; i++) {
+		double strDist = 0;
+		if (i == 0) {
+			strDist = 0.5 * (path_s[i] - 1) - 1;
+		} else {
+			strDist = 0.5 * path_s[i] - 1;
+		}
+		if (strDist > 0) {
+			getAllPram();
+		}
+		turnVarys = turnVary(path_t[i]);
+		vsla = turnVelocity(turnVarys);
+		double t1 = 0;
+		double t2 = 0;
+		double t3 = getFrontDistance(turnVarys, RorL) / vsla;
+		if (i == 0) {
+			t1 = getStraightTime(v_now, pathVmax, vsla, pathAcc, pathDiac,
+					180 * strDist + 41);
+		} else if (strDist > 0) {
+			if (!dia) {
+				t1 = getStraightTime(v_now, pathVmax, vsla, pathAcc, pathDiac,
+						180 * strDist);
+			} else {
+				t1 = getStraightTime(v_now, pathVmax * 0.7, vsla, pathAcc * 0.5,
+						pathDiac * 0.8, 180 * strDist * ROOT2);
+			}
+		}
+		RorL = turnRoL(path_t[i]);
+		t2 = getNaiperTime(turnVarys, RorL);
+
+		if (turnVarys == Dia45 || turnVarys == Dia135) {
+			dia = dia == 0 ? 1 : 0;
+		}
+
+		double t4 = getBackDist(turnVarys, RorL) / vsla;
+
+		v_now = vsla;
+		time += t1 + t2 * 2 + t3 + t4;
+
+		if (showTime) {
+			myprintf("%d	(%f,%f),	%f\r\n", i, t1, t2 * 2 + t3 + t4, time);
+		}
+
+		if (path_t[i] == 255) {
+			break;
+		}
+	}
+	return time;
+}
+
+double sitimulateTime(char bool) {
+	double time = 0;
+	if (bool) {
+		largePath(true);
+		diagonalPath(true, true);
+		time = getGoalTime(false);
+		return time;
+	}
+	return 255;
+}
+
 float countPathLength(char bool) {
 	int i = 0;
 	float j = 0;
@@ -590,9 +702,10 @@ float countPathLength(char bool) {
 			} else if (path_t[i] == 11 || path_t[i] == 12) {
 				j += 1;
 			} else {
-				j += 0.5;
+				j += 1;
 			}
 		}
+		return j;
 //		float tmp = j;
 		for (i = 0; path_t[i] != 255; i++) {
 			j++;
@@ -778,7 +891,12 @@ float pathCreateChange(int Goal_X, int Goal_Y, int qX, int qY, int fixedMove) {
 	if (qX == 0 && qY == 0) {
 		return 0;
 	}
-	return countPathLength(bool);
+
+	if (pathVmax > 0) {
+		return sitimulateTime(bool);
+	} else {
+		return countPathLength(bool);
+	}
 }
 
 #endif /* PATH_H_ */

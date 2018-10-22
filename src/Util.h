@@ -797,6 +797,16 @@ void logOutPut() {
 	globalState = STRAIGHT;
 }
 
+void detectSysIdLogOutput() {
+	while (Swich == 1)
+		;
+	for (int c = 0; c < DETECT_SYS_ID_Length; c++) {
+		myprintf("%f,%f,%f,%f\r\n", vrlist[c], vllist[c], gyrolist[c],
+				dutylist[c]);
+		cmt_wait(1);
+	}
+}
+
 void logOutput3() {
 	while (Swich == 1)
 		;

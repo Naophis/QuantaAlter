@@ -692,7 +692,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 //		velocity = 1000;
 //		velocity2 = 1500;
 		acc = 5000;
-		diac = 12000;
+		diac = 6000;
 	} else {
 		velocity = 500;
 		velocity2 = 1000;
@@ -894,11 +894,49 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 				backFlg = 0;
 				break;
 			case Right:
-				check = slalom(R, Normal, velocity, velocity, 0);
+//				if (
+////						(x == GoalX && y == GoalY) || (x == GoalX + 1 && y == GoalY)
+////						|| (x == GoalX && y == GoalY + 1)
+////						|| (x == GoalX + 1 && y == GoalY + 1)
+////						||
+//				(x == firstGoalX && y == firstGoalY)
+//						|| (x == firstGoalX + 1 && y == firstGoalY)
+//						|| (x == firstGoalX && y == firstGoalY + 1)
+//						|| (x == firstGoalX + 1 && y == firstGoalY + 1)) {
+//					frontCtrl();
+//					realRun(velocity, acc, diac, 90, 100);
+//					mtu_stop();
+//					gyroRollTest(L, 90, 60, 100);
+//					fanMode = SearchRun;
+//					mtu_start();
+//					check = front(velocity, acc, 90, 1);
+////					check = runForWallOff(velocity, acc, 90, 1);
+//				} else {
+					check = slalom(R, Normal, velocity, velocity, 0);
+//				}
 				backFlg = 0;
 				break;
 			case Left:
-				check = slalom(L, Normal, velocity, velocity, 0);
+//				if (
+////						(x == GoalX && y == GoalY) || (x == GoalX + 1 && y == GoalY)
+////						|| (x == GoalX && y == GoalY + 1)
+////						|| (x == GoalX + 1 && y == GoalY + 1)
+////						||
+//				(x == firstGoalX && y == firstGoalY)
+//						|| (x == firstGoalX + 1 && y == firstGoalY)
+//						|| (x == firstGoalX && y == firstGoalY + 1)
+//						|| (x == firstGoalX + 1 && y == firstGoalY + 1)) {
+//					frontCtrl();
+//					realRun(velocity, acc, diac, 90, 100);
+//					mtu_stop();
+//					gyroRollTest(R, 90, 60, 100);
+//					fanMode = SearchRun;
+//					mtu_start();
+//					 front(velocity, acc, 90, 1);
+////					check = runForWallOff(velocity, acc, 90, 1);
+//				} else {
+					check = slalom(L, Normal, velocity, velocity, 0);
+//				}
 				backFlg = 0;
 				break;
 			case Back:

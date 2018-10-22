@@ -52,6 +52,8 @@ float Vkp, Vki, Vkd;
 #define supR_WALL 2000
 #define supL_WALL 2000
 
+float RF_WALL_EXIST2 = 800; //前壁補正　開始
+
 //#define KIREME_R_DIA_SIDE 20
 //#define KIREME_L_DIA_SIDE 20
 
@@ -244,6 +246,8 @@ void importFromDataFlash() {
 	myprintf("search_wall_off_r	%f	%d\r\n", search_wall_off_r, 1049720);
 	FRONT_CTRL_1 = *(float *) 1049724;
 	myprintf("FRONT_CTRL_1	%f	%d\r\n", FRONT_CTRL_1, 1049724);
+	RF_WALL_EXIST2 = *(float *) 1049728;
+	myprintf("RF_WALL_EXIST2	%f	%d\r\n", RF_WALL_EXIST2, 1049728);
 
 	float fastRunFan, seachFan, seachFanLow;
 	R_WALL_OFF = *(float *) 1049856;

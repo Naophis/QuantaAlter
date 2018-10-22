@@ -532,8 +532,6 @@ void dutyCalcuration2(void) {
 	SeFrnt.error_old = 0;
 	SeFrntL.error_old = 0;
 
-//	dutyL = 15;
-//	dutyR = -15;
 	Duty_r = dutyR;
 	Duty_l = dutyL;
 	changeRotation(dutyR, R);	//R_CW/CCW
@@ -587,6 +585,25 @@ void Physical_Basement(void) {
 
 	enc_to_vel();
 
-	dutyCalcuration2();
+	if (enableSystemIdentification) {
+
+		gra_r = (short) (ABS(*(float *) 1049472) / battery * M_CYCLE);
+		gra_l = (short) (ABS(*(float *) 1049476) / battery * M_CYCLE);
+
+		float dutyR = gra_r * 100 / M_CYCLE;
+		float dutyL = gra_l * 100 / M_CYCLE;
+
+		changeRotation(*(float *) 1049472, R);	//R_CW/CCW
+		changeRotation(*(float *) 1049476, L);	//L_CW/CCW
+
+		if (enablePWM) {
+			GPT0.GTCCRA = GPT0.GTCCRC = gra_l;
+			GPT1.GTCCRA = GPT1.GTCCRC = gra_r;
+		} else {
+			GPT0.GTCCRA = GPT0.GTCCRC = GPT1.GTCCRA = GPT1.GTCCRC = 0;
+		}
+	} else {
+		dutyCalcuration2();
+	}
 }
 #endif /* PHYSICALBASEMENT_H_ */

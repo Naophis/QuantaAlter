@@ -448,7 +448,6 @@ char roll(char RorL, float Angle, float w_max, float al) {
 	return 1;
 }
 
-float RF_WALL_EXIST2 = 750; //前壁補正　開始
 char frontCtrl() {
 	globalState = FRONT_ctrl;
 	distance = img_distance = 0;
@@ -472,7 +471,7 @@ float FRONT_CTRL = 1315;   //前壁補正
 float F_WALL_EXIST5 = 750; //前壁補正　開始
 char frontCtrl5() {
 	char tmp = sensingMode;
-	if (Front_SEN.now > F_WALL_EXIST5) {
+	if (Front_SEN.now > RF_WALL_EXIST2) {
 		sensingMode = SearchMode;
 		while (Front_SEN.now < FRONT_CTRL_1)
 			;

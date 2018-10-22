@@ -47,7 +47,7 @@ char fanStart2 = false;
 float FAN_AMP = 9.0f;	//11.35
 float FAN_AMP2 = 6.5f;	//5.0
 float FAN_AMP3 = 0.0f;	//5.0
-float FAN_AMP4 = 0.0f;	//5.0
+float FAN_AMP4 = 4.0f;	//5.0
 float FAN_AMP5 = 3.0f;	//5.0
 
 volatile float myVacumeDuty = 6.5;
@@ -307,7 +307,7 @@ volatile vector_map m[MAZE_SIZE][MAZE_SIZE];
 
 #define Q_LENGTH 2048
 int que[Q_LENGTH][3];
-#define L_Length 2800
+#define L_Length 3000
 volatile int log1[L_Length];
 volatile float logs2[L_Length];
 volatile float log3[L_Length];
@@ -342,6 +342,16 @@ volatile float log31[L_Length];
 volatile float log32[L_Length];
 volatile float log33[L_Length];
 volatile float log34[L_Length];
+
+volatile char enableSystemIdentification = false;
+volatile float sysIdDutyR = 0;
+volatile float sysIdDutyL = 0;
+
+#define DETECT_SYS_ID_Length 20
+volatile float vrlist[DETECT_SYS_ID_Length];
+volatile float vllist[DETECT_SYS_ID_Length];
+volatile float gyrolist[DETECT_SYS_ID_Length];
+volatile float dutylist[DETECT_SYS_ID_Length];
 
 #define Cycle 24000000.0f
 #define MTU_CYCLE 16000.0f	//4khz
@@ -417,5 +427,9 @@ float px2 = 0, py2 = 0;
 float FRONT_WALL_EXIST = 800; //探索時壁判定
 float R_WALL_EXIST4 = 220;  //探索時壁判定
 float L_WALL_EXIST4 = 220;  //探索時壁判定
+
+float pathVmax=0;
+float pathAcc=0;
+float pathDiac=0;
 
 #endif /* DEFINES_H_ */

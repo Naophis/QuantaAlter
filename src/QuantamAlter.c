@@ -150,6 +150,14 @@ volatile void cmt() {
 			logs++;
 		}
 	}
+
+	if (enableSystemIdentification && timer < DETECT_SYS_ID_Length) {
+		vrlist[timer] = V_Enc.r;
+		vllist[timer] = V_Enc.l;
+		gyrolist[timer] = settleGyro;
+		dutylist[timer] = (*(float *) 1049472) / battery * M_CYCLE;
+	}
+
 }
 
 volatile int timer2 = 0;
@@ -159,7 +167,7 @@ void mtu4_A() {
 	switch (tpu_count) {
 	case 1:
 		timer2++;
-		sensing_in_off();
+//		sensing_in_off();
 		if (mpu) {
 			callMpu(0x47);
 		}
@@ -195,7 +203,8 @@ void mtu4_A() {
 		if (mpu) {
 			callMpu(0x47);
 		}
-		sensing_battery();
+		sensing_in_off();
+//		sensing_battery();
 		break;
 	}
 }
@@ -242,7 +251,7 @@ void mtu4_B() {
 			} else if (fanMode == CtrlFan2) {
 				GPT2.GTCCRA = (short) (FAN_AMP4 / battery * FAN_CYCLE);
 				GPT2.GTCCRC = (short) (FAN_AMP4 / battery * FAN_CYCLE);
-			}else if (fanMode == CtrlFan3) {
+			} else if (fanMode == CtrlFan3) {
 				GPT2.GTCCRA = (short) (FAN_AMP5 / battery * FAN_CYCLE);
 				GPT2.GTCCRC = (short) (FAN_AMP5 / battery * FAN_CYCLE);
 			}
@@ -336,19 +345,6 @@ void printErrorEnum() {
 
 void main(void) {
 	initRX64M();
-//	while (true) {
-////		S12AD.ADANSA0.BIT.ANSA0 = 0x77E;
-////		S12AD.ADCSR.BIT.ADST = 1;
-////		while (S12AD.ADCSR.BIT.ADST)
-////			;
-////		S12AD1.ADANSA0.BIT.ANSA0 = 0x700;
-////		S12AD1.ADCSR.BIT.ADST = 1;
-////		while (S12AD1.ADCSR.BIT.ADST)
-////			;
-//		myprintf("%d	%d	%d	%d	%d\r\n", LS2, LS45, FRONT_AD, RS45, RS2);
-//		cmt_wait(25);
-//	}
-
 	batteryCheck();
 	setupCmt = enableMPU = os_escape = true;
 

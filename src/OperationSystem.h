@@ -394,14 +394,17 @@ void testSlalom3() {
 		TRANSAM = true;
 		startVacume2(90);
 	}
-	Sen_Dia_Side.Kp = Sen_Dia_Side.Ki = Sen_Dia_Side.Kd = 0.0;
+
+	if (!test_dia) {
+		Sen_Dia_Side.Kp = Sen_Dia_Side.Ki = Sen_Dia_Side.Kd = 0.0;
+	}
 
 	ang = 0;
 	angle = 0;
 	Gy.error_old = 0;
 	mode_FF = 1;
 
-	dia = (char) test_dia == 1;
+//	dia = (char) test_dia == 1;
 
 	save();
 
@@ -413,7 +416,6 @@ void testSlalom3() {
 	cc = 1;
 	logs = 0;
 	if (globalSkipFront) {
-
 		testRunMode = true;
 		realRun(vMax, accele, diaccele, 41 + getFirstFront(type), vMax);
 		testRunMode = false;
@@ -442,10 +444,16 @@ void testSlalom3() {
 
 	testRunMode = true;
 
-	if (dia == 1) {
-		realRun(vMax, accele, diaccele, 180.0 * ROOT2, 50);
+	if (test_dia) {
+		float targetDistDia = *(float *) 1049300;
+		float test_max_v = *(float *) 1049272;
+		realRun(test_max_v, accele, diaccele, targetDistDia, 50);
 	} else {
-		realRun(vMax, accele, diaccele, 180.0 * 1.0, 50);
+		if (dia == 1) {
+			realRun(vMax, accele, diaccele, 180.0 * ROOT2, 50);
+		} else {
+			realRun(vMax, accele, diaccele, 180.0 * 1.0, 50);
+		}
 	}
 //	running(50, 0, 90, 0);
 	mtu_stop2();
@@ -687,18 +695,26 @@ char makePath4() {
 	vetorPathCreate(0, 0, false);
 	largePath(true);
 	diagonalPath(false, true);
-
 	return true;
 }
-void makePath(char goalX, char goalY, char isFull) {
+void makePath(char goalX, char goalY, char isFull, float vmax, float acc,
+		float diac) {
 	flushcheckQ();
 	printMap();
 	printMap2();
+
+	pathVmax = vmax;
+	pathAcc = acc;
+	pathDiac = diac;
+
 	if (cirquitMode == false) {
 		minus = 4;
 		int minus3 = makePath3(goalX, goalY, isFull);
 	}
 	printRealPath();
+	double time = getGoalTime(true);
+	myprintf("time = %f\r\n", time);
+
 }
 void makePath2() {
 	flushcheckQ();
@@ -727,7 +743,7 @@ void testVacume2(int duty) {
 //	resetGyroParam();
 	startVacume2(duty);
 	fanMode = TestRun;
-	//	cmt_wait(15000);
+//	cmt_wait(15000);
 	int mode = 0;
 	while (PushCenter) {
 
@@ -1048,131 +1064,134 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		return Adachi2(goalX, goalY, Oufuku, isFull, m2) ? 2 : 0;
 	} else if (mode == RUN) {
 		float v = 4500;
-		if (!fastMode) {
-			v = eigherRightLeft() == Right ? 4500 : 3500;
-		}
-		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1500();
 		save();
 		save2();
 		if (!fastMode) {
+			v = eigherRightLeft() == Right ? 4500 : 3500;
+		}
+		float acc = 20500;
+		float diac = 18000;
+		if (eigherRightLeft() == Right) {
+			makePath(goalX, goalY, isFull, v, acc, diac);
+		} else {
+			makePath(goalX, goalY, isFull, 0, 0, 0);
+		}
+		double time = sitimulateTime(false);
+		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 22000, 18000);
+		char check = runForPath(v, acc, diac);
 	} else if (mode == RUN2) {
 		float v = 4700;
+		inputNaiperTurnAll1700();
+		save();
+		inputNaiperTurnAll1500();
+		save2();
 		if (!fastMode) {
 			v = eigherRightLeft() == Right ? 4700 : 4000;
 		}
-		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll1700();
-		save();
-		inputNaiperTurnAll1700();
-		save2();
+		float acc = 20500;
+		float diac = 22000;
+		if (eigherRightLeft() == Right) {
+			makePath(goalX, goalY, isFull, v, acc, diac);
+		} else {
+			makePath(goalX, goalY, isFull, 0, 0, 0);
+		}
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 22000, 22000);
+		char check = runForPath(v, acc, diac);
 	} else if (mode == RUN3) {
 		float v = 5000;
 		if (!fastMode) {
 			v = eigherRightLeft() == Right ? 5000 : 4500;
 		}
-		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1800();
 		save();
-		inputNaiperTurnAll1700();
+		inputNaiperTurnAll1500();
 		save2();
+
+		float acc = 20500;
+		float diac = 22000;
+		if (eigherRightLeft() == Right) {
+			makePath(goalX, goalY, isFull, v, acc, diac);
+		} else {
+			makePath(goalX, goalY, isFull, 0, 0, 0);
+		}
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 22000, 22000);
+		char check = runForPath(v, acc, diac);
 	} else if (mode == RUN4) {
 		float v = eigherRightLeft() == Right ? 5000 : 4500;
-		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll1900();
 		if (transam) {
 			callParamForCircit(2400);
 		}
 		save();
-		inputNaiperTurnAll1700();
+		inputNaiperTurnAll1500();
 		save2();
+
+		float acc = 20500;
+		float diac = 22000;
+		if (eigherRightLeft() == Right) {
+			makePath(goalX, goalY, isFull, v, acc, diac);
+		} else {
+			makePath(goalX, goalY, isFull, 0, 0, 0);
+		}
+
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 22000, 22000);
+		char check = runForPath(v, acc, diac);
 	} else if (mode == RUN5) {
 		float v = eigherRightLeft() == Right ? 5100 : 4700;
-		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll2000();
 		if (transam) {
 			callParamForCircit(2500);
 		}
 		save();
-		inputNaiperTurnAll1700();
+		inputNaiperTurnAll1500();
 		save2();
+		float acc = 20500;
+		float diac = 22000;
+		if (eigherRightLeft() == Right) {
+			makePath(goalX, goalY, isFull, v, acc, diac);
+		} else {
+			makePath(goalX, goalY, isFull, 0, 0, 0);
+		}
+
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 22000, 22000);
+		char check = runForPath(v, acc, diac);
 	} else if (mode == CONFIG) {
 		float v = eigherRightLeft() == Right ? 5100 : 5000;
-		makePath(goalX, goalY, isFull);
 		inputNaiperTurnAll2100();
 		if (transam) {
 			callParamForCircit(2600);
 		}
 		save();
-		inputNaiperTurnAll1700();
+		inputNaiperTurnAll1500();
 		save2();
+
+		float acc = 20500;
+		float diac = 22000;
+		if (eigherRightLeft() == Right) {
+			makePath(goalX, goalY, isFull, v, acc, diac);
+		} else {
+			makePath(goalX, goalY, isFull, 0, 0, 0);
+		}
+
 		if (!fastMode) {
 			motionCheck();
 		}
-		char check = runForPath(v, 22000, 22000);
+		char check = runForPath(v, acc, diac);
 	} else if (mode == CONFIG2) {
-		float v = eigherRightLeft() == Right ? 5100 : 5000;
-		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll1900();
-		save();
-		inputNaiperTurnAll1700();
-		save2();
-		if (!fastMode) {
-			motionCheck();
-		}
-		char check = runForPath(v, 22000, 22000);
 	} else if (mode == CONFIG3) {
-		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll1900();
-		save();
-		inputNaiperTurnAll1700();
-		save2();
-		if (!fastMode) {
-			motionCheck();
-		}
-		float v = getMaxVeloctiy();
-		char check = runForPath(v, 22000, 22000);
 	} else if (mode == CONFIG4) {
-		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll1900();
-		save();
-		inputNaiperTurnAll1700();
-		save2();
-		float v = getMaxVeloctiy();
-		if (!fastMode) {
-			motionCheck();
-		}
-		char check = runForPath(v, 22000, 22000);
 	} else if (mode == CONFIG5) {
-		makePath(goalX, goalY, isFull);
-		inputNaiperTurnAll1900();
-		save();
-		inputNaiperTurnAll1700();
-		save2();
-		float v = getMaxVeloctiy();
-		if (!fastMode) {
-			motionCheck();
-		}
-		char check = runForPath(v, 22000, 22000);
 	} else if (mode == CONFIG6) {
 	} else if (mode == CONFIG7) {
 		goalChangeFlg = 1;
@@ -1388,6 +1407,28 @@ void testRpm1() {
 	}
 }
 
+void detectSysId() {
+
+	motionCheck();
+	cmt_wait(500);
+	gyroZeroCheck(false);
+
+	mtu_start();
+	enableSystemIdentification = true;
+	timer = 0;
+	resetVelocityGain();
+	resetGyroParam();
+
+	long limit = (long) (*(float *) 1049480);
+	while (timer < limit) {
+
+	}
+	enableSystemIdentification = false;
+	mtu_stop();
+	detectSysIdLogOutput();
+
+}
+
 void operation() {
 	volatile char goalX = (char) (*(float *) 1049336);
 	volatile char goalY = (char) (*(float *) 1049340); //selectGoal();
@@ -1477,6 +1518,13 @@ void operation() {
 		case 11:
 			cmtMusic(G3_, 100);
 			keepZeroPoint2();
+			break;
+		case 12: //System Identification 並進
+			cmtMusic(A3_, 100);
+			detectSysId();
+			break;
+		case 13: //System Identification 回転
+			cmtMusic(B3_, 100);
 			break;
 		}
 	} else {

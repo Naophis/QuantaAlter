@@ -29,7 +29,7 @@ char runForPath(float max, float ac, float diac) {
 	char turnVarys2 = 0;
 	char res = 1;
 	float slalomDist = 0;
-	char oldTurnVary = 0;
+//	char oldTurnVary = 0;
 	char top = false;
 
 	dia = 0;
@@ -160,7 +160,7 @@ char runForPath_v2(float max, float ac, float diac) {
 	char turnVarys2 = 0;
 	char check = 0;
 	float slalomDist = 0;
-	char oldTurnVary = 0;
+//	char oldTurnVary = 0;
 	char top = false;
 	dia = 0;
 	tempVmax = max;

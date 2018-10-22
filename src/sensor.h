@@ -24,7 +24,7 @@ void sensing_battery() {
 	getBattery();
 }
 void sensing_in_off() {
-	S12AD.ADANSA0.BIT.ANSA0 = 0x7E;
+	S12AD.ADANSA0.BIT.ANSA0 = 0xfE;
 	S12AD.ADCSR.BIT.ADST = 1;
 	while (S12AD.ADCSR.BIT.ADST)
 		;
@@ -33,6 +33,7 @@ void sensing_in_off() {
 	LS_SEN45.off = LS45;
 	RS_SEN2.off = RS2;
 	LS_SEN2.off = LS2;
+	getBattery();
 }
 
 void sensing_side2() {
