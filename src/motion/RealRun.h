@@ -94,7 +94,7 @@ char runForPath(float max, float ac, float diac) {
 				res = realRun(max, ac, diac, tmpDist, slaVel);
 			} else {
 				float tmpDist = dist * ROOT2 * 180 + slalomDist;
-				res = realRun(max * 0.7, ac * 0.5, diac * 0.8, tmpDist, slaVel);
+				res = realRun(max * 0.8, ac * 0.8, diac * 0.8, tmpDist, slaVel);
 			}
 		}
 		if (!res) {

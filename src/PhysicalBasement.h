@@ -177,10 +177,6 @@ float check_sen_error(void) {
 	if (check == 0) {
 		Se.error_old = Se.before = Se.error_delta = 0;
 	} else {
-		if (!TRANSAM) {
-			Gy.error_old = 0;
-			Angle.error_old = 0;
-		}
 		if (!testRunMode && gyroErrResetEnable) {
 			Gy.error_old = 0;
 			Angle.error_old = 0;
@@ -237,53 +233,108 @@ volatile char isControl = 0;
 volatile int errorOld_dia = 0;
 volatile int errorOld_dia_side = 0;
 
-float check_sen_error_dia_side(void) {
+char validateImgIndex(int a) {
+	return 20 <= a && a <= 220;
+}
+
+char validateImg90Index(int a) {
+	return (0 <= a && a <= 25) || (55 <= a && a <= 145)
+			|| (190 <= a && a <= 250);
+}
+float lastR45Data = 0;
+float lastL45Data = 0;
+float check_sen_error_dia_side_v2(void) {
 	float error = 0;
+	float error2 = 0;
 	char check = 0;
+	char check2 = 0;
 
-	if (RS_SEN45.now > R_WALL_DIA && lastPeekR < R_WALL_DIA) {
-		error += RS_SEN45.now - RS_SEN45.ref2;
-		check++;
-//	} else if (lastPeekR > R_WALL_DIA) {
-//		error += lastPeekR - RS_SEN45.ref2;
-//		check++;
-	} else if (RS_SEN2.now > R_WALL_DIA) {
-		error += RS_SEN2.now - RS_SEN2.ref2;
-		check++;
+	const float diff = *(float *) 1049732;
+	const float diff90 = *(float *) 1049736;
+
+	const float diffthread = *(float *) 1049740;
+	const float diffthread90 = *(float *) 1049744;
+
+	char flag45 = false;
+
+	if (diaStrwallCount_r > 0) {
+		float tmpRightRef = sen_r_dia_img[(int) img_dist_r];
+		float tmpRightRef90 = sen_r90_dia[(int) img_dist_r];
+		if (ABS(RS_SEN45.now - RS_SEN45.old) < diff
+				&& RS_SEN45.now > (tmpRightRef - diffthread)
+				&& validateImgIndex((int) img_dist_r)) {
+			flag45 = true;
+			error += RS_SEN45.now - tmpRightRef;
+			check++;
+		} else if (ABS(RS_SEN2.now - RS_SEN2.old) < diff90
+				&& RS_SEN2.now > (tmpRightRef90 - diffthread90)
+				&& RS_SEN2.now > 590 && validateImg90Index((int) img_dist_r)) {
+			error += RS_SEN2.now - tmpRightRef90;
+			check++;
+		}
 	}
-
-	if (LS_SEN45.now > L_WALL_DIA && lastPeekL < L_WALL_DIA) {
-		error -= LS_SEN45.now - LS_SEN45.ref2;
-		check++;
-//	} else if (lastPeekL > L_WALL_DIA) {
-//		error -= lastPeekL - LS_SEN45.ref2;
-//		check++;
-	} else if (LS_SEN2.now > L_WALL_DIA2) {
-		error -= LS_SEN2.now - LS_SEN2.ref2;
-		check++;
+	if (diaStrwallCount_l > 0) {
+		float tmpLeftRef = sen_l_dia_img[(int) img_dist_l];
+		float tmpLeftRef90 = sen_l90_dia[(int) img_dist_l];
+		if (ABS(LS_SEN45.now - LS_SEN45.old) < diff
+				&& LS_SEN45.now > (tmpLeftRef - diffthread)
+				&& validateImgIndex((int) img_dist_l)) {
+			error -= LS_SEN45.now - tmpLeftRef;
+			check++;
+		} else if (ABS(LS_SEN2.now - LS_SEN2.old) < diff90
+				&& LS_SEN2.now > (tmpLeftRef90 - diffthread90)
+				&& LS_SEN2.now > 590 && !flag45
+				&& validateImg90Index((int) img_dist_l)) {
+			error -= LS_SEN2.now - tmpLeftRef90;
+			check++;
+		}
 	}
-
 	if (check == 0) {
 		Se2.error_old = Se2.before = Se2.error_delta = 0;
-//		error = errorOld_dia_side;
-	} else {
+	} else if (check == 2) {
 //		Gy.error_old = 0;
+//		Angle.error_old = 0;
+//		angle = ang = 0;
 	}
 	isControl = false;
-
 	if (check != 0) {
 		errorFlg = 1;
-//		errorOld_dia_side = error;
 	} else {
 		errorFlg = 0;
 	}
 
-	errorOld_dia = error;
+//	if (check != 0 && check2 != 0) {
+//		float tmp = 0;
+//		if (check == 1) {
+//			tmp += (2 * error);
+//		} else {
+//			tmp += (error);
+//		}
+//		if (check2 == 1) {
+//			tmp += (2 * error2);
+//		} else {
+//			tmp += (error2);
+//
+//		}
+//		return tmp / 2;
+//	} else {
+//
+//		errorOld_dia = error;
+//
+//		if (check == 2) {
+//			return error;
+//		}
+//
+//		if (check2 == 2) {
+//			return error2;
+//		}
 
 	if (check == 2) {
 		return error;
 	}
+
 	return 2 * error;
+//	}
 }
 float RF_WALL_FrontCTRL = 520; //斜め時 姿勢制御閾値(壁ナシ）
 float LF_WALL_FrontCTRL = 450; //斜め時 姿勢制御閾値(壁ナシ）
@@ -330,7 +381,10 @@ void errorVelocity(void) {
 			Se.before = Se.error_now;
 			Se.error_old += Se.error_now;
 		} else if (dia == 1) {
-			Se2.error_now = check_sen_error_dia_side();
+//			Se2.error_now = check_sen_error_dia_side();
+
+			Se2.error_now = check_sen_error_dia_side_v2();
+
 			if (Se2.before != 0) {
 				Se2.error_delta = Se2.error_now - Se2.before;
 			} else {

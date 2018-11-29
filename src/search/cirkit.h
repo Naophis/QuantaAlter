@@ -47,6 +47,30 @@ void cirquitFull() {
 
 }
 
+void cirquitDiaPractice() {
+	cirquitMode = 1;
+	pathClear();
+
+	char maxcicle = (char) (*(float *) 1049308);
+
+	char i = 0;
+	for (i = 0; i < 4 * maxcicle; i += 4) {
+		path_s[i] = 2;
+		path_t[i] = 7;
+		path_s[i + 1] = 5;
+		path_t[i + 1] = 9;
+		path_s[i + 2] = 2;
+		path_t[i + 2] = 7;
+		path_s[i + 3] = 5;
+		path_t[i + 3] = 9;
+	}
+
+	path_s[0] += 3;
+	path_s[i] = 3;
+	path_t[i] = 255;
+
+}
+
 /*斜めの修行
  path_s[0]=5;path_t[0]=7;
  char tempI=0;

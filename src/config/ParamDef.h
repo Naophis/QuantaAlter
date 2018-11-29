@@ -305,6 +305,8 @@ void importFromDataFlash() {
 //	kireme_L=*(float *)1049976;myprintf("kireme_L	%f	%d\r\n",kireme_L,1049976);
 	seachFanLow = *(float *) 1049980;
 	myprintf("seachFanLow	%f	%d\r\n", seachFanLow, 1049980);
+	fastRunFanV2 = *(float *) 1049984;
+	myprintf("fastRunFanV2	%f	%d\r\n", fastRunFanV2, 1049984);
 
 	FAN_AMP = fastRunFan;
 	FAN_AMP2 = seachFan;

@@ -646,7 +646,7 @@ double getGoalTime(char showTime) {
 				t1 = getStraightTime(v_now, pathVmax, vsla, pathAcc, pathDiac,
 						180 * strDist);
 			} else {
-				t1 = getStraightTime(v_now, pathVmax * 0.7, vsla, pathAcc * 0.5,
+				t1 = getStraightTime(v_now, pathVmax * 0.75, vsla, pathAcc * 0.75,
 						pathDiac * 0.8, 180 * strDist * ROOT2);
 			}
 		}

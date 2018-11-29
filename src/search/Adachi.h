@@ -1017,7 +1017,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 	frontCtrl3();
 	mtu_stop();
 	gyroRollTest(L, 180, 60, 100);
-	back(-100, -diac / 500, 50, 0);
+	back(-100, -diac / 500, 20, 0);
 	V_now = 0;
 	cmt_wait(500);
 	mtu_stop2();

@@ -12,7 +12,7 @@ volatile int buff1, buff2, buff3;
 volatile long timeCounter = 0;
 
 // SPI用 //
-static volatile unsigned char rx_buff[3];
+static volatile unsigned int rx_buff[3];
 static volatile unsigned char tx_buff[3];
 static volatile unsigned char flag_spi;
 static volatile unsigned char flag_spi2;
@@ -24,7 +24,6 @@ extern void interrpt_spi_end(void);
 extern unsigned char MPU6500_Read_1byte(unsigned char addr);
 extern void MPU6000_Read_1byte_v2(unsigned char addr);
 extern signed short MPU6500_Read_2byte(unsigned char addr);
-extern signed short MPU6500_Read_2byte_v2(unsigned char addr);
 extern void MPU6500_Write_1byte(unsigned char addr, unsigned char write_date);
 volatile int temp = 0;
 void spi10MbpsMode() {
@@ -86,8 +85,15 @@ void Init_SPI(void) {
 	RSPI1.SPCMD2.WORD = RSPI1.SPCMD0.WORD;
 	RSPI1.SPCMD2.BIT.SSLKP = 0;	//CSをnegativeにする
 
-	RSPI1.SPBR = 4;
-	RSPI1.SPCMD0.BIT.BRDV = 2;
+//	RSPI1.SPBR = 4;
+//	RSPI1.SPCMD0.BIT.BRDV = 2;
+
+
+//	RSPI1.SPBR = 5;
+//	RSPI1.SPCMD0.BIT.BRDV = 3;
+
+//	RSPI1.SPBR = 5;
+//	RSPI1.SPCMD0.BIT.BRDV = 4;
 
 	IEN(RSPI1, SPTI1) = 1;
 	IEN(RSPI1, SPRI1) = 1;
@@ -250,14 +256,6 @@ void callMpu(unsigned char addr) {
 	RSPI1.SPCR.BIT.SPTIE = 1;	//送信割り込み要求許可
 	RSPI1.SPCR.BIT.SPE = 1;		//機能動作
 }
-signed short getMpu() {
-	if (flag_spi == 0) {
-		return gyroData;	//まだなら前回のデータ
-	}
-// 返値
-	return (((unsigned short) rx_buff[1] << 8)
-			| ((unsigned short) rx_buff[2] & 0xff));
-}
 signed short getWhoAmI() {
 	if (flag_spi == 0) {
 		return gyroData;	//まだなら前回のデータ
@@ -279,49 +277,13 @@ signed short MPU6500_Read_2byte(unsigned char addr) {
 	while (flag_spi == 0)
 		;
 // 返値
-	return (((unsigned short) rx_buff[1] << 8)
-			| ((unsigned short) rx_buff[2] & 0xff));
+	return (signed short) ((((unsigned int) (rx_buff[1] & 0xff)) << 8)
+			| ((unsigned int) (rx_buff[2] & 0xff)));
 }
 
-signed short MPU6500_Read_2byte_v2(unsigned char addr) {
-// spiフラグクリア //
-	flag_spi2 = 0;
-// SPIスタート //
-	RSPI1.SPCR.BIT.SPRIE = 1;	//受信割り込み要求許可
-	RSPI1.SPCR.BIT.SPE = 1;		//機能動作
-// 送信配列に代入 //
-	RSPI1.SPDR.WORD.H = (addr | 0x80);
-	RSPI1.SPDR.WORD.H = 0;
-	RSPI1.SPDR.WORD.H = 0;
-	while (flag_spi2 == 0)
-		;
-	RSPI1.SPCR.BIT.SPRIE = 0;	//受信割り込み要求許可
-// 返値
-	return (((unsigned short) rx_buff[1] << 8)
-			| ((unsigned short) rx_buff[2] & 0xff));
-
-}
-
-signed short mpuData = 0;
 signed short getMpuData() {
-	mpuData = (((unsigned short) rx_buff[1] << 8)
-			| ((unsigned short) rx_buff[2] & 0xff));
-	return mpuData;
-}
-void MPU6500Read2byte(unsigned char addr) {
-	if (spiFlg == USE) {
-		global_spi_data = (((unsigned short) rx_buff[1] << 8)
-				| ((unsigned short) rx_buff[2] & 0xff));
-	} else {
-		// 送信配列に代入 //
-		tx_buff[0] = (addr | 0x80);
-		tx_buff[1] = 0;
-		tx_buff[2] = 0;
-		// SPIスタート //
-		RSPI1.SPCR.BIT.SPRIE = 1;	//受信割り込み要求許可
-		RSPI1.SPCR.BIT.SPE = 1;		//機能動作
-		spiFlg = USE;
-	}
+	return (signed short) ((((unsigned int) (rx_buff[1] & 0xff)) << 8)
+			| ((unsigned int) (rx_buff[2] & 0xff)));
 }
 void MPU6500_Write_1byte(unsigned char addr, unsigned char write_date) {
 // spiフラグクリア //

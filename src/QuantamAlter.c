@@ -55,18 +55,16 @@ volatile void buzzer() {
 		stopCmt1();
 	}
 }
-volatile int tmp1 = 0;
-volatile int tmp2 = 0;
 volatile void mtu6A() {
 	PORTD.PODR.BIT.B7 = 1;
-	tmp1++;
 }
 volatile void mtu6B() {
 	PORTD.PODR.BIT.B7 = 0;
-	tmp2++;
 }
 volatile char rightTrend = 0;
 volatile char leftTrend = 0;
+volatile signed short gyros[4];
+
 volatile void cmt() {
 	timer++;
 	time++;
@@ -96,26 +94,14 @@ volatile void cmt() {
 			cmtMusic(F2_, 100);
 		}
 	}
-	if (dia == 1) {
-		pushLatestSensor(RS_SEN45.now, LS_SEN45.now);
-		pushLatestSensor2(RS_SEN2.now, LS_SEN2.now);
-	} else {
-		peekRight = 0;
-		peekLeft = 0;
-		lastPeekR = 0;
-		lastPeekL = 0;
-		peekRight2 = 0;
-		peekLeft2 = 0;
-		lastPeekR2 = 0;
-		lastPeekL2 = 0;
-		Se2.error_old = Se2.before = Se2.error_delta = 0;
-	}
 	Physical_Basement();
 	if ((logs < (L_Length - 1)) && (cc == 1) && (time >= 0)) {
 		if ((time % (char) (logterm)) == 0) {
 			log1[logs] = (int) (V_now);
 			logs2[logs] = ((Wo * Wo - W_now * W_now) / (2.0 * alpha));
 			log3[logs] = (V_Enc.r + V_Enc.l) / 2;
+//			logs2[logs] = V_Enc.r; // ((Wo * Wo - W_now * W_now) / (2.0 * alpha));
+//			log3[logs] = V_Enc.l; // (V_Enc.r + V_Enc.l) / 2;
 			log4[logs] = (ang * 180 / PI); //ジャイロ
 			log5[logs] = Duty_l * 100;
 			log6[logs] = Duty_r * 100;
@@ -147,6 +133,14 @@ volatile void cmt() {
 			log32[logs] = distance;
 			log33[logs] = img_distance;
 			log34[logs] = C.angles;
+			log35[logs] = img_dist_l;
+			log36[logs] = img_dist_r;
+//
+
+//			log33[logs] = gyros[0];
+//			log34[logs] = gyros[1];
+//			log35[logs] = gyros[2];
+//			log36[logs] = gyros[3];
 			logs++;
 		}
 	}
@@ -167,72 +161,24 @@ void mtu4_A() {
 	switch (tpu_count) {
 	case 1:
 		timer2++;
-//		sensing_in_off();
 		if (mpu) {
 			callMpu(0x47);
 		}
-//		if (globalState != PIVOT && globalState != SLA_TURN
-//				&& globalState != DIA_STRAIGHT && globalState != MODE_SELECT
-//				&& globalState != IMPORT_PARM) {
 		PORTD.PODR.BIT.B6 = 1; //Front
-//		}
 		break;
 	case 2:
 		if (mpu) {
 			callMpu(0x47);
 		}
-//		if (globalState != PIVOT && globalState != SLA_TURN
-//				&& globalState != MODE_SELECT && globalState != START_WAIT
-//				&& globalState != IMPORT_PARM) {
 		PORTE.PODR.BIT.B0 = 1; //Right45
 		PORT2.PODR.BIT.B5 = 1; //Left45
-//		}
 		break;
 	case 3:
 		if (mpu) {
 			callMpu(0x47);
 		}
-//		if (globalState != PIVOT && globalState != SLA_TURN
-//				&& globalState != MODE_SELECT && globalState != START_WAIT
-//				&& globalState != IMPORT_PARM && globalState != DIA_STRAIGHT) {
 		PORTE.PODR.BIT.B1 = 1; //Right90
 		PORT2.PODR.BIT.B4 = 1; //Left90
-//		}
-		break;
-	case 4:
-		if (mpu) {
-			callMpu(0x47);
-		}
-		sensing_in_off();
-//		sensing_battery();
-		break;
-	}
-}
-
-void getBattery() {
-	float tmp = 3.34;
-	if (BATTERY != 0) {
-		battery = 0.1 * tmp * BATTERY / 4096 * 4 + 0.9 * batteryOld;
-	} else {
-		battery = tmp * BATTERY / 4096 * 4;
-	}
-	batteryOld = battery;
-}
-int gyros[4];
-
-void mtu4_B() {
-	switch (tpu_count) {
-	case 1:
-		sensing_front();
-		gyros[0] = getMpuData();
-		break;
-	case 2:
-		sensing_side();
-		gyros[1] = getMpuData();
-		break;
-	case 3:
-		sensing_side2();
-		gyros[2] = getMpuData();
 		break;
 	case 4:
 		if (fanStart) {
@@ -242,6 +188,9 @@ void mtu4_B() {
 			} else if (fanMode == FastRun) {
 				GPT2.GTCCRA = (short) (FAN_AMP / battery * FAN_CYCLE);
 				GPT2.GTCCRC = (short) (FAN_AMP / battery * FAN_CYCLE);
+			} else if (fanMode == FastRun2) {
+				GPT2.GTCCRA = (short) (fastRunFanV2 / battery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (fastRunFanV2 / battery * FAN_CYCLE);
 			} else if (fanMode == SearchRun) {
 				GPT2.GTCCRA = (short) (FAN_AMP2 / battery * FAN_CYCLE);
 				GPT2.GTCCRC = (short) (FAN_AMP2 / battery * FAN_CYCLE);
@@ -258,8 +207,39 @@ void mtu4_B() {
 		} else {
 			GPT2.GTCCRA = GPT2.GTCCRC = 0;
 		}
+		if (mpu) {
+			callMpu(0x47);
+		}
+		break;
+	}
+}
 
-		gyros[3] = getMpuData();
+void getBattery() {
+	float tmp = 3.34;
+	if (BATTERY != 0) {
+		battery = 0.1 * tmp * BATTERY / 4096 * 4 + 0.9 * batteryOld;
+	} else {
+		battery = tmp * BATTERY / 4096 * 4;
+	}
+	batteryOld = battery;
+}
+void mtu4_B() {
+	switch (tpu_count) {
+	case 1:
+		sensing_front();
+		gyros[0] = (signed short) getMpuData();
+		break;
+	case 2:
+		sensing_side();
+		gyros[1] = (signed short) getMpuData();
+		break;
+	case 3:
+		sensing_side2();
+		gyros[2] = (signed short) getMpuData();
+		break;
+	case 4:
+		sensing_in_off();
+		gyros[3] = (signed short) getMpuData();
 
 		RS_SEN45.old = RS_SEN45.now;
 		LS_SEN45.old = LS_SEN45.now;
@@ -268,14 +248,43 @@ void mtu4_B() {
 		LS_SEN2.old = LS_SEN2.now;
 
 		getSensorData();
+		float tmpGyros = 0.250 * (gyros[0] + gyros[1] + gyros[2] + gyros[3]);
+//		float tmpGyros = 0.50 * (gyros[0] + gyros[2]);
 
-		float tmpGyros = (gyros[0] + gyros[1] + gyros[2] + gyros[3]) / 4;
 		settleGyro2 = (tmpGyros - G.ref) * G.th;
-		G.now = settleGyro2;
-		settleGyroOld = settleGyro;
-		settleGyro = 0.1 * G.now + 0.9 * G.old;
-		//		settleGyro = settleGyro2;
-		G.old = settleGyro;
+
+		float diffOder = *(float *) 1049748;
+		char gyroMode = (char) (*(float *) 1049752);
+		if (ABS(G.old-settleGyro2) > diffOder) {
+			float sum = 0;
+			char j = 0;
+			for (char i = 0; i < 4; i++) {
+				float tmpGyro = (gyros[i] - G.ref) * G.th;
+				if (ABS(G.old-tmpGyro) < diffOder) {
+					sum += tmpGyro;
+					j++;
+				}
+			}
+			if (j > 0) {
+				G.now = (sum / j - G.ref) * G.th;
+				settleGyroOld = settleGyro;
+				if (gyroMode == true) {
+					settleGyro = 0.1 * G.now + 0.9 * G.old;
+				} else {
+					settleGyro = G.now;
+				}
+				G.old = settleGyro;
+			}
+		} else {
+			G.now = settleGyro2;
+			settleGyroOld = settleGyro;
+			if (gyroMode == true) {
+				settleGyro = 0.1 * G.now + 0.9 * G.old;
+			} else {
+				settleGyro = G.now;
+			}
+			G.old = settleGyro;
+		}
 
 		tpu_count = 0;
 
@@ -350,7 +359,7 @@ void main(void) {
 
 	while (1) {
 		float result = getZeroPoint();
-		if (ABS(result) < 0.5) {
+		if (ABS(result) < 0.01) {
 			decide2(125);
 			setupMpu6500();
 		} else {

@@ -316,8 +316,10 @@ char roll_timer(char RorL, float Angle, float w_max, float al) {
 	}
 	if (RorL == R) {
 		G.th = gyroTh_R;
+		motionDir = R;
 	} else {
 		G.th = gyroTh_L;
+		motionDir = L;
 	}
 	globalState = PIVOT;
 	rotate_r = (RorL != R);
@@ -390,8 +392,10 @@ char roll(char RorL, float Angle, float w_max, float al) {
 	friction_roll = true;
 	if (RorL == R) {
 		G.th = gyroTh_R;
+		motionDir = R;
 	} else {
 		G.th = gyroTh_L;
+		motionDir = L;
 	}
 	cmt_wait(50);
 	mtu_start();
@@ -455,7 +459,7 @@ char frontCtrl() {
 	if (Front_SEN.now > RF_WALL_EXIST2) {
 		sensingMode = SearchMode;
 		while (Front_SEN.now < FRONT_CTRL_1)
-		;
+			;
 		sensingMode = tmp;
 		cmtMusic(D3_, 100);
 		distance = img_distance = 0;
@@ -609,8 +613,10 @@ char slalom(char dir, char type, float Velocity, float vel2, float ac) {
 
 	if (dir == R) {
 		G.th = gyroTh_R;
+		motionDir = R;
 	} else {
 		G.th = gyroTh_L;
+		motionDir = L;
 	}
 	if (type == Normal) {
 		frontCtrl();
@@ -833,11 +839,74 @@ char orignalRunDia(float v1, float v2, float ac, float diac, float dist) {
 	originalDiaMode = true;
 	lastPeekR = lastPeekL = 0;
 	cc = 1;
-
+	img_dist_r = img_dist_l = -1;
 	Se2.error_old = Se2.before = Se2.error_delta = 0;
+
+	char walloffMode = 0;
+	char walloffstate = 0;
+	double tmpdist = 0;
+	double temp_dist_l = 0;
+	double temp_dist_r = 0;
+
+	gyroErrResetEnable = dist >= 90;
 
 	while (ABS(distance) < ABS(dist)) {
 		d2 = ABS((V_now + v2) * (V_now - v2) / (2.0 * diac));
+		if (!testRunMode) {
+			if (gyroErrResetEnable && (dist - distance) < 90) {
+				gyroErrResetEnable = false;
+			}
+		}
+		if (SEN_R > SEN_L) {
+			walloffMode = R;
+		} else {
+			walloffMode = L;
+		}
+
+		if (diaStrwallCount_r > 0) {
+			if (img_dist_r > 180 * ROOT2) {
+				img_dist_r -= 180 * ROOT2;
+			}
+		}
+		if (diaStrwallCount_l > 0) {
+			if (img_dist_l > 180 * ROOT2) {
+				img_dist_l -= 180 * ROOT2;
+			}
+		}
+		if (walloffMode == R) {
+			if (SEN_R > 1500) {
+				walloffstate = 1;
+			}
+			if (walloffstate == 1 && diaStrwallCount_r == 0) {
+				if (SEN_R < 1500) {
+					img_dist_r = 0;
+					walloffstate = 0;
+					temp_dist_r = distance;
+					diaStrwallCount_r++;
+				}
+			}
+		} else if (walloffMode == L) {
+			if (SEN_L > 1500) {
+				walloffstate = 1;
+			}
+
+			if (walloffstate == 1 && diaStrwallCount_l == 0) {
+				if (SEN_L < 1500) {
+					img_dist_l = 0;
+					walloffstate = 0;
+					temp_dist_l = distance;
+					diaStrwallCount_l++;
+				}
+			}
+		}
+
+		if (tmpdist != distance) {
+			img_dist_r = distance - temp_dist_r;
+			img_dist_l = distance - temp_dist_l;
+		}
+
+		tmpdist = distance;
+
 		switch (sequence) {
 		case FIX:
 			acc = 0;
@@ -871,13 +940,13 @@ char orignalRunDia(float v1, float v2, float ac, float diac, float dist) {
 			originalDiaMode = false;
 			tmpDiac = 0;
 			targetVelocity = 0;
-			peekSideR = peekSideL = 0;
 			cc = 0;
+			diaStrwallCount_l = diaStrwallCount_r = 0;
 			return 0;
 		}
 	}
 	cc = 0;
-	peekSideR = peekSideL = 0;
+	diaStrwallCount_l = diaStrwallCount_r = 0;
 	alpha = 0;
 	acc = 0;
 	positionControlValueFlg = 0;
@@ -935,12 +1004,6 @@ char orignalRun(float v1, float v2, float ac, float diac, float dist) {
 			}
 		}
 
-		if (startDecrease(R)) {
-			peekSideR = RS_SEN45.now;
-		}
-		if (startDecrease(L)) {
-			peekSideL = LS_SEN45.now;
-		}
 		d2 = ABS((V_now + v2) * (V_now - v2) / (2.0 * diac));
 		switch (sequence) {
 		case FIX:
@@ -1015,6 +1078,7 @@ void back(float v1, float ac, float dist, char control) {
 	positionControlValueFlg = control;
 	V_max = v1;
 	G.th = gyroTh_R;
+	motionDir = R;
 	ang = 0;
 	angle = 0;
 

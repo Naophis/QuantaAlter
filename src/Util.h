@@ -32,6 +32,61 @@ char eigherRightLeft() {
 	return res;
 }
 
+char uiVolatage(char res) {
+	char old = res;
+	char flag = false;
+
+	singing = true;
+	while (true) {
+		if (!PushRight || !PushLeft) {
+			flag = true;
+		}
+		if (!PushTop) {
+			flag = true;
+			res++;
+		}
+		if (!PushBottom) {
+			flag = true;
+			res--;
+		}
+		if (res < 1) {
+			res = 1;
+		}
+		if (res > 4) {
+			res = 4;
+		}
+		if (res == 1) {
+			led(0, 0, 0, 1);
+		} else if (res == 2) {
+			led(0, 0, 1, 1);
+		} else if (res == 3) {
+			led(0, 1, 1, 1);
+		} else if (res == 4) {
+			led(1, 1, 1, 1);
+		}
+
+		if (res != old) {
+//			myprintf("change %d to %d\r\n", old, res);
+			coin(100);
+			singing = true;
+		}
+
+		old = res;
+
+		while (!PushTop || !PushRight || !PushLeft || !PushBottom) {
+
+		}
+		if (!PushCenter && flag) {
+			break;
+		}
+
+		cmt_wait(10);
+	}
+	LED(0);
+	singing = false;
+	return res;
+}
+
 char updown() {
 	volatile signed char mode = SEARCH;
 	os_escape = 0;
@@ -474,14 +529,19 @@ float getZeroPoint() {
 	float result = 0;
 	mpu = false;
 	for (int i = 0; i < limit; i++) {
-		tempData += MPU6500_Read_2byte(0x47);
+		signed short a = MPU6500_Read_2byte(0x47);
+		tempData += a;
 		cmt_wait(1);
+
+//		myprintf("%d\r\n", a);
 	}
 	mpu = true;
-	result = tempData / limit;
+	result = (float) tempData / limit;
 	tempData = 0;
 	tempGyro2 = result;
 	settlegyroData = result;
+
+//	myprintf("result = %f\r\n", result);
 	return result;
 }
 void gyroZeroCheck(char bool) {
@@ -555,15 +615,15 @@ void keepZeroPoint() {
 	mtu_stop();
 }
 void keepZeroPoint2() {
-	//	motionCheck();
-	//	cmt_wait(500);
+//	motionCheck();
+//	cmt_wait(500);
 	gyroZeroCheck(true);
 	readGyroParam();
 	readAngleParam();
 	readVelocityGain();
-	//	resetGyroParam();
+//	resetGyroParam();
 	mtu_start();
-	//	positionControlValueFlg = 1;
+//	positionControlValueFlg = 1;
 	ang = 0;
 	angle = 0;
 
@@ -791,8 +851,12 @@ void logOutPut() {
 		cmt_wait(1);
 		myprintf(" %f %f %f %f %f", log25[c], log26[c], log27[c],
 				log28[c] * 100, log29[c]);
-		myprintf(" %f %f %f %f %f\r\n", log30[c], log31[c], log32[c], log33[c],
+		cmt_wait(1);
+		myprintf(" %f %f %f %f %f", log30[c], log31[c], log32[c], log33[c],
 				log34[c]);
+		cmt_wait(1);
+		myprintf(" %f %f\r\n", log35[c], log36[c]);
+		cmt_wait(1);
 	}
 	globalState = STRAIGHT;
 }
@@ -919,6 +983,10 @@ void printRealPath() {
 		}
 	}
 }
+/**
+ * integrate[exp(1-1/(1-x^n)),0,1]
+ * Series[exp(1-1/(1-x^n)),{x,0,8}]
+ */
 #define Euler  2.7182818284
 const float z = 1.0f;
 float Et2(float t, float s, float N) {
