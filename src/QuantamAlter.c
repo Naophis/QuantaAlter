@@ -255,27 +255,42 @@ void mtu4_B() {
 
 		float diffOder = *(float *) 1049748;
 		char gyroMode = (char) (*(float *) 1049752);
-		if (ABS(G.old-settleGyro2) > diffOder) {
-			float sum = 0;
-			char j = 0;
-			for (char i = 0; i < 4; i++) {
-				float tmpGyro = (gyros[i] - G.ref) * G.th;
-				if (ABS(G.old-tmpGyro) < diffOder) {
-					sum += tmpGyro;
-					j++;
-				}
-			}
-			if (j > 0) {
-				G.now = (sum / j - G.ref) * G.th;
-				settleGyroOld = settleGyro;
-				if (gyroMode == true) {
-					settleGyro = 0.1 * G.now + 0.9 * G.old;
-				} else {
-					settleGyro = G.now;
-				}
-				G.old = settleGyro;
-			}
-		} else {
+		float gyrooffset = *(float *) 1049756;
+
+		if ((W_now - settleGyro2) > diffOder
+				|| (settleGyro2 - W_now) > diffOder) {
+			settleGyro = W_now + gyrooffset;
+			settleGyroOld = settleGyro;
+			G.now = settleGyro;
+			G.old = settleGyro;
+		}
+
+//		if (ABS(G.old-settleGyro2) > diffOder) {
+//			float sum = 0;
+//			char j = 0;
+//			for (char i = 0; i < 4; i++) {
+//				float tmpGyro = (gyros[i] - G.ref) * G.th;
+//				if (ABS(G.old-tmpGyro) < diffOder) {
+//					sum += tmpGyro;
+//					j++;
+//				}
+//			}
+//			if (j > 0) {
+//				G.now = (sum / j - G.ref) * G.th;
+//				settleGyroOld = settleGyro;
+//				if (gyroMode == true) {
+//					settleGyro = 0.1 * G.now + 0.9 * G.old;
+//				} else {
+//					settleGyro = G.now;
+//				}
+//				G.old = settleGyro;
+//			} else {
+//				G.now = W_now;
+//				settleGyro = W_now;
+////				G.old = W_now;
+//			}
+//		}
+		else {
 			G.now = settleGyro2;
 			settleGyroOld = settleGyro;
 			if (gyroMode == true) {

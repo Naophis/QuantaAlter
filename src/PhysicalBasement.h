@@ -140,8 +140,8 @@ void enc_to_vel(void) {
 
 	Velocity.error_now = V_now - (V_Enc.r + V_Enc.l) / 2;
 
-	px += V_now * sinf(ABS(ang)) * dt;
-	py += V_now * cosf(ABS(ang)) * dt;
+	// px += V_now * sinf(ABS(ang)) * dt;
+	// py += V_now * cosf(ABS(ang)) * dt;
 
 }
 #define KIREME_R 11 //11/12
@@ -234,7 +234,7 @@ volatile int errorOld_dia = 0;
 volatile int errorOld_dia_side = 0;
 
 char validateImgIndex(int a) {
-	return 20 <= a && a <= 220;
+	return 30 <= a && a <= 220;
 }
 
 char validateImg90Index(int a) {
@@ -427,30 +427,6 @@ void errorVelocity(void) {
 		C.g = -CgLimit;
 	}
 
-	Angle.error_now = (angle - ang);
-
-	if (C.angles > CanlgesLimit || C.angles < -CanlgesLimit) {
-	} else {
-		Angle.error_old += Angle.error_now;
-	}
-	if (Angle.before != 0) {
-		Angle.error_delta = Angle.error_now - Angle.before;
-	} else {
-		Angle.error_delta = 0;
-	}
-
-	Angle.before = Angle.error_now;
-
-	C.angles = Angles.Kp * Angle.error_now + Angles.Ki * Angle.error_old
-			+ Angles.Kd * Angle.error_delta;
-
-	if (C.angles > CanlgesLimit) {
-		C.angles = CanlgesLimit;
-	}
-	if (C.angles < -CanlgesLimit) {
-		C.angles = -CanlgesLimit;
-	}
-
 }
 
 float checkDuty(float duty) {
@@ -504,6 +480,8 @@ float FF_calc(char RorL, float w, float al) {
 	float counterV = ABS((Ke + friction) * rpm);
 	float ff = feadforward(RorL);
 	float ffp = feadforward_para(RorL);
+
+//	return 0;
 
 	if (V_now == 0) {
 		resist_str = 0;

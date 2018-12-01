@@ -364,7 +364,7 @@ void testSlalom3() {
 	readVelocityGain();
 //	resetVelocityGain();
 
-	if (vMax >= 1950) {
+	if (vMax >= 1900) {
 		TRANSAM = true;
 		fanMode = FastRun2;
 		startVacume2(90);
@@ -496,6 +496,77 @@ void testNormalSlalom() {
 		if (test_turn_times > 0) {
 			for (char i = 0; i < test_turn_times; i++) {
 				slalom(RorL == R ? L : R, Normal, vMax, vMax, 0);
+			}
+		}
+		cc = 0;
+		realRun(vMax, accele, diaccele, 180.0 * 1, 50);
+	}
+	mtu_stop2();
+	stopVacume();
+	cmt_wait(500);
+	logOutPut();
+}
+
+
+void testNormalSlalom2() {
+
+	char testCmd = (char) (*(float *) 1049260);
+	char test_front_ctrl = testCmd == 4;
+
+	float accele = *(float *) 1049324;
+	float diaccele = *(float *) 1049328;
+	float vMax = *(float *) 1049320;
+	float test_dia = *(float *) 1049276;
+
+	char RorL = eigherRightLeft() == Right ? R : L;
+
+	motionCheck();
+	cmt_wait(500);
+	gyroZeroCheck(false);
+
+	if (vMax >= 1000) {
+		fanMode = SearchRun;
+		startVacume2(70);
+		setNormalParam1000();
+	} else {
+		setNormalParam500();
+	}
+
+	mtu_start();
+	readGyroParam();
+	readVelocityGain();
+
+	ang = angle = Gy.error_old = 0;
+	mode_FF = 1;
+	save();
+
+	testRunMode = true;
+
+	if (test_front_ctrl) {
+		realRun(vMax, accele, diaccele, 180.0 * 1, vMax);
+		frontCtrl();
+		realRun(vMax, accele, diaccele, 90.0 * 1, 50);
+		resetAllData();
+		mtu_stop2();
+	} else {
+
+		if (test_dia > 0) {
+			runForWallOff(vMax, accele, 360, 1);
+		} else {
+			realRun(vMax, accele, diaccele, 180.0 * 1, vMax);
+		}
+
+		logs = 0;
+		time = 0;
+		cc = 1;
+		logs = 0;
+		slalom(RorL, Normal, vMax, vMax, 0);
+//		slalom(RorL, Normal, vMax, vMax, 0);
+
+		char test_turn_times = (char) (*(float *) 1049308);
+		if (test_turn_times > 0) {
+			for (char i = 0; i < test_turn_times; i++) {
+				slalom(RorL == R ? R : L, Normal, vMax, vMax, 0);
 			}
 		}
 		cc = 0;
@@ -1128,6 +1199,8 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		char check = runForPath(v, acc, diac);
 	} else if (mode == RUN4) {
 		float v = eigherRightLeft() == Right ? 5000 : 4500;
+
+		fanMode = FastRun2;
 		inputNaiperTurnAll1900();
 		if (transam) {
 			callParamForCircit(2400);
@@ -1177,6 +1250,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		} else if (res == 4) {
 			acc = 22000;
 		}
+		fanMode = FastRun2;
 		inputNaiperTurnAll1950();
 		if (res2 == 1) {
 			setLargeParam2000();
@@ -1660,6 +1734,10 @@ void operation() {
 		case 14:
 			cmtMusic(C3_, 100);
 			cirquitDiaPractice();
+			break;
+		case 15:
+			cmtMusic(C3_, 100);
+			testNormalSlalom2();
 			break;
 		}
 	} else {
