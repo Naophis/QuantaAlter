@@ -170,13 +170,13 @@ void inputNaiperTurnAll2000() {
 //	setDia90Param2000();
 }
 void inputNaiperTurnAll2050() {
+	inputNaiperTurnAll2000();
 	setLargeParam2050();
-	setOrvalParam2050();
-	setDia45Param2050();
+//	setOrvalParam2050();
+//	setDia45Param2050();
 //	setDia135Param2050();
-	setDia135Param1950();
 //	setDia90Param2050();
-	setDia90Param1900();
+	setDia90Param1950();
 }
 void inputNaiperTurnAll2100() {
 	inputNaiperTurnAll2050();
@@ -1168,7 +1168,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 	} else if (mode == RUN3) {
 		float v = 5000;
 		if (!fastMode) {
-			v = eigherRightLeft() == Right ? 5000 : 4500;
+			v = eigherRightLeft() == Right ? 5100 : 5000;
 		}
 		inputNaiperTurnAll1800();
 		save();
@@ -1198,7 +1198,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		}
 		char check = runForPath(v, acc, diac);
 	} else if (mode == RUN4) {
-		float v = eigherRightLeft() == Right ? 5000 : 4500;
+		float v = eigherRightLeft() == Right ? 5250 : 5100;
 
 		fanMode = FastRun2;
 		inputNaiperTurnAll1900();
@@ -1232,7 +1232,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		}
 		char check = runForPath(v, acc, diac);
 	} else if (mode == RUN5) {
-		float v = eigherRightLeft() == Right ? 5100 : 4700;
+		float v = eigherRightLeft() == Right ? 5200 : 5100;
 		save();
 		inputNaiperTurnAll1500();
 		save2();
@@ -1277,7 +1277,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		char check = runForPath(v, acc, diac);
 	} else if (mode == CONFIG) {
 		fanMode = FastRun2;
-		float v = eigherRightLeft() == Right ? 5100 : 5000;
+		float v = eigherRightLeft() == Right ? 5250 : 5100;
 		inputNaiperTurnAll1500();
 		save2();
 		float acc = 20500;
@@ -1318,7 +1318,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		char check = runForPath(v, acc, diac);
 	} else if (mode == CONFIG2) {
 		fanMode = FastRun2;
-		float v = eigherRightLeft() == Right ? 5250 : 5000;
+		float v = eigherRightLeft() == Right ? 5250 : 5100;
 		inputNaiperTurnAll1500();
 		save2();
 		float acc = 20500;
@@ -1342,7 +1342,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		} else if (res2 == 3) {
 			setLargeParam2200();
 		} else if (res2 == 4) {
-			setLargeParam2300();
+			setLargeParam2200();
 		}
 		save();
 		if (type == Right) {
@@ -1356,7 +1356,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		char check = runForPath(v, acc, diac);
 	} else if (mode == CONFIG3) {
 		fanMode = FastRun2;
-		float v = eigherRightLeft() == Right ? 5300 : 5000;
+		float v = eigherRightLeft() == Right ? 5300 : 5100;
 		inputNaiperTurnAll1500();
 		save2();
 		float acc = 20500;
@@ -1379,7 +1379,8 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		} else if (res2 == 3) {
 			setLargeParam2200();
 		} else if (res2 == 4) {
-			setLargeParam2300();
+			setLargeParam2200();
+//			setLargeParam2300();
 //			setOrvalParam2300();
 		}
 		save();
