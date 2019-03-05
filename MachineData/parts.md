@@ -6,8 +6,8 @@
 |	2	|	TB6614FNG	|	2	|[URL](	https://www.digikey.jp/product-detail/ja/toshiba-semiconductor-and-storage/TB6614FNG,C,EL/TB6614FNGCELCT-ND/3671341	)|	Production Stopped	|
 |	3	|	icm20689	|	1	|[URL](	https://www.digikey.jp/product-detail/ja/tdk-invensense/ICM-20689/1428-1059-1-ND/5872874	)|	Successor Model MPU6050	|
 |	4	|	LXDC55FAAA-203	|	1	|[URL](	http://akizukidenshi.com/catalog/g/gM-09577/	)|	DCDC(Target Output is 5V)	|
-|	5	|	SFH4550	|	5	|[URL](	https://www.digikey.jp/product-detail/ja/osram-opto-semiconductors-inc/SFH-4550/475-1200-ND/806365	)|		|
-|	6	|	ST-1KL3A	|	5	|[URL](	https://www.rt-shop.jp/index.php?main_page=product_info&cPath=42&products_id=2747	)|		|
+|	5	|	SFH4550	|	5	|[URL](	https://www.digikey.jp/product-detail/ja/osram-opto-semiconductors-inc/SFH-4550/475-1200-ND/806365	)|  IR LED		|
+|	6	|	ST-1KL3A	|	5	|[URL](	https://www.rt-shop.jp/index.php?main_page=product_info&cPath=42&products_id=2747	)| photo transistor	|
 |	7	|	Xtal24MHz	|	1	|[URL](	https://www.digikey.jp/product-detail/ja/txc-corporation/7V-24.000MAAV-T/887-1805-1-ND/3585998	)|		|
 |	8	|	2chNPN transister	|	3	|[URL](	https://www.digikey.jp/product-detail/ja/on-semiconductor/FDC6561AN/FDC6561ANCT-ND/965590	)|	for LED & buzzer	|
 |	9	|	buzzer	|	1	|[URL](	https://www.digikey.jp/product-detail/ja/pui-audio-inc/SMT-0540-T-7-R/668-1207-1-ND/2207546	)|		|
