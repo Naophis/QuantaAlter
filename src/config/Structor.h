@@ -69,7 +69,7 @@ typedef struct {
 	float s2;
 	float v;
 } t_Control;
-volatile t_Control C;
+volatile t_Control C, C_old;
 
 typedef struct {
 	float targetAngle;

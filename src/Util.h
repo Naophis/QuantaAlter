@@ -214,6 +214,7 @@ void resetData2() {
 	mode_FF = 1;
 	distance = 0;
 	img_distance = 0;
+	C_old.s = C_old.v = C_old.g = 0;
 }
 
 void resetAllData() {
@@ -257,6 +258,7 @@ void resetAllData() {
 	distance = 0;
 	img_distance = 0;
 	testRunMode = false;
+	C_old.s = C_old.v = C_old.g = 0;
 	resetOmegaParam();
 }
 void clearLogs();
@@ -308,6 +310,7 @@ void mtu_stop2() {
 	resetAngleParam();
 	resetOmegaParam();
 	resetAllData();
+	C_old.s = C_old.v = C_old.g = 0;
 	cmt_wait(750);
 	enablePWM = false;
 	GPT0.GTCCRA = GPT0.GTCCRC = GPT1.GTCCRA = GPT1.GTCCRC = 0;
@@ -317,6 +320,7 @@ void mtu_stop2() {
 	PORTB.PODR.BIT.B3 = 0;
 	stopVacume();
 	ledOn = 0;
+	enableSensorCtrl = false;
 }
 char failOutR = 0, failOutL = 0;
 #define order 200
@@ -421,7 +425,7 @@ void printAdData() {
 }
 char checkStablly();
 float check_sen_error(void);
-void gyroZeroCheck(char bool);
+void gyroZeroCheck(char bool2);
 char skipPrint = false;
 void printSensor() {
 	ledOn = 1;
@@ -544,8 +548,8 @@ float getZeroPoint() {
 //	myprintf("result = %f\r\n", result);
 	return result;
 }
-void gyroZeroCheck(char bool) {
-	if (bool) {
+void gyroZeroCheck(char bool2) {
+	if (bool2) {
 		motionCheck();
 	}
 	resetGyroParam();
@@ -562,7 +566,7 @@ void gyroZeroCheck(char bool) {
 		}
 //		break;
 	}
-	if (bool) {
+	if (bool2) {
 		coin(100);
 	}
 	myprintf("%f\r\n", tmpData);

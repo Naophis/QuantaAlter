@@ -46,7 +46,12 @@ short setupMpu6500() {
 	cmt_wait(200);
 	MPU6500_Write_1byte(0x6A, 0x10); //uercontrol i2c=disable
 	cmt_wait(200);
-	MPU6500_Write_1byte(0x1B, 0x18); //gyro config ジャイロのフルスケールを±2000°/s
+	char gyroConfig = (char) (*(float *) 1049816);
+	if (gyroConfig) {
+		MPU6500_Write_1byte(0x1B, 0x18); //gyro config ジャイロのフルスケールを±2000°/s
+	} else {
+		MPU6500_Write_1byte(0x1B, 0x19); //gyro config ジャイロのフルスケールを±2000°/s
+	}
 	cmt_wait(200);
 	short result = MPU6500_Read_1byte(117);
 	myprintf("%d	%d\r\n", result, result == 152);
@@ -87,7 +92,6 @@ void Init_SPI(void) {
 
 //	RSPI1.SPBR = 4;
 //	RSPI1.SPCMD0.BIT.BRDV = 2;
-
 
 //	RSPI1.SPBR = 5;
 //	RSPI1.SPCMD0.BIT.BRDV = 3;

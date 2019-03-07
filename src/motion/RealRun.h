@@ -143,11 +143,24 @@ char runForPath(float max, float ac, float diac) {
 	running(150, -diac, 90, 1);
 
 	if (!dia) {
-		frontCtrl2();
+//		 frontCtrl2();
+		frontCtrl3();
 	}
 
 	mtu_stop2();
 	fastMode = 0;
+	gyroRollTest(R, 180, 60, 100);
+	back(-100, -1000, 65, 1);
+
+	if (now_dir == North) {
+		now_dir = South;
+	} else if (now_dir == East) {
+		now_dir = West;
+	} else if (now_dir == West) {
+		now_dir = East;
+	} else if (now_dir == South) {
+		now_dir = North;
+	}
 	return 1;
 }
 
@@ -247,6 +260,7 @@ char runForPath_v2(float max, float ac, float diac) {
 
 	if (!dia) {
 		frontCtrl2();
+		frontCtrl3();
 	}
 
 	mtu_stop2();
@@ -270,6 +284,18 @@ char runForKnownPath(float max, float ac, float diac) {
 	slaVelocity = turnVelocitySlow(turnVarys);
 	char tmp = false;
 	for (i = 0; i < pathLength; i++) {
+		if (i == 0) {
+			wall_off_limit = 125000;
+			wall_off_limit_d = 125000;
+			if (dist >= 0.5) {
+				const float tempdist1 = *(float *) 1049960;
+				wall_off_limit = wall_off_limit_d = tempdist1;
+			}
+		} else {
+			const float tempdist1 = *(float *) 1049960;
+			wall_off_limit = wall_off_limit_d = tempdist1;
+		}
+
 		if (i == 0/* || path_t[i] == 255 || path_t[i] == 0*/) {
 			dist = 0.5 * (path_s[i] - 1) - 0.5;
 		} else {
@@ -283,7 +309,7 @@ char runForKnownPath(float max, float ac, float diac) {
 
 		slaVelocity = turnVelocitySlow(turnVarys);
 		RorL = turnRoL(path_t[i]);
-		if (dist == 1) {
+		if (dia == 0 && dist == 1) {
 			check = runForWallOff(slaVelocity, 0, 180.0, 1);
 		} else if (dist > 0) {
 			if (dia == 0) {

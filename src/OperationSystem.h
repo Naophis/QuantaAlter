@@ -55,7 +55,7 @@ void testRun() {
 
 	mtu_start();
 	dia = test_dia == 1;
-
+	enableSensorCtrl = true;
 	if (dia == 1) {
 		float targetDistDia = *(float *) 1049300;
 		realRun(velocity, accele, diaccele, targetDistDia, vMax);
@@ -63,8 +63,14 @@ void testRun() {
 		float targetdist = *(float *) 1049296;
 		realRun(velocity, accele, diaccele, targetdist, vMax);
 	}
-
+	positionControlValueFlg = 1;
+	gyroKeepZero = 1;
+	C_old.g = C.g = 0;
+//	enablePWM = false;
 	mtu_stop2();
+	gyroKeepZero = 0;
+	enableSensorCtrl = false;
+	positionControlValueFlg = 0;
 	logOutPut();
 }
 void testRun1(float v, float accele, float diaccele, float dist, float vM,
@@ -416,8 +422,8 @@ void testSlalom3() {
 	}
 	cc = 0;
 
-	testRunMode = true;
-	gyroErrResetEnable = false;
+	// testRunMode = true;
+	// gyroErrResetEnable = false;
 
 	if (test_dia) {
 		float targetDistDia = *(float *) 1049300;
@@ -501,12 +507,13 @@ void testNormalSlalom() {
 		cc = 0;
 		realRun(vMax, accele, diaccele, 180.0 * 1, 50);
 	}
+	C_old.g = 0;
+	C_old.s = 0;
 	mtu_stop2();
 	stopVacume();
 	cmt_wait(500);
 	logOutPut();
 }
-
 
 void testNormalSlalom2() {
 
@@ -625,6 +632,44 @@ void testWallOff() {
 	cmt_wait(500);
 	logOutPut();
 }
+
+void testCalibrate() {
+
+	float test_acc = *(float *) 1049268;
+	float test_max_v = *(float *) 1049272;
+	float test_dia = *(float *) 1049276;
+
+	float velocity = test_max_v;
+	float accele = test_acc;
+	float diaccele = test_acc;
+	float vMax = 100;
+
+	char RorL = eigherRightLeft() == Right ? L : R;
+
+	gyroZeroCheck(true);
+	cmt_wait(500);
+	fanMode = SearchRun;
+	startVacume2(70);
+	cmt_wait(200);
+	cc = 1;
+	gyroOn = 1;
+	V_now = 0;
+
+	mtu_start();
+	dia = test_dia == 1;
+	enableSensorCtrl = true;
+	float targetdist = *(float *) 1049296;
+	realRun(velocity, accele, diaccele, targetdist, vMax);
+
+	mtu_stop();
+
+	enableSensorCtrl = false;
+
+	calibrateRun(RorL);
+
+	logOutPut();
+}
+
 void testWallOffSeach() {
 
 	float vMax = *(float *) 1049320;
@@ -1053,6 +1098,19 @@ void printCheckMapping() {
 	myprintf("\r\n");
 }
 
+void easyMakePath(char isFull) {
+	flushcheckQ();
+	fanMode = SearchRun;
+	fanMode = FastRun;
+	Dia2 = Dia - minus + 2;
+	Dia3 = Dia - minus + 1;
+	St2 = St1 - minus - 1;
+	St3 = St1 - minus - 2;
+	vetorPathCreate(0, 0, isFull);
+	largePath(true);
+	diagonalPath(isFull, true);
+}
+
 char action(char mode, char goalX, char goalY, char fastMode) {
 	char isFull = isFullMaze(goalX, goalY);
 
@@ -1086,6 +1144,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		}
 		save();
 		pathClear();
+		motionCheck();
 		return Adachi2(goalX, goalY, Zentansaku, isFull, m2) ? 2 : 0;
 	} else if (mode == SEARCH2) {
 		fanMode = SearchRun;
@@ -1103,19 +1162,22 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 		}
 		save();
 		pathClear();
+		motionCheck();
 		return Adachi2(goalX, goalY, Oufuku, isFull, m2) ? 2 : 0;
 	} else if (mode == RUN) {
 		float v = 4500;
+		char type = Left;
+		char res = 2;
 		inputNaiperTurnAll1500();
 		save();
 		save2();
 		if (!fastMode) {
 			v = eigherRightLeft() == Right ? 4500 : 3500;
+			res = uiVolatage(2);
 		}
 		float acc = 20500;
 		float diac = 18000;
-		char type = eigherRightLeft();
-		char res = uiVolatage(2);
+//		char type = eigherRightLeft();
 		if (res == 1) {
 			acc = 18000;
 		} else if (res == 2) {
@@ -1134,19 +1196,27 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 			motionCheck();
 		}
 		char check = runForPath(v, acc, diac);
+		const int Return = (int) (*(float *) 1049844);
+		if (check && Return) {
+			easyMakePath(isFull);
+			check = runForPath(v, acc, diac);
+		}
 	} else if (mode == RUN2) {
 		float v = 4700;
+		char type = Left;
+		char res = 2;
 		inputNaiperTurnAll1700();
 		save();
 		inputNaiperTurnAll1500();
 		save2();
 		if (!fastMode) {
 			v = eigherRightLeft() == Right ? 4700 : 4000;
+			res = uiVolatage(2);
 		}
 		float acc = 20500;
 		float diac = 22000;
-		char type = eigherRightLeft();
-		char res = uiVolatage(2);
+//		char type = eigherRightLeft();
+//		uiVolatage(2);
 		if (res == 1) {
 			acc = 18000;
 		} else if (res == 2) {
@@ -1165,8 +1235,14 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 			motionCheck();
 		}
 		char check = runForPath(v, acc, diac);
+		const int Return = (int) (*(float *) 1049844);
+		if (check && Return) {
+			easyMakePath(isFull);
+			check = runForPath(v, acc, diac);
+		}
 	} else if (mode == RUN3) {
 		float v = 5000;
+		char type = Left;
 		if (!fastMode) {
 			v = eigherRightLeft() == Right ? 5100 : 5000;
 		}
@@ -1177,7 +1253,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 
 		float acc = 20500;
 		float diac = 22000;
-		char type = eigherRightLeft();
+//		char type = eigherRightLeft();
 		char res = uiVolatage(2);
 		if (res == 1) {
 			acc = 18000;
@@ -1197,9 +1273,14 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 			motionCheck();
 		}
 		char check = runForPath(v, acc, diac);
+		const int Return = (int) (*(float *) 1049844);
+		if (check && Return) {
+			easyMakePath(isFull);
+			check = runForPath(v, acc, diac);
+		}
 	} else if (mode == RUN4) {
 		float v = eigherRightLeft() == Right ? 5250 : 5100;
-
+		char type = Left;
 		fanMode = FastRun2;
 		inputNaiperTurnAll1900();
 		if (transam) {
@@ -1211,7 +1292,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 
 		float acc = 20500;
 		float diac = 22000;
-		char type = eigherRightLeft();
+//		char type = eigherRightLeft();
 		char res = uiVolatage(2);
 		if (res == 1) {
 			acc = 18000;
@@ -1231,14 +1312,20 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 			motionCheck();
 		}
 		char check = runForPath(v, acc, diac);
+		const int Return = (int) (*(float *) 1049844);
+		if (check && Return) {
+			easyMakePath(isFull);
+			check = runForPath(v, acc, diac);
+		}
 	} else if (mode == RUN5) {
 		float v = eigherRightLeft() == Right ? 5200 : 5100;
+		char type = Left;
 		save();
 		inputNaiperTurnAll1500();
 		save2();
 		float acc = 20500;
 		float diac = 22000;
-		char type = eigherRightLeft();
+//		char type = eigherRightLeft();
 		char res = uiVolatage(2);
 		char res2 = uiVolatage(2);
 		if (res == 1) {
@@ -1275,14 +1362,20 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 			motionCheck();
 		}
 		char check = runForPath(v, acc, diac);
+		const int Return = (int) (*(float *) 1049844);
+		if (check && Return) {
+			easyMakePath(isFull);
+			check = runForPath(v, acc, diac);
+		}
 	} else if (mode == CONFIG) {
 		fanMode = FastRun2;
 		float v = eigherRightLeft() == Right ? 5250 : 5100;
+		char type = Left;
 		inputNaiperTurnAll1500();
 		save2();
 		float acc = 20500;
 		float diac = 22000;
-		char type = eigherRightLeft();
+//		char type = eigherRightLeft();
 		char res = uiVolatage(2);
 		char res2 = uiVolatage(2);
 		if (res == 1) {
@@ -1316,14 +1409,20 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 			motionCheck();
 		}
 		char check = runForPath(v, acc, diac);
+		const int Return = (int) (*(float *) 1049844);
+		if (check && Return) {
+			easyMakePath(isFull);
+			check = runForPath(v, acc, diac);
+		}
 	} else if (mode == CONFIG2) {
 		fanMode = FastRun2;
 		float v = eigherRightLeft() == Right ? 5250 : 5100;
+		char type = Left;
 		inputNaiperTurnAll1500();
 		save2();
 		float acc = 20500;
 		float diac = 22000;
-		char type = eigherRightLeft();
+//		char type = eigherRightLeft();
 		char res = uiVolatage(2);
 		char res2 = uiVolatage(2);
 		if (res == 1) {
@@ -1354,14 +1453,20 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 			motionCheck();
 		}
 		char check = runForPath(v, acc, diac);
+		const int Return = (int) (*(float *) 1049844);
+		if (check && Return) {
+			easyMakePath(isFull);
+			check = runForPath(v, acc, diac);
+		}
 	} else if (mode == CONFIG3) {
 		fanMode = FastRun2;
 		float v = eigherRightLeft() == Right ? 5300 : 5100;
+		char type = Left;
 		inputNaiperTurnAll1500();
 		save2();
 		float acc = 20500;
 		float diac = 22000;
-		char type = eigherRightLeft();
+//		char type = eigherRightLeft();
 		char res = uiVolatage(2);
 		char res2 = uiVolatage(2);
 		if (res == 1) {
@@ -1393,6 +1498,11 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 			motionCheck();
 		}
 		char check = runForPath(v, acc, diac);
+		const int Return = (int) (*(float *) 1049844);
+		if (check && Return) {
+			easyMakePath(isFull);
+			check = runForPath(v, acc, diac);
+		}
 	} else if (mode == CONFIG4) {
 	} else if (mode == CONFIG5) {
 	} else if (mode == CONFIG6) {
@@ -1740,6 +1850,10 @@ void operation() {
 			cmtMusic(C3_, 100);
 			testNormalSlalom2();
 			break;
+		case 16:
+			cmtMusic(C3_, 100);
+			testCalibrate();
+			break;
 		}
 	} else {
 		cmtMusic(C2_, 100);
@@ -1760,6 +1874,7 @@ void operation() {
 		mtu_stop2();
 		if (autostart && res == 2) {
 			action(RUN2, goalX, goalY, true);
+
 		}
 		mtu_stop2();
 	}

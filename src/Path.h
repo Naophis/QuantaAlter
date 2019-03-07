@@ -12,7 +12,7 @@ void largePath(char b1);
 void diagonalPath(char isFull, char a1);
 float pathCreateChange(int Goal_X, int Goal_Y, int qX, int qY, int fixedMove);
 void vectorDistUpdate(int x, int y, char isFull);
-float countPathLength(char bool);
+float countPathLength(char bool2);
 void clearCheckMap() {
 	for (char i = 0; i < 16; i++) {
 		for (char j = 0; j < 16; j++) {
@@ -45,13 +45,13 @@ void addQ(int x, int y) {
 	checkQDuality[i] = x * 16 + y;
 }
 void deleteQ(int x, int y) {
-	char bool = false;
+	char bool2 = false;
 	for (int i = 0; checkQ[i] != 0; i++) {
 		if (checkQ[i] / 16 == x && (checkQ[i] & 0x0f) == y) {
 			checkQ[i] = 0;
-			bool = true;
+			bool2 = true;
 		}
-		if (bool) {
+		if (bool2) {
 			checkQ[i] = checkQ[i + 1];
 		}
 	}
@@ -70,17 +70,17 @@ void addCheckQ(int x, int y) {
 	}
 }
 char checkDualCheck(int x, int y) {
-	char bool = false;
+	char bool2 = false;
 	int i = 0;
 	for (i = 0; checkQDuality[i] != 0; i++) {
 		if (checkQDuality[i] == x * 16 + y) {
-			bool = true;
+			bool2 = true;
 		}
 	}
-	if (!bool) {
+	if (!bool2) {
 		addQ(x, y);
 	}
-	return bool;
+	return bool2;
 }
 void checkOtherRoot(int x, int y, int now) {
 	int temp = 0;
@@ -673,9 +673,9 @@ double getGoalTime(char showTime) {
 	return time;
 }
 
-double sitimulateTime(char bool) {
+double sitimulateTime(char bool2) {
 	double time = 0;
-	if (bool) {
+	if (bool2) {
 		largePath(true);
 		diagonalPath(true, true);
 		time = getGoalTime(false);
@@ -684,10 +684,10 @@ double sitimulateTime(char bool) {
 	return 255;
 }
 
-float countPathLength(char bool) {
+float countPathLength(char bool2) {
 	int i = 0;
 	float j = 0;
-	if (bool) {
+	if (bool2) {
 		largePath(true);
 		diagonalPath(true, true);
 		for (i = 0; path_t[i] != 255; i++) {
@@ -773,7 +773,7 @@ float pathCreateChange(int Goal_X, int Goal_Y, int qX, int qY, int fixedMove) {
 	char b2 = false;
 	char dirX = East;
 	char dirY = North;
-	char bool = false;
+	char bool2 = false;
 	checkTurningPoint = false;
 //	deadEnd(Goal_X, Goal_Y);
 	pathClear();
@@ -801,12 +801,12 @@ float pathCreateChange(int Goal_X, int Goal_Y, int qX, int qY, int fixedMove) {
 					|| (x == Goal_X && y == Goal_Y + 1)
 					|| (x == Goal_X + 1 && y == Goal_Y + 1)) {
 				b1 = true;
-				bool = true;
+				bool2 = true;
 			}
 		} else {
 			if ((x == Goal_X && y == Goal_Y)) {
 				b1 = true;
-				bool = true;
+				bool2 = true;
 			}
 		}
 		if (now_dir == North) {
@@ -893,9 +893,9 @@ float pathCreateChange(int Goal_X, int Goal_Y, int qX, int qY, int fixedMove) {
 	}
 
 	if (pathVmax > 0) {
-		return sitimulateTime(bool);
+		return sitimulateTime(bool2);
 	} else {
-		return countPathLength(bool);
+		return countPathLength(bool2);
 	}
 }
 

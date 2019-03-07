@@ -15,11 +15,8 @@ volatile float wall_off_limit_d = 40;
 
 void walloff1(char RorL) {
 	if (RorL == R) {
-
-		while (SEN_R < R_WALL_OFF && SEN_FRONT < FRONT_WALL_ON) {
-			if (SEN_FRONT < 500 && distance > wall_off_limit) {
-				break;
-			}
+		while (SEN_R < R_WALL_OFF && distance <= wall_off_limit
+				&& SEN_FRONT < FRONT_WALL_ON) {
 			if (!fail) {
 				positionControlValueFlg = 0;
 				break;
@@ -96,14 +93,14 @@ char wallOff(char RorL, char ctrl) {
 
 	if (RorL == R) {
 		if (SEN_R < existRightWall4) {
-			cmtMusic(C4_, 250);
+			// cmtMusic(C4_, 250);
 			walloff1(R);
 		} else {
 			walloff2(R);
 		}
 	} else {
 		if (SEN_L < existLeftWall4) {
-			cmtMusic(C4_, 250);
+			// cmtMusic(C4_, 250);
 			walloff1(L);
 		} else {
 			walloff2(L);

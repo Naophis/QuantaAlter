@@ -525,7 +525,7 @@ void vetorPathCreate(int Gx, int Gy, char isFull) {
 	int dirLog[3];
 	char b1 = false;
 	char b2 = false;
-	deadEnd(Gx, Gy);
+//	deadEnd(Gx, Gy);
 	pathClear();
 	// updateVectorMap(goalX, goalY, false, isFull);
 	updateVectorMap(Gx, Gy, false, isFull);
