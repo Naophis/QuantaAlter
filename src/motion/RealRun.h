@@ -256,7 +256,7 @@ char runForPath_v2(float max, float ac, float diac) {
 			return 0;
 		}
 	}
-	running(150, -diac, 120, 1);
+	running(150, -diac / 500, 120, 1);
 
 	if (!dia) {
 		frontCtrl2();

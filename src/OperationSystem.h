@@ -168,21 +168,23 @@ void inputNaiperTurnAll1950() {
 	setDia90Param1900();
 }
 void inputNaiperTurnAll2000() {
+	inputNaiperTurnAll1950();
 	setLargeParam2000();
 	setOrvalParam2000();
 	setDia45Param2000();
 	setDia135Param2000();
+	setDia45Param1950();
+	setDia135Param1950();
 	setDia90Param1900();
-//	setDia90Param2000();
 }
 void inputNaiperTurnAll2050() {
 	inputNaiperTurnAll2000();
 	setLargeParam2050();
-//	setOrvalParam2050();
+	setOrvalParam2050();
 //	setDia45Param2050();
 //	setDia135Param2050();
 //	setDia90Param2050();
-	setDia90Param1950();
+//	setDia90Param1950();
 }
 void inputNaiperTurnAll2100() {
 	inputNaiperTurnAll2050();
