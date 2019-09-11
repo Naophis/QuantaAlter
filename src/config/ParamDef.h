@@ -26,8 +26,8 @@ float Tread = 0.074;
 float running_wall_off_r = 500;
 float running_wall_off_l = 500;
 
-float search_wall_off_r = 1500;
-float search_wall_off_l = 1400;
+volatile float search_wall_off_r = 1500;
+volatile float search_wall_off_l = 1400;
 
 #define W_ENCORDER_LIMIT 100
 #define W_ENCORDER_LIMIT2 10

@@ -8,14 +8,22 @@
 #ifndef REALRUN_H_
 #define REALRUN_H_
 
+#define NULL_FILTER 0
+#define SEARCH_FILTER 1
+#define REAL_RUN_FILTER 2
+#define DIA_RUN_FILTER 3
+#define START_FILTER 4
+#define OTHERS_FILTER 5
+
 void cirquit();
-char realRun(float max, float ac, float diac, float dist, float sla) {
+char realRun(float max, float ac, float diac, float dist, float sla,
+		char runtype) {
 	globalState = STRAIGHT;
 	sensingMode = (dia == 0) ? AtackStraight : AtackDia;
 
 	return (dia == 1) ?
-			orignalRunDia(max, sla, ac, diac, dist) :
-			orignalRun(max, sla, ac, diac, dist);
+			orignalRunDia(max, sla, ac, diac, dist, runtype) :
+			orignalRun(max, sla, ac, diac, dist, runtype);
 
 }
 
@@ -31,6 +39,7 @@ char runForPath(float max, float ac, float diac) {
 	float slalomDist = 0;
 //	char oldTurnVary = 0;
 	char top = false;
+	float start_offset = *(float *) 1049496;
 
 	dia = 0;
 	tempVmax = max;
@@ -53,7 +62,7 @@ char runForPath(float max, float ac, float diac) {
 		if (i == 0) {
 			wall_off_limit = 125000;
 			wall_off_limit_d = 125000;
-			dist = 0.5 * (path_s[i] - 1) - 1;
+			dist = 0.5 * (path_s[i] - 1) - 0.5;
 			if (dist >= 0.5) {
 				const float tempdist1 = *(float *) 1049960;
 				wall_off_limit = wall_off_limit_d = tempdist1;
@@ -81,21 +90,30 @@ char runForPath(float max, float ac, float diac) {
 
 		if (i == 0) {
 			if (dist > 0) {
-				float tmpDist = (dist) * 180 + 41;
-				res = realRun(max, ac, diac, tmpDist, slaVel);
+				float tmpDist = (dist) * 180 + start_offset;
+				res = realRun(max, ac, diac, tmpDist, slaVel, START_FILTER);
 			} else {
-				float tmpDist = getFirstFront(turnVarys) + 41;
-				res = realRun(max, ac, diac, tmpDist, slaVel);
+				float tmpDist = getFirstFront(turnVarys) + start_offset;
+				float tmpAccel = slaVel * slaVel / 2 / tmpDist;
+				if (tmpAccel > ac) {
+					tmpAccel += 1000;
+					res = realRun(max, tmpAccel, tmpAccel, tmpDist, slaVel,
+						START_FILTER);
+				} else {
+					res = realRun(max, ac, diac, tmpDist, slaVel,
+						START_FILTER);
+				}
+				
 				globalSkipFront = true;
 			}
 		} else if (dist > 0 || i == 0) {
 			if (dia == 0) {
 				float tmpDist = dist * 180 + slalomDist;
-				res = realRun(max, ac, diac, tmpDist, slaVel);
+				res = realRun(max, ac, diac, tmpDist, slaVel, REAL_RUN_FILTER);
 			} else {
 				float tmpDist = dist * ROOT2 * 180 + slalomDist;
 				res = realRun(max * 0.75, ac * 0.75, diac * 0.75, tmpDist,
-						slaVel);
+						slaVel, DIA_RUN_FILTER);
 			}
 		}
 		if (!res) {
@@ -143,11 +161,24 @@ char runForPath(float max, float ac, float diac) {
 	running(150, -diac, 90, 1);
 
 	if (!dia) {
-		frontCtrl2();
+//		 frontCtrl2();
+		frontCtrl3();
 	}
 
 	mtu_stop2();
 	fastMode = 0;
+	gyroRollTest(R, 180, 60, 100);
+	back(-100, -1000, 65, 1);
+
+	if (now_dir == North) {
+		now_dir = South;
+	} else if (now_dir == East) {
+		now_dir = West;
+	} else if (now_dir == West) {
+		now_dir = East;
+	} else if (now_dir == South) {
+		now_dir = North;
+	}
 	return 1;
 }
 
@@ -162,6 +193,7 @@ char runForPath_v2(float max, float ac, float diac) {
 	char check = 0;
 	float slalomDist = 0;
 //	char oldTurnVary = 0;
+	float start_offset = *(float *) 1049496;
 	char top = false;
 	dia = 0;
 	tempVmax = max;
@@ -181,7 +213,7 @@ char runForPath_v2(float max, float ac, float diac) {
 	mtu_start();
 	for (i = 0; i < pathLength; i++) {
 		if (i == 0) {
-			dist = 0.5 * (path_s[i] - 1) - 1;
+			dist = 0.5 * (path_s[i] - 1) - 0.5;
 		} else {
 			dist = 0.5 * path_s[i] - 1;
 		}
@@ -202,15 +234,16 @@ char runForPath_v2(float max, float ac, float diac) {
 		if (dist > 0 || i == 0) {
 			if (dia == 0) {
 				if (i == 0) {
-					check = realRun(max, ac, diac, (dist) * 180 + 41,
-							slaVelocity);
+					check = realRun(max, ac, diac, (dist) * 180 + start_offset,
+							slaVelocity, NULL_FILTER);
 				} else {
 					check = realRun(max, ac, diac, dist * 180 + slalomDist,
-							slaVelocity);
+							slaVelocity, NULL_FILTER);
 				}
 			} else {
 				check = realRun(max, ac * 0.8, diac * 0.8,
-						dist * ROOT2 * 180 + slalomDist, slaVelocity);
+						dist * ROOT2 * 180 + slalomDist, slaVelocity,
+						NULL_FILTER);
 			}
 		}
 		if (!check) {
@@ -243,10 +276,11 @@ char runForPath_v2(float max, float ac, float diac) {
 			return 0;
 		}
 	}
-	running(150, -diac, 120, 1);
+	running(150, -diac / 500, 120, 1);
 
 	if (!dia) {
 		frontCtrl2();
+		frontCtrl3();
 	}
 
 	mtu_stop2();
@@ -270,6 +304,18 @@ char runForKnownPath(float max, float ac, float diac) {
 	slaVelocity = turnVelocitySlow(turnVarys);
 	char tmp = false;
 	for (i = 0; i < pathLength; i++) {
+		if (i == 0) {
+			wall_off_limit = 125000;
+			wall_off_limit_d = 125000;
+			if (dist >= 0.5) {
+				const float tempdist1 = *(float *) 1049960;
+				wall_off_limit = wall_off_limit_d = tempdist1;
+			}
+		} else {
+			const float tempdist1 = *(float *) 1049960;
+			wall_off_limit = wall_off_limit_d = tempdist1;
+		}
+
 		if (i == 0/* || path_t[i] == 255 || path_t[i] == 0*/) {
 			dist = 0.5 * (path_s[i] - 1) - 0.5;
 		} else {
@@ -283,41 +329,46 @@ char runForKnownPath(float max, float ac, float diac) {
 
 		slaVelocity = turnVelocitySlow(turnVarys);
 		RorL = turnRoL(path_t[i]);
-		if (dist == 1) {
+		if (dia == 0 && dist == 1) {
 			check = runForWallOff(slaVelocity, 0, 180.0, 1);
 		} else if (dist > 0) {
 			if (dia == 0) {
 				if (path_t[i] == 255 && tmp) {
 					cmtMusic(C2_, 500);
-					check = realRun(max, ac, diac, dist * 180, slaVelocity);
+					check = realRun(max, ac, diac, dist * 180, slaVelocity,
+					NULL_FILTER);
 				} else if (path_t[i] != 255
 						&& !(path_t[i] == 1 || path_t[i] == 2)) {
 					cmtMusic(C2_, 500);
-					check = realRun(max, ac, diac, dist * 180, slaVelocity);
+					check = realRun(max, ac, diac, dist * 180, slaVelocity,
+					NULL_FILTER);
 					tmp = true;
 				} else if (path_t[i] == 1 || path_t[i] == 2) {
 					if (tmp) {
-						if (dist >= 1) {
-							check = realRun(max, ac, diac, dist * 180 - 90,
-									slaVelocity);
-						}
-						check = runForWallOff(slaVelocity, ac, 90, 1);
+						// if (dist >= 1) {
+							check = realRun(max, ac, diac, dist * 180,
+									slaVelocity, NULL_FILTER);
+						// }
+						// check = runForWallOff(slaVelocity, ac, 90, 1);
 						tmp = false;
 					} else {
-						check = realRun(max, ac, diac, dist * 180, slaVelocity);
+						check = realRun(max, ac, diac, dist * 180, slaVelocity,
+						NULL_FILTER);
 					}
 				} else {
 					if (dist >= 1) {
 						check = realRun(max, ac, diac, dist * 180 - 90,
-								slaVelocity);
-						check = runForWallOff(slaVelocity, ac, 90, 1);
+								slaVelocity, NULL_FILTER);
+						check = runForWallOff(slaVelocity, ac, 90, 1,
+						NULL_FILTER);
 					} else {
-						check = realRun(max, ac, diac, dist * 180, slaVelocity);
+						check = realRun(max, ac, diac, dist * 180, slaVelocity,
+						NULL_FILTER);
 					}
 				}
 			} else {
 				check = realRun(max, ac * 0.8, diac * 0.8, dist * ROOT2 * 180,
-						slaVelocity);
+						slaVelocity, NULL_FILTER);
 			}
 		}
 		if (!check) {

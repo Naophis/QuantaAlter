@@ -214,6 +214,7 @@ void resetData2() {
 	mode_FF = 1;
 	distance = 0;
 	img_distance = 0;
+	C_old.s = C_old.v = C_old.g = 0;
 }
 
 void resetAllData() {
@@ -257,6 +258,7 @@ void resetAllData() {
 	distance = 0;
 	img_distance = 0;
 	testRunMode = false;
+	C_old.s = C_old.v = C_old.g = 0;
 	resetOmegaParam();
 }
 void clearLogs();
@@ -308,6 +310,7 @@ void mtu_stop2() {
 	resetAngleParam();
 	resetOmegaParam();
 	resetAllData();
+	C_old.s = C_old.v = C_old.g = 0;
 	cmt_wait(750);
 	enablePWM = false;
 	GPT0.GTCCRA = GPT0.GTCCRC = GPT1.GTCCRA = GPT1.GTCCRC = 0;
@@ -317,14 +320,12 @@ void mtu_stop2() {
 	PORTB.PODR.BIT.B3 = 0;
 	stopVacume();
 	ledOn = 0;
+	enableSensorCtrl = false;
 }
 char failOutR = 0, failOutL = 0;
 #define order 200
-#define vOrder 100
-#define wOrder 1
 char senCheck = 0;
 #define conflictOrder 3000
-#define TIME_LIMIT 100
 char failR2, failL2;
 char dutyLimit, velocityLimit;
 #define DIST_LIMIT 50
@@ -332,6 +333,10 @@ char dutyLimit, velocityLimit;
 //char sw;
 void failCheck(float Dr, float Dl) {
 //	return;
+	float vOrder = *(float *) 1049484;
+	float wOrder = *(float *) 1049488;
+	float TIME_LIMIT = *(float *) 1049492;
+	
 	char checkR = 0;
 	char checkL = 0;
 	if (Front_SEN.now > conflictOrder) {
@@ -343,6 +348,11 @@ void failCheck(float Dr, float Dl) {
 		failOutR++;
 		checkR++;
 	}
+	if (ABS(ang - angle) > wOrder) {
+		failOutR++;
+		checkR++;
+	}
+
 	if (checkR == 0) {
 		failOutR = 0;
 	}
@@ -421,7 +431,7 @@ void printAdData() {
 }
 char checkStablly();
 float check_sen_error(void);
-void gyroZeroCheck(char bool);
+void gyroZeroCheck(char bool2);
 char skipPrint = false;
 void printSensor() {
 	ledOn = 1;
@@ -544,8 +554,8 @@ float getZeroPoint() {
 //	myprintf("result = %f\r\n", result);
 	return result;
 }
-void gyroZeroCheck(char bool) {
-	if (bool) {
+void gyroZeroCheck(char bool2) {
+	if (bool2) {
 		motionCheck();
 	}
 	resetGyroParam();
@@ -562,7 +572,7 @@ void gyroZeroCheck(char bool) {
 		}
 //		break;
 	}
-	if (bool) {
+	if (bool2) {
 		coin(100);
 	}
 	myprintf("%f\r\n", tmpData);
@@ -570,7 +580,7 @@ void gyroZeroCheck(char bool) {
 }
 long er, el;
 
-char realRun(float max, float ac, float diac, float dist, float sla);
+char realRun(float max, float ac, float diac, float dist, float sla, char type);
 float FB_distance();
 void keepZeroPoint() {
 	motionCheck();
@@ -975,9 +985,15 @@ void printPath() {
 }
 void printRealPath() {
 	myprintf("\r\n");
+	float dist = 0;
 	for (short i = 0; i < pathLength; i++) {
-		myprintf("path_s[%d]=%d;path_t[%d]=%d;\r\n", i, path_s[i], i,
-				path_t[i]);
+
+		if (i == 0) {
+			dist = 0.5 * (path_s[i] - 1) - 0.5;
+		} else {
+			dist = 0.5 * path_s[i] - 1;
+		}
+		myprintf("path_s[%d]=%f(%d);path_t[%d]=%d;\r\n", i, dist, path_s[i], i,	path_t[i]);
 		if (path_t[i] == 0xff || path_t[i] == 0) {
 			break;
 		}

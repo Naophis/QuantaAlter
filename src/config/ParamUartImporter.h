@@ -496,4 +496,172 @@ void setDia90Param2400() {
 	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
 	setPrms3(Dia90, p[9], p[10], p[11]);
 }
+void setLargeParam2500() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054080 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
+}
+void setOrvalParam2500() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054144 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
+}
+void setDia45Param2500() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054208 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
+}
+void setDia135Param2500() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054272 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
+}
+void setDia90Param2500() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054336 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
+}
+void setLargeParam2600() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054400 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
+}
+void setOrvalParam2600() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054464 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
+}
+void setDia45Param2600() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054528 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
+}
+void setDia135Param2600() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054592 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
+}
+void setDia90Param2600() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054656 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
+}
+void setLargeParam2700() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054720 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
+}
+void setOrvalParam2700() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054784 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
+}
+void setDia45Param2700() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054848 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
+}
+void setDia135Param2700() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054912 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
+}
+void setDia90Param2700() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1054976 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
+}
+void setLargeParam2800() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1055040 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
+}
+void setOrvalParam2800() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1055104 + 4 * i);
+	}
+	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Orval, p[9], p[10], p[11]);
+}
+void setDia45Param2800() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1055168 + 4 * i);
+	}
+	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia45, p[9], p[10], p[11]);
+}
+void setDia135Param2800() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1055232 + 4 * i);
+	}
+	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia135, p[9], p[10], p[11]);
+}
+void setDia90Param2800() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1055296 + 4 * i);
+	}
+	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Dia90, p[9], p[10], p[11]);
+}
+void setLargeParam3000() {
+	float p[12];
+	for (char i = 0; i < 12; i++) {
+		p[i] = *(float *) (1055360 + 4 * i);
+	}
+	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
+	setPrms3(Large, p[9], p[10], p[11]);
+}
 #endif

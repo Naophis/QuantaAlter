@@ -118,8 +118,6 @@ float getAverageL() {
 }
 
 void enc_to_vel(void) {
-	float temp = Velocity.error_now;
-	Velocity.error_old += Velocity.error_now;
 
 	vr = -(float) (PI * TIRE * enc_r * CMT_CYCLE / GEAR / 4096.0);
 	vl = -(float) (PI * TIRE * enc_l * CMT_CYCLE / GEAR / 4096.0);
@@ -130,18 +128,16 @@ void enc_to_vel(void) {
 	vr2 = V_Enc.r;
 	vl2 = V_Enc.l;
 
-	Velocity.error_delta = (V_now - (V_Enc.l + V_Enc.r) / 2) - temp;
-
 	rpmR_old = rpmR;
 	rpmL_old = rpmL;
 
 	rpmR = ((V_now - Tread * 500 * W_now) / (TIRE / 2)) * 60.0 / (2.0 * PI);
 	rpmL = ((V_now + Tread * 500 * W_now) / (TIRE / 2)) * 60.0 / (2.0 * PI);
 
+	Velocity.before = Velocity.error_now;
 	Velocity.error_now = V_now - (V_Enc.r + V_Enc.l) / 2;
-
-	// px += V_now * sinf(ABS(ang)) * dt;
-	// py += V_now * cosf(ABS(ang)) * dt;
+	Velocity.error_old += Velocity.error_now;
+	Velocity.error_delta = Velocity.error_now - Velocity.before;
 
 }
 #define KIREME_R 11 //11/12
@@ -150,9 +146,38 @@ void enc_to_vel(void) {
 #define KIREME_L2 10
 unsigned int R_WALL = 880; //820; //#define R_WALL 4000	//サーキット用
 unsigned int L_WALL = 750; //600;	//制御壁閾値
-volatile float FRONT_OUT = 2250;	//袋小路時前センサー閾値
+volatile float FRONT_OUT = 1500;	//袋小路時前センサー閾値
 
 int checkStr = 0;
+
+char validateStraight(float dist) {
+	return true;
+	if (!enableSensorCtrl) {
+		return true;
+	}
+
+	int c = (int) (dist / 180);
+	float tmpdist = dist - c * 180;
+
+	if (fanMode == SearchRun || !fanMode) {
+		return !(60 <= tmpdist && tmpdist <= 90);
+	} else {
+		 return true;
+//		return !(60 + 90 <= tmpdist && tmpdist <= 180);
+	}
+}
+
+char validateGyroReset() {
+	const int enable = (int) (*(float *) 1049828);
+	const float range = *(float *) 1049832;
+
+	if (enable) {
+		return (ang * 180 / PI) < range && (ang * 180 / PI) > -range;
+	}
+
+	return false;
+}
+
 float check_sen_error(void) {
 	float error = 0;
 	char check = 0;
@@ -160,7 +185,9 @@ float check_sen_error(void) {
 	const float leftCtrlDiff = *(float *) 1049968;
 	const int kireme_R = (int) (*(float *) 1049972);
 	const int kireme_L = (int) (*(float *) 1049976);
-	if (Front_SEN.now < FRONT_OUT) {
+	const float FRONT_OUT = *(float *) 1049772;
+
+	if (Front_SEN.now < FRONT_OUT && validateStraight(distance)) {
 		if (ABS(RS_SEN45.now - RS_SEN45.old) < kireme_R) {
 			if (RS_SEN45.now > (RS_SEN45.ref - rightCtrlDiff)) {
 				error += RS_SEN45.now - RS_SEN45.ref;
@@ -176,11 +203,15 @@ float check_sen_error(void) {
 	}
 	if (check == 0) {
 		Se.error_old = Se.before = Se.error_delta = 0;
+		C_old.s = 0;
 	} else {
-		if (!testRunMode && gyroErrResetEnable) {
+		if (!testRunMode && gyroErrResetEnable
+		//  && validateGyroReset()
+				&& globalState != WALL_OFF && globalState != WALL_OFF_WAIT && globalState != WALL_OFF_WAIT_DIA) {
 			Gy.error_old = 0;
 			Angle.error_old = 0;
 			angle = ang = 0;
+			C_old.g = 0;
 		}
 	}
 
@@ -234,12 +265,12 @@ volatile int errorOld_dia = 0;
 volatile int errorOld_dia_side = 0;
 
 char validateImgIndex(int a) {
-	return 30 <= a && a <= 220;
+	return 20 <= a && a <= 210;
 }
 
 char validateImg90Index(int a) {
-	return (0 <= a && a <= 25) || (55 <= a && a <= 145)
-			|| (190 <= a && a <= 250);
+	return (0 <= a && a <= 20) || (60 <= a && a <= 130)
+			|| (195 <= a && a <= 250);
 }
 float lastR45Data = 0;
 float lastL45Data = 0;
@@ -255,46 +286,53 @@ float check_sen_error_dia_side_v2(void) {
 	const float diffthread = *(float *) 1049740;
 	const float diffthread90 = *(float *) 1049744;
 
-	char flag45 = false;
+	float hosei = 0;
 
+	char flag45 = false;
 	if (diaStrwallCount_r > 0) {
-		float tmpRightRef = sen_r_dia_img[(int) img_dist_r];
-		float tmpRightRef90 = sen_r90_dia[(int) img_dist_r];
+		float tmpRightRef = sen_r_dia_img[(int) (img_dist_r)];
+		float tmpRightRef90 = sen_r90_dia[(int) (img_dist_r)];
 		if (ABS(RS_SEN45.now - RS_SEN45.old) < diff
 				&& RS_SEN45.now > (tmpRightRef - diffthread)
 				&& validateImgIndex((int) img_dist_r)) {
 			flag45 = true;
 			error += RS_SEN45.now - tmpRightRef;
 			check++;
-		} else if (ABS(RS_SEN2.now - RS_SEN2.old) < diff90
+		}
+		if (ABS(RS_SEN2.now - RS_SEN2.old) < diff90
 				&& RS_SEN2.now > (tmpRightRef90 - diffthread90)
 				&& RS_SEN2.now > 590 && validateImg90Index((int) img_dist_r)) {
-			error += RS_SEN2.now - tmpRightRef90;
-			check++;
+			error2 += RS_SEN2.now - tmpRightRef90;
+			check2++;
 		}
 	}
 	if (diaStrwallCount_l > 0) {
-		float tmpLeftRef = sen_l_dia_img[(int) img_dist_l];
-		float tmpLeftRef90 = sen_l90_dia[(int) img_dist_l];
+		float tmpLeftRef = sen_l_dia_img[(int) (img_dist_l)];
+		float tmpLeftRef90 = sen_l90_dia[(int) (img_dist_l)];
 		if (ABS(LS_SEN45.now - LS_SEN45.old) < diff
 				&& LS_SEN45.now > (tmpLeftRef - diffthread)
 				&& validateImgIndex((int) img_dist_l)) {
 			error -= LS_SEN45.now - tmpLeftRef;
 			check++;
-		} else if (ABS(LS_SEN2.now - LS_SEN2.old) < diff90
+		}
+		if (ABS(LS_SEN2.now - LS_SEN2.old) < diff90
 				&& LS_SEN2.now > (tmpLeftRef90 - diffthread90)
 				&& LS_SEN2.now > 590 && !flag45
 				&& validateImg90Index((int) img_dist_l)) {
-			error -= LS_SEN2.now - tmpLeftRef90;
-			check++;
+			error2 -= LS_SEN2.now - tmpLeftRef90;
+			check2++;
 		}
 	}
-	if (check == 0) {
+	if (check == 0 || check2 == 0) {
 		Se2.error_old = Se2.before = Se2.error_delta = 0;
-	} else if (check == 2) {
-//		Gy.error_old = 0;
-//		Angle.error_old = 0;
-//		angle = ang = 0;
+	} else {
+		int flag = (int) (*(float *) 1049764);
+		if (!testRunMode && gyroErrResetEnable && validateGyroReset()) {
+			Gy.error_old = 0;
+			Angle.error_old = 0;
+			angle = ang = 0;
+			C_old.g = 0;
+		}
 	}
 	isControl = false;
 	if (check != 0) {
@@ -303,34 +341,25 @@ float check_sen_error_dia_side_v2(void) {
 		errorFlg = 0;
 	}
 
-//	if (check != 0 && check2 != 0) {
-//		float tmp = 0;
-//		if (check == 1) {
-//			tmp += (2 * error);
-//		} else {
-//			tmp += (error);
-//		}
-//		if (check2 == 1) {
-//			tmp += (2 * error2);
-//		} else {
-//			tmp += (error2);
-//
-//		}
-//		return tmp / 2;
-//	} else {
-//
-//		errorOld_dia = error;
-//
-//		if (check == 2) {
-//			return error;
-//		}
-//
-//		if (check2 == 2) {
-//			return error2;
-//		}
-
+	if (check > 0 && check2 > 0) {
+		float tmpError, tmpError2;
+		if (check == 1) {
+			tmpError = 2 * error;
+		}
+		if (check2 == 1) {
+			tmpError2 = 2 * error2;
+		}
+		return (tmpError + tmpError2) / 2;
+	}
 	if (check == 2) {
 		return error;
+	} else if (check == 1) {
+		return 2 * error;
+	}
+	if (check2 == 2) {
+		return error2;
+	} else if (check2 == 1) {
+		return 2 * error2;
 	}
 
 	return 2 * error;
@@ -363,14 +392,29 @@ void errorVelocity(void) {
 
 	if (positionControlValueFlg == 1) {
 		if (dia == 0) {
+			Se.before = Se.error_now;
 			Se.error_now = check_sen_error();
+
 			if (Se.before != 0) {
 				Se.error_delta = Se.error_now - Se.before;
 			} else {
 				Se.error_delta = 0;
 			}
+
+			Se.error_old += Se.error_now;
+			const char enableSPID = (char) (*(float *) 1049812);
+			float C_old2 = C_old.s;
+			C_old.s = C.s;
 			C.s = Sen.Kp * Se.error_now + Sen.Ki * Se.error_old
 					+ Sen.Kd * Se.error_delta;
+
+			if (enableSPID) {
+				C.s = (Sen.Kp * Se.error_now + Sen.Ki * Se.error_old
+						+ Sen.Kd * Se.error_delta) + (C_old.s - C_old2) * dt;
+
+				// C.s =	 (Sen.Kp * Se.error_delta / dt + Sen.Ki * Se.error_now)
+				// 		* dt + C_old.s;
+			}
 
 			if (C.s > CsLimit) {
 				C.s = CsLimit;
@@ -378,11 +422,9 @@ void errorVelocity(void) {
 				C.s = -CsLimit;
 			}
 
-			Se.before = Se.error_now;
-			Se.error_old += Se.error_now;
-		} else if (dia == 1) {
+		} else if (dia == 1 && Sen_Dia_Side.Kp!=0) {
 //			Se2.error_now = check_sen_error_dia_side();
-
+			Se2.before = Se2.error_now;
 			Se2.error_now = check_sen_error_dia_side_v2();
 
 			if (Se2.before != 0) {
@@ -390,41 +432,109 @@ void errorVelocity(void) {
 			} else {
 				Se2.error_delta = 0;
 			}
+
+			Se2.error_old += Se2.error_now;
+			char enableSDiaPID = (char) (*(float *) 1049824);
+			float C_old2 = C_old.s;
+			C_old.s = C.s;
 			C.s = Sen_Dia_Side.Kp * Se2.error_now
 					+ Sen_Dia_Side.Ki * Se2.error_old
 					+ Sen_Dia_Side.Kd * Se2.error_delta;
+			if (enableSDiaPID) {
+//				C.s = (Sen_Dia_Side.Kp * Se2.error_delta / dt
+//						+ Sen_Dia_Side.Ki * Se2.error_now) * dt + C_old.s;
+				C.s = (Sen_Dia_Side.Kp * Se2.error_now
+						+ Sen_Dia_Side.Ki * Se2.error_old
+						+ Sen_Dia_Side.Kd * Se2.error_delta)
+						+ (C_old.s - C_old2) * dt;
+			}
 			if (C.s > CsLimitDia) {
 				C.s = CsLimitDia;
 			} else if (C.s < -CsLimitDia) {
 				C.s = -CsLimitDia;
 			}
-			Se2.before = Se2.error_now;
-			Se2.error_old += Se2.error_now;
 		}
 	} else {
 		Se.error_delta = Se.error_old = Se.before = 0;
 		Se2.error_delta = Se2.error_old = Se2.before = 0;
 		C.s = 0;
+		C_old.s = 0;
 	}
-	Gy.error_now = (W_now - settleGyro);
-	if (C.g > CgLimit || C.g < -CgLimit) {
-	} else {
-		Gy.error_old += Gy.error_now;
+	if (!enablePWM) {
+		C.s = 0;
+		C_old.s = 0;
 	}
-	if (Gy.before != 0) {
-		Gy.error_delta = Gy.error_now - Gy.before;
-	} else {
-		Gy.error_delta = 0;
-	}
-	Gy.before = Gy.error_now;
 
-	C.g = Gyro.Kp * Gy.error_now + Gyro.Ki * Gy.error_old
-			+ Gyro.Kd * Gy.error_delta;
-	if (C.g > CgLimit) {
-		C.g = CgLimit;
-	}
-	if (C.g < -CgLimit) {
-		C.g = -CgLimit;
+	int isCtrlMode = (int) (*(float *) 1049848);
+
+	if(isCtrlMode){
+		Angle.error_now = (angle -ang);
+		if (C.angles > CgLimit || C.angles < -CgLimit) {
+		} else {
+			Angle.error_old += Angle.error_now;
+		}
+		if (Gy.before != 0) {
+			Angle.error_delta = Angle.error_now - Angle.before;
+		} else {
+			Angle.error_delta = 0;
+		}
+		Angle.before = Angle.error_now;
+
+		const char enableGPID = (char) (*(float *) 1049808);
+		float C_old2 = C_old.angles;
+		C_old.angles = C.angles;
+
+		if (enableGPID) {
+			C.angles = (Angles.Kp * Angle.error_now + Angles.Ki * Angle.error_old
+					+ Angles.Kd * Angle.error_delta) + (C_old.angles - C_old2) * dt;
+		} else {
+			C.angles = Angles.Kp * Angle.error_now + Angles.Ki * Angle.error_old
+					+ Angles.Kd * Angle.error_delta;
+		}
+		if (!enablePWM) {
+			C.angles = 0;
+			C_old.angles = 0;
+		}
+		if (C.angles > CgLimit) {
+			C.angles = CgLimit;
+		}
+		if (C.angles < -CgLimit) {
+			C.angles = -CgLimit;
+		}
+	}else{
+		Gy.error_now = (W_now - settleGyro);
+		if (C.g > CgLimit || C.g < -CgLimit) {
+		} else {
+			Gy.error_old += Gy.error_now;
+		}
+		if (Gy.before != 0) {
+			Gy.error_delta = Gy.error_now - Gy.before;
+		} else {
+			Gy.error_delta = 0;
+		}
+		Gy.before = Gy.error_now;
+
+		const char enableGPID = (char) (*(float *) 1049808);
+		float C_old2 = C_old.g;
+		C_old.g = C.g;
+
+		if (enableGPID) {
+			C.g = (Gyro.Kp * Gy.error_now + Gyro.Ki * Gy.error_old
+					+ Gyro.Kd * Gy.error_delta) + (C_old.g - C_old2) * dt;
+		} else {
+			C.g = Gyro.Kp * Gy.error_now + Gyro.Ki * Gy.error_old
+					+ Gyro.Kd * Gy.error_delta;
+		}
+		if (!enablePWM) {
+			C.g = 0;
+			C_old.g = 0;
+		}
+		if (C.g > CgLimit) {
+			C.g = CgLimit;
+		}
+		if (C.g < -CgLimit) {
+			C.g = -CgLimit;
+		}
 	}
 
 }
@@ -473,15 +583,21 @@ float wheel_lm(char RorL) {
 }
 
 float FF_calc(char RorL, float w, float al) {
+	// return 0;
 	float rpm = getRpm(RorL);
 	float resist_str = 0;  //friction_str ? Resist * friction / Km : 0;
-	float resist_roll = friction_roll ? ABS(Resist * friction2 / Km) : 0;
+	float resist_roll = friction_roll ? (Resist * friction2 / Km) : 0;
 	float whrlm = 0;
-	float counterV = ABS((Ke + friction) * rpm);
+
+	if (RorL == R) {
+		rpm = (V_now / 1000 - Tread / 2 * W_now) / (60 * TIRE / 2) * 1000;
+	} else {
+		rpm = (V_now / 1000 + Tread / 2 * W_now) / (60 * TIRE / 2) * 1000;
+	}
+
+	float counterV = (Ke + friction) * rpm;
 	float ff = feadforward(RorL);
 	float ffp = feadforward_para(RorL);
-
-//	return 0;
 
 	if (V_now == 0) {
 		resist_str = 0;
@@ -493,13 +609,13 @@ float FF_calc(char RorL, float w, float al) {
 		if (rotate_r) {
 			return ((ff + ffp) / 2 + counterV + resist_roll) + whrlm;
 		} else {
-			return ((ff + ffp) / 2 - counterV - resist_roll) - whrlm;
+			return ((ff + ffp) / 2 + counterV - resist_roll) - whrlm;
 		}
 	} else {
 		if (rotate_l) {
 			return ((ff + ffp) / 2 + counterV + resist_roll) + whrlm;
 		} else {
-			return ((ff + ffp) / 2 - counterV - resist_roll) - whrlm;
+			return ((ff + ffp) / 2 + counterV - resist_roll) - whrlm;
 		}
 	}
 	return ((ff + ffp) / 2 + Ke * rpm + resist_str) + whrlm;
@@ -524,8 +640,21 @@ float FB_calc_omega() {
 }
 
 float FB_velocity() {
-	return (Vel.Kp * Velocity.error_now + Vel.Ki * Velocity.error_old
+	const char enableVPID = (char) (*(float *) 1049804);
+	float C_old2 = C_old.v;
+	C_old.v = C.v;
+	C.v = (Vel.Kp * Velocity.error_now + Vel.Ki * Velocity.error_old
 			+ Vel.Kd * Velocity.error_delta);
+	if (enableVPID) {
+		// C.v = (Vel.Kp * Velocity.error_delta / dt + Vel.Ki * Velocity.error_now) * dt + C_old.v;
+		C.v = (Vel.Kp * Velocity.error_now + Vel.Ki * Velocity.error_old
+				+ Vel.Kd * Velocity.error_delta) + (C_old.v - C_old2) * dt;
+	}
+	if (!enablePWM) {
+		C.v = 0;
+		C_old.v = 0;
+	}
+	return C.v;
 }
 
 float FB_distance() {
@@ -542,10 +671,16 @@ float FB_distance() {
 }
 
 float FB_calc_straight() {
-	return FB_velocity() + FB_distance();
+	C.v = FB_velocity() + FB_distance();
+
+	return C.v;
 }
 
 float FB_calc_pararell() {
+
+	if (gyroKeepZero) {
+		return C.s + C.s2;
+	}
 	return C.angles + C.g + C.s + C.s2;
 }
 
@@ -612,8 +747,17 @@ void Physical_Basement(void) {
 	V_now += acc * dt;
 	W_now += alpha * dt;
 
-	ang += settleGyro * dt;
+	char gyroMode2 = (char) (*(float *) 1049800);
+
+	if (gyroMode2) {
+		ang += settleGyro * dt;
+	} else {
+		ang += G.now * dt;
+	}
 	angle += W_now * dt;
+
+	px2 += V_now * sinf(ang) * dt;
+	py2 += V_now * cosf(ang) * dt;
 
 	enc_to_vel();
 

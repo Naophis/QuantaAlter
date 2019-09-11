@@ -20,9 +20,13 @@ void cirquit() {
 		path_t[i] = 5;
 		path_s[i + 1] = 4;
 		path_t[i + 1] = 5;
+		if(transam){
+			path_s[i] -= 0.25;
+			path_s[i + 1] -= 0.25;
+		}
 	}
 
-	path_s[0] += 3;
+	path_s[0] += 2;
 	path_s[4 * maxcicle] = 2;
 	path_t[4 * maxcicle] = 255;
 
@@ -39,9 +43,13 @@ void cirquitFull() {
 		path_t[i] = 5;
 		path_s[i + 1] = 28;
 		path_t[i + 1] = 5;
+		if(transam){
+			path_s[i] -= 0.25;
+			path_s[i + 1] -= 0.25;
+		}
 	}
 
-	path_s[0] += 3;
+	path_s[0] += 2;
 	path_s[4 * maxcicle] = 2;
 	path_t[4 * maxcicle] = 255;
 
@@ -65,7 +73,7 @@ void cirquitDiaPractice() {
 		path_t[i + 3] = 9;
 	}
 
-	path_s[0] += 3;
+	path_s[0] += 2;
 	path_s[i] = 3;
 	path_t[i] = 255;
 

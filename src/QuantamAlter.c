@@ -98,10 +98,7 @@ volatile void cmt() {
 	if ((logs < (L_Length - 1)) && (cc == 1) && (time >= 0)) {
 		if ((time % (char) (logterm)) == 0) {
 			log1[logs] = (int) (V_now);
-			logs2[logs] = ((Wo * Wo - W_now * W_now) / (2.0 * alpha));
 			log3[logs] = (V_Enc.r + V_Enc.l) / 2;
-//			logs2[logs] = V_Enc.r; // ((Wo * Wo - W_now * W_now) / (2.0 * alpha));
-//			log3[logs] = V_Enc.l; // (V_Enc.r + V_Enc.l) / 2;
 			log4[logs] = (ang * 180 / PI); //ジャイロ
 			log5[logs] = Duty_l * 100;
 			log6[logs] = Duty_r * 100;
@@ -113,34 +110,37 @@ volatile void cmt() {
 			log12[logs] = (settleGyro);
 			log13[logs] = (W_now);
 			log14[logs] = (angle * 180 / PI); //理論値
-			log15[logs] = (V_Enc.r);
-			log16[logs] = (V_Enc.l);
+			log15[logs] = V_Enc.r;
+			log16[logs] = V_Enc.l;
 			log17[logs] = (float) (alpha);
-			log18[logs] = peekRight; //lastPeekR;
+			log18[logs] = px2; //lastPeekR;
 			log19[logs] = (feadforward_para(L));
 			log20[logs] = (feadforward_para(R));
 			log21[logs] = (LS_SEN2.now);
 			log22[logs] = (RS_SEN2.now);
-			log23[logs] = peekRight2;
-			log24[logs] = peekLeft2;
+			float tmpRightRef = sen_r_dia_img[(int) img_dist_r];
+			float tmpRightRef90 = sen_r90_dia[(int) img_dist_r];
+			float tmpLeftRef = sen_l_dia_img[(int) img_dist_l];
+			float tmpLeftRef90 = sen_l90_dia[(int) img_dist_l];
+
+			log23[logs] = sen_l2[0];
+			log24[logs] = sen_r2[0];
+
 			log25[logs] = C.g;
 			log26[logs] = C.s;
-			log27[logs] = peekLeft;
+			log27[logs] = C.v;
 			log28[logs] = globalState;
 			log29[logs] = Se2.error_now;
-			log30[logs] = lastPeekL;
-			log31[logs] = lastPeekR;
+
+			log30[logs] = tmpLeftRef;
+			log31[logs] = tmpLeftRef90;
+
 			log32[logs] = distance;
 			log33[logs] = img_distance;
 			log34[logs] = C.angles;
 			log35[logs] = img_dist_l;
 			log36[logs] = img_dist_r;
-//
 
-//			log33[logs] = gyros[0];
-//			log34[logs] = gyros[1];
-//			log35[logs] = gyros[2];
-//			log36[logs] = gyros[3];
 			logs++;
 		}
 	}
@@ -249,6 +249,7 @@ void mtu4_B() {
 
 		getSensorData();
 		float tmpGyros = 0.250 * (gyros[0] + gyros[1] + gyros[2] + gyros[3]);
+		// float tmpGyros = gyros[3];
 //		float tmpGyros = 0.50 * (gyros[0] + gyros[2]);
 
 		settleGyro2 = (tmpGyros - G.ref) * G.th;
@@ -263,34 +264,7 @@ void mtu4_B() {
 			settleGyroOld = settleGyro;
 			G.now = settleGyro;
 			G.old = settleGyro;
-		}
-
-//		if (ABS(G.old-settleGyro2) > diffOder) {
-//			float sum = 0;
-//			char j = 0;
-//			for (char i = 0; i < 4; i++) {
-//				float tmpGyro = (gyros[i] - G.ref) * G.th;
-//				if (ABS(G.old-tmpGyro) < diffOder) {
-//					sum += tmpGyro;
-//					j++;
-//				}
-//			}
-//			if (j > 0) {
-//				G.now = (sum / j - G.ref) * G.th;
-//				settleGyroOld = settleGyro;
-//				if (gyroMode == true) {
-//					settleGyro = 0.1 * G.now + 0.9 * G.old;
-//				} else {
-//					settleGyro = G.now;
-//				}
-//				G.old = settleGyro;
-//			} else {
-//				G.now = W_now;
-//				settleGyro = W_now;
-////				G.old = W_now;
-//			}
-//		}
-		else {
+		} else {
 			G.now = settleGyro2;
 			settleGyroOld = settleGyro;
 			if (gyroMode == true) {
@@ -298,27 +272,32 @@ void mtu4_B() {
 			} else {
 				settleGyro = G.now;
 			}
-			G.old = settleGyro;
+			char gyroConfig2 = (char) (*(float *) 1049820);
+			if (gyroConfig2) {
+				G.old = settleGyro2;
+			} else {
+				G.old = settleGyro;
+			}
 		}
 
 		tpu_count = 0;
 
 		for (char i = 4; i > 0; i--) {
-			sen_log_r[i] = sen_log_r[i - 1];
-			sen_log_l[i] = sen_log_l[i - 1];
-			sen_log_front[i] = sen_log_front[i - 1];
-			sen_r[i] = sen_r[i - 1];
-			sen_l[i] = sen_l[i - 1];
+			// sen_log_r[i] = sen_log_r[i - 1];
+			// sen_log_l[i] = sen_log_l[i - 1];
+			// sen_log_front[i] = sen_log_front[i - 1];
+			// sen_r[i] = sen_r[i - 1];
+			// sen_l[i] = sen_l[i - 1];
 			sen_r2[i] = sen_r2[i - 1];
 			sen_l2[i] = sen_l2[i - 1];
 		}
-		sen_log_r[0] = RS_SEN45.now;
-		sen_log_l[0] = LS_SEN45.now;
-		sen_r[0] = RS_SEN45.now > running_wall_off_r;
-		sen_l[0] = LS_SEN45.now > running_wall_off_l;
+		// sen_log_r[0] = RS_SEN45.now;
+		// sen_log_l[0] = LS_SEN45.now;
+		// sen_r[0] = RS_SEN45.now > running_wall_off_r;
+		// sen_l[0] = LS_SEN45.now > running_wall_off_l;
 		sen_r2[0] = RS_SEN2.now > search_wall_off_r;
 		sen_l2[0] = LS_SEN2.now > search_wall_off_l;
-		sen_log_front[0] = Front_SEN.now;
+		// sen_log_front[0] = Front_SEN.now;
 		break;
 	}
 	sensor_led_off();
