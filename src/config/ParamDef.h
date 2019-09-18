@@ -310,7 +310,7 @@ void importFromDataFlash() {
 
 	FAN_AMP = fastRunFan;
 	FAN_AMP2 = seachFan;
-	FAN_AMP5 = seachFanLow;
+	FAN_AMP4 = seachFanLow;
 }
 
 void override() {

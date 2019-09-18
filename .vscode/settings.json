@@ -9,6 +9,12 @@
         "paramscontroller.h": "c",
         "stdint.h": "c",
         "algorithm": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "serial.h": "c",
+        "i2c2.h": "c",
+        "i2c.h": "c",
+        "i2c3.h": "c",
+        "tof.h": "c",
+        "init.h": "c"
     }
 }

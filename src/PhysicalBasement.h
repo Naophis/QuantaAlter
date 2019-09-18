@@ -162,7 +162,7 @@ char validateStraight(float dist) {
 	if (fanMode == SearchRun || !fanMode) {
 		return !(60 <= tmpdist && tmpdist <= 90);
 	} else {
-		 return true;
+		return true;
 //		return !(60 + 90 <= tmpdist && tmpdist <= 180);
 	}
 }
@@ -206,8 +206,9 @@ float check_sen_error(void) {
 		C_old.s = 0;
 	} else {
 		if (!testRunMode && gyroErrResetEnable
-		//  && validateGyroReset()
-				&& globalState != WALL_OFF && globalState != WALL_OFF_WAIT && globalState != WALL_OFF_WAIT_DIA) {
+				//  && validateGyroReset()
+				&& globalState != WALL_OFF && globalState != WALL_OFF_WAIT
+				&& globalState != WALL_OFF_WAIT_DIA) {
 			Gy.error_old = 0;
 			Angle.error_old = 0;
 			angle = ang = 0;
@@ -422,7 +423,7 @@ void errorVelocity(void) {
 				C.s = -CsLimit;
 			}
 
-		} else if (dia == 1 && Sen_Dia_Side.Kp!=0) {
+		} else if (dia == 1 && Sen_Dia_Side.Kp != 0) {
 //			Se2.error_now = check_sen_error_dia_side();
 			Se2.before = Se2.error_now;
 			Se2.error_now = check_sen_error_dia_side_v2();
@@ -438,8 +439,7 @@ void errorVelocity(void) {
 			float C_old2 = C_old.s;
 			C_old.s = C.s;
 			C.s = Sen_Dia_Side.Kp * Se2.error_now
-					+ Sen_Dia_Side.Ki * Se2.error_old
-					+ Sen_Dia_Side.Kd * Se2.error_delta;
+					+ Sen_Dia_Side.Ki * Se2.error_old;
 			if (enableSDiaPID) {
 //				C.s = (Sen_Dia_Side.Kp * Se2.error_delta / dt
 //						+ Sen_Dia_Side.Ki * Se2.error_now) * dt + C_old.s;
@@ -467,8 +467,8 @@ void errorVelocity(void) {
 
 	int isCtrlMode = (int) (*(float *) 1049848);
 
-	if(isCtrlMode){
-		Angle.error_now = (angle -ang);
+	if (isCtrlMode) {
+		Angle.error_now = (angle - ang);
 		if (C.angles > CgLimit || C.angles < -CgLimit) {
 		} else {
 			Angle.error_old += Angle.error_now;
@@ -485,8 +485,10 @@ void errorVelocity(void) {
 		C_old.angles = C.angles;
 
 		if (enableGPID) {
-			C.angles = (Angles.Kp * Angle.error_now + Angles.Ki * Angle.error_old
-					+ Angles.Kd * Angle.error_delta) + (C_old.angles - C_old2) * dt;
+			C.angles = (Angles.Kp * Angle.error_now
+					+ Angles.Ki * Angle.error_old
+					+ Angles.Kd * Angle.error_delta)
+					+ (C_old.angles - C_old2) * dt;
 		} else {
 			C.angles = Angles.Kp * Angle.error_now + Angles.Ki * Angle.error_old
 					+ Angles.Kd * Angle.error_delta;
@@ -501,7 +503,7 @@ void errorVelocity(void) {
 		if (C.angles < -CgLimit) {
 			C.angles = -CgLimit;
 		}
-	}else{
+	} else {
 		Gy.error_now = (W_now - settleGyro);
 		if (C.g > CgLimit || C.g < -CgLimit) {
 		} else {

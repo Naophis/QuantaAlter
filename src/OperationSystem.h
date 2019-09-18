@@ -735,6 +735,13 @@ void testRoll(char r) {
 	r = eigherRightLeft() == Right ? R : L;
 	gyroZeroCheck(true);
 
+	gyroZeroCheck(false);
+	float test_dia = *(float *) 1049276;
+	if (test_dia >= 1) {
+		fanMode = CtrlFan2;
+		startVacume2(70);
+	}
+
 	for (char a = 0; a < test_turn_times; a++) {
 		cmt_wait(150);
 		cc = 1;
@@ -743,6 +750,7 @@ void testRoll(char r) {
 //		gyroZeroCheck(false);
 		cc = 0;
 	}
+	mtu_stop2();
 	logOutPut();
 }
 
