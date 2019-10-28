@@ -710,8 +710,11 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 	}
 	mtu_start();
 
-	runForWallOff(velocity, acc, 90.0 + 56, 1);
-
+//	runForWallOff(velocity, acc, 90.0 + 56, 1);
+	float start_offset = *(float *) 1049496;
+	// runForWallOff(velocity, acc, 90.0 + start_offset, 1);
+	// realRun(velocity, acc, diac, 90.0 + start_offset, velocity, START_FILTER);
+	running(velocity, acc, 90.0 + start_offset, 1);
 	next_dir = direction(now_dir, Straight);
 	while (true) {
 		now_dir = next_dir;
@@ -790,8 +793,9 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 			}
 		}
 
+
 		if (goaled) {
-//			break;
+			break;
 		}
 		skip = false;
 
@@ -849,8 +853,11 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 		if (goaled) {
 			cmtMusic(F3_, 1000);
 		}
-		if (!goaled && setNewPositionDummy(x, y, nextDirection)
-				&& nextMotion != Back) {
+
+		char tmp = setNewPositionDummy(x, y, nextDirection);
+		tmp = 0;
+		// known =false;
+		if (!goaled && tmp && nextMotion != Back) {
 			known = true;
 			if (p == 0 && path_s[0] == 0) {
 				path_s[0] += 2;
@@ -910,7 +917,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 				if (Front_SEN.now > wallhosei) {
 					fanMode = CtrlFan2;
 					frontCtrl();
-					realRun(velocity, acc, diac, 100, 100,NULL_FILTER);
+					realRun(velocity, acc, diac, 100, 100, NULL_FILTER);
 					mtu_stop();
 					gyroRollTest(L, 180, 60, 100);
 					if (isStepped(firstGoalX, firstGoalY)) {
@@ -938,7 +945,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 					mtu_start();
 					check = runForWallOff(velocity, acc, 115, 1);
 				} else {
-					realRun(velocity, acc, diac, 115, 25,NULL_FILTER);
+					realRun(velocity, acc, diac, 115, 25, NULL_FILTER);
 					mtu_stop();
 					gyroRoll(R, 180, 60, 80);
 					if (isStepped(firstGoalX, firstGoalY)) {
@@ -961,6 +968,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 				backFlg++;
 				break;
 			}
+
 		}
 		if (check == 0) {
 			mtu_stop();
@@ -974,7 +982,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 	}
 	fanMode = CtrlFan2;
 	frontCtrl();
-	realRun(velocity, acc, diac, 100, 50,NULL_FILTER);
+	realRun(velocity, acc, diac, 100, 50, NULL_FILTER);
 	frontCtrl3();
 	mtu_stop();
 

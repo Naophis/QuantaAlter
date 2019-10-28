@@ -47,24 +47,6 @@ void walloff1(char RorL) {
 	}
 }
 
-void walloff2(char RorL) {
-	if (RorL == R) {
-		while (SEN_R > R_WALL_OFF2) {
-			if (!fail) {
-				positionControlValueFlg = 0;
-				break;
-			}
-		}
-	} else {
-		while (SEN_L > L_WALL_OFF2) {
-			if (!fail) {
-				positionControlValueFlg = 0;
-				break;
-			}
-		}
-	}
-}
-
 float existRightWall4 = 6000;  //壁切れの予備
 float existLeftWall4 = 6000;   //壁切れの予備
 
@@ -93,19 +75,9 @@ char wallOff(char RorL, char ctrl) {
 	img_distance = 0;
 
 	if (RorL == R) {
-		if (SEN_R < existRightWall4) {
-			// cmtMusic(C4_, 250);
-			walloff1(R);
-		} else {
-			walloff2(R);
-		}
+		walloff1(R);
 	} else {
-		if (SEN_L < existLeftWall4) {
-			// cmtMusic(C4_, 250);
-			walloff1(L);
-		} else {
-			walloff2(L);
-		}
+		walloff1(L);
 	}
 	positionControlValueFlg = 0;
 	cc = 0;
@@ -152,24 +124,6 @@ void walloff3(char RorL) {
 	}
 }
 
-void walloff4(char RorL) {
-	if (RorL == R) {
-		while (SEN_R > R_WALL_OFF_D2) {
-			if (!fail) {
-				positionControlValueFlg = 0;
-				break;
-			}
-		}
-	} else {
-		while (SEN_L > L_WALL_OFF_D2) {
-			if (!fail) {
-				positionControlValueFlg = 0;
-				break;
-			}
-		}
-	}
-}
-
 char wallOff_D(char RorL, char ctrl) {
 //	positionControlValueFlg = 1;
 	ang = 0;
@@ -178,17 +132,9 @@ char wallOff_D(char RorL, char ctrl) {
 	img_distance = 0;
 	sensingMode = AtackDia;
 	if (RorL == R) {
-		if (SEN_R < existRightWall5) {
-			walloff3(R);
-		} else {
-			walloff4(R);
-		}
+		walloff3(R);
 	} else {
-		if (SEN_L < existLeftWall5) {
-			walloff3(L);
-		} else {
-			walloff4(L);
-		}
+		walloff3(L);
 	}
 	positionControlValueFlg = 0;
 	return 1;

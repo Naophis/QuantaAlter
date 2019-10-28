@@ -311,6 +311,9 @@ void importFromDataFlash() {
 	FAN_AMP = fastRunFan;
 	FAN_AMP2 = seachFan;
 	FAN_AMP4 = seachFanLow;
+	FAN_AMP5 = *(float *) 1050016;
+	myprintf("fastRunFanV2	%f	%d\r\n", fastRunFanV2, 1049984);
+
 }
 
 void override() {

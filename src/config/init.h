@@ -318,34 +318,6 @@ void startVacume() {
 	cmt_wait(1000);
 }
 
-float getDiaDistR() {
-	return 189 - 17 * logf(RS_SEN45.now);
-}
-
-float getDiaDistL() {
-	return 189 - 17 * logf(LS_SEN45.now);
-	if (LS_SEN45.now < 1500) {
-		return 575 - 66.76 * logf(1500);
-	}
-	return 575 - 66.76 * logf(LS_SEN45.now);
-}
-
-void calcdist() {
-	float a[7] = { 1.50E-18, -2.35E-14, 1.52E-10, -5.23E-07, 0.0010087,
-			-1.06088, 580 - 2 };
-	float b[7] = { 1.50E-18, -2.35E-14, 1.52E-10, -5.23E-07, 0.0010087,
-			-1.06088, 578 + 6 };
-	RS_SEN45.dist = a[0];
-	LS_SEN45.dist = b[0];
-	for (int i = 1; i <= 6; i++) {
-		RS_SEN45.dist = RS_SEN45.dist * RS_SEN45.now + a[i];
-		LS_SEN45.dist = LS_SEN45.dist * LS_SEN45.now + b[i];
-	}
-
-//	Front_SEN.dist = 737 - 82.58 * logf(Front_SEN.now);
-//	RS_SEN2.dist = 694 - 82.25 * logf(RS_SEN2.now);
-//	LS_SEN2.dist = 798 - 95.27 * logf(LS_SEN2.now);
-}
 void getSensorData() {
 
 	if (RS_SEN45.on > RS_SEN45.off) {
@@ -376,12 +348,5 @@ void getSensorData() {
 	} else {
 		Front_SEN.now = 0;
 	}
-//	RS_SEN45.now = RS_SEN45.on;
-//	LS_SEN45.now = LS_SEN45.on;
-//	RS_SEN2.now = RS_SEN2.on;
-//	LS_SEN2.now = LS_SEN2.on;
-//	Front_SEN.now = Front_SEN.on;
-
-	calcdist();
 }
 #endif /* INIT_H_ */

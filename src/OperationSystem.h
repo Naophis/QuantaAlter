@@ -35,7 +35,7 @@ void testRun() {
 	float test_acc = *(float *) 1049268;
 	float test_max_v = *(float *) 1049272;
 	float test_dia = *(float *) 1049276;
-
+	float gyroReset = *(float *) 1049508;
 	float velocity = test_max_v;
 	float accele = test_acc;
 	float diaccele = test_acc;
@@ -55,8 +55,13 @@ void testRun() {
 	dia = test_dia == 1;
 	enableSensorCtrl = true;
 	if (dia == 1) {
+		if (gyroReset > 0) {
+			testRunMode = true;
+		}
 		float targetDistDia = *(float *) 1049300;
 		realRun(velocity, accele, diaccele, targetDistDia, vMax, NULL_FILTER);
+		testRunMode = false;
+
 	} else {
 		float targetdist = *(float *) 1049296;
 		realRun(velocity, accele, diaccele, targetdist, vMax, NULL_FILTER);
@@ -153,31 +158,31 @@ void inputNaiperTurnAll1900() {
 	setLargeParam1900();
 	setOrvalParam1900();
 	setDia45Param1900();
-	setDia135Param1800();
-	setDia90Param1800();
+	setDia135Param1900();
+	setDia135Param1900();
 }
 void inputNaiperTurnAll1950() {
 	setLargeParam1950();
 	setOrvalParam1950();
 	setDia45Param1950();
-	setDia135Param1800();
-	setDia90Param1800();
+	setDia135Param1950();
+	setDia135Param1950();
 }
 void inputNaiperTurnAll2000() {
 	inputNaiperTurnAll1950();
 	setLargeParam2000();
 	setOrvalParam2000();
 	setDia45Param2000();
-	setDia135Param1800();
-	setDia90Param1800();
+	setDia135Param2000();
+	setDia90Param1950();
 }
 void inputNaiperTurnAll2050() {
 	inputNaiperTurnAll2000();
 	setLargeParam2050();
 	setOrvalParam2050();
-	setDia45Param2050();
-	setDia135Param1800();
-	setDia90Param1800();
+	setDia45Param2000();
+	setDia135Param2000();
+	setDia90Param1950();
 }
 void inputNaiperTurnAll2100() {
 	inputNaiperTurnAll2050();
@@ -232,7 +237,21 @@ void callParamForCircit(float vMax) {
 }
 
 void callParam(float vMax) {
-	if (vMax == 1000) {
+	if (vMax == 150) {
+		setNormalParam150();
+		setLargeParam150();
+		setOrvalParam150();
+		setDia45Param150();
+		setDia135Param150();
+		setDia90Param150();
+	} else if (vMax == 500) {
+		setNormalParam500();
+		setLargeParam500();
+		setOrvalParam500();
+		setDia45Param500();
+		setDia135Param500();
+		setDia90Param500();
+	} else if (vMax == 1000) {
 		setNormalParam1000();
 		setLargeParam1000();
 		setOrvalParam1000();
@@ -339,6 +358,7 @@ void testSlalom3() {
 //	char test_dia = (char) (*(float *) 1049276);
 	char turnType = (char) (*(float *) 1049280);
 	char test_sla_scenario2 = (char) (*(float *) 1049284);
+	float isgyroResetDisable = *(float *) 1049508;
 
 	char test_sla_return_flg = (char) (*(float *) 1049288);
 	char test_sla_return_scenario = (char) (*(float *) 1049292);
@@ -419,14 +439,32 @@ void testSlalom3() {
 		}
 		testRunMode = false;
 	} else {
-		realRun(vMax, accele, diaccele, 180.0 * 1.22, vMax, NULL_FILTER);
+		float start_offset = *(float *) 1049496;
+		realRun(vMax, accele, diaccele, 180.0 + start_offset, vMax,
+				NULL_FILTER);
 	}
 	if (!globalSkipFront) {
+		if (isgyroResetDisable > 0) {
+			gyroErrResetEnable = false;
+			Sen.Kp = Sen.Ki = Sen.Kd = 0.0;
+			Sen_Dia.Kp = Sen_Dia.Ki = Sen_Dia.Kd = 0;
+		}
 		wallOff(RorL, true);
 	}
 	testRunMode = true;
 	slalom(RorL, type, vMax, vMax, 0);
 
+	gyroErrResetEnable = true;
+	// Sen.Kp = *(float *) 1049376;
+	// Sen.Ki = *(float *) 1049380;
+	// Sen.Kd = *(float *) 1049384;
+	Sen_Dia_Side.Kp = *(float *) 1049388;
+	Sen_Dia_Side.Ki = *(float *) 1049392;
+	Sen_Dia_Side.Kd = *(float *) 1049396;
+
+	if (!test_dia) {
+		Sen_Dia_Side.Kp = Sen_Dia_Side.Ki = Sen_Dia_Side.Kd = 0.0;
+	}
 	peekRight = peekLeft = 0;
 
 //	Sen.Kp = Sen.Ki = Sen.Kd = 0.0;
@@ -438,7 +476,11 @@ void testSlalom3() {
 	cc = 0;
 
 	// testRunMode = true;
-	// gyroErrResetEnable = false;
+	if (isgyroResetDisable > 0) {
+		gyroErrResetEnable = false;
+		Sen.Kp = Sen.Ki = Sen.Kd = 0.0;
+		Sen_Dia.Kp = Sen_Dia.Ki = Sen_Dia.Kd = 0;
+	}
 
 	if (test_dia) {
 		float targetDistDia = *(float *) 1049300;
@@ -446,9 +488,6 @@ void testSlalom3() {
 		realRun(test_max_v, accele, diaccele, targetDistDia, 50, NULL_FILTER);
 	} else {
 		if (dia == 1) {
-			// if (Sen_Dia_Side.Kp==0){
-			// 	positionControlValueFlg = false;
-			// }
 			realRun(vMax, accele, diaccele, 180.0 * ROOT2, 50, NULL_FILTER);
 		} else {
 			realRun(vMax, accele, diaccele, 180.0 * 1.0, 50, NULL_FILTER);
@@ -481,8 +520,10 @@ void testNormalSlalom() {
 		fanMode = SearchRun;
 		startVacume2(70);
 		setNormalParam1000();
-	} else {
+	} else if (vMax >= 500) {
 		setNormalParam500();
+	} else {
+		setNormalParam150();
 	}
 
 	mtu_start();
@@ -712,7 +753,7 @@ void testWallOffSeach() {
 	Gy.error_old = 0;
 	mode_FF = 1;
 	cc = 1;
-	realRun(vMax, accele, diaccele, 90.0 * 1, vMax, NULL_FILTER);
+//	realRun(vMax, accele, diaccele, 90.0 * 1, 50, NULL_FILTER);
 	runForWallOff(vMax, accele, 360, 1);
 	realRun(vMax, accele, diaccele, 90.0 * 1, 50, NULL_FILTER);
 	mtu_stop2();
@@ -1231,7 +1272,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 			check = runForPath(v, acc, diac);
 		}
 	} else if (mode == RUN2) {
-		float v = 4700;
+			float v = 4700;
 		char type = Left;
 		char res = 2;
 		inputNaiperTurnAll1700();
@@ -1595,6 +1636,7 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 	} else if (mode == MapMemory) {
 //		testVacume2(70);
 		motionCheck();
+		fanMode = CtrlFan3;
 		startVacume2(70);
 		cmt_wait(15000);
 	} else if (mode == VacumeTest) {
@@ -1823,12 +1865,13 @@ void detectSysId() {
 void operation() {
 	volatile char goalX = (char) (*(float *) 1049336);
 	volatile char goalY = (char) (*(float *) 1049340); //selectGoal();
-
+	char testCmd = (char) (*(float *) 1049260);
 	myprintf("Goal=(%d, %d)\r\n", goalX, goalY);
 	fanMode = FastRun;
 	if (!PushBottom) {
 		goalX = 7;
 		goalY = 7;
+		testCmd = 0;
 		coin(100);
 		coin(100);
 		coin(100);
@@ -1859,8 +1902,6 @@ void operation() {
 	if (transam) {
 		ashLikeSnow(180);
 	}
-
-	char testCmd = (char) (*(float *) 1049260);
 
 	resetAllData();
 

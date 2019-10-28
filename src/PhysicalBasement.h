@@ -186,16 +186,20 @@ float check_sen_error(void) {
 	const int kireme_R = (int) (*(float *) 1049972);
 	const int kireme_L = (int) (*(float *) 1049976);
 	const float FRONT_OUT = *(float *) 1049772;
+	const float R90_exist = *(float *) 1050020;
+	const float L90_exist = *(float *) 1050024;
 
 	if (Front_SEN.now < FRONT_OUT && validateStraight(distance)) {
 		if (ABS(RS_SEN45.now - RS_SEN45.old) < kireme_R) {
-			if (RS_SEN45.now > (RS_SEN45.ref - rightCtrlDiff)) {
+			if (RS_SEN45.now > (RS_SEN45.ref - rightCtrlDiff)
+					&& RS_SEN2.now > R90_exist) {
 				error += RS_SEN45.now - RS_SEN45.ref;
 				check++;
 			}
 		}
 		if (ABS(LS_SEN45.now - LS_SEN45.old) < kireme_L) {
-			if (LS_SEN45.now > (LS_SEN45.ref - leftCtrlDiff)) {
+			if (LS_SEN45.now > (LS_SEN45.ref - leftCtrlDiff)
+					&& LS_SEN2.now > L90_exist) {
 				error -= LS_SEN45.now - LS_SEN45.ref;
 				check++;
 			}
@@ -287,7 +291,8 @@ float check_sen_error_dia_side_v2(void) {
 	const float diffthread = *(float *) 1049740;
 	const float diffthread90 = *(float *) 1049744;
 
-	float hosei = 0;
+	const float R90_order = *(float *) 1049500;
+	const float L90_order = *(float *) 1049504;
 
 	char flag45 = false;
 	if (diaStrwallCount_r > 0) {
@@ -302,7 +307,8 @@ float check_sen_error_dia_side_v2(void) {
 		}
 		if (ABS(RS_SEN2.now - RS_SEN2.old) < diff90
 				&& RS_SEN2.now > (tmpRightRef90 - diffthread90)
-				&& RS_SEN2.now > 590 && validateImg90Index((int) img_dist_r)) {
+				&& RS_SEN2.now > R90_order
+				&& validateImg90Index((int) img_dist_r)) {
 			error2 += RS_SEN2.now - tmpRightRef90;
 			check2++;
 		}
@@ -318,7 +324,7 @@ float check_sen_error_dia_side_v2(void) {
 		}
 		if (ABS(LS_SEN2.now - LS_SEN2.old) < diff90
 				&& LS_SEN2.now > (tmpLeftRef90 - diffthread90)
-				&& LS_SEN2.now > 590 && !flag45
+				&& LS_SEN2.now > L90_order && !flag45
 				&& validateImg90Index((int) img_dist_l)) {
 			error2 -= LS_SEN2.now - tmpLeftRef90;
 			check2++;
@@ -383,9 +389,14 @@ float D1 = 0.0001;
 float k1 = 76.25;
 float k2 = 10370;
 float P = 100;
+float lastC_s = 0;
+float lastC_s2 = 0;
 void errorVelocity(void) {
-	C.s2 = 0;
+	lastC_s = C.s;
+	lastC_s2 = C.s2;
+
 	C.s = 0;
+	C.s2 = 0;
 	const float CsLimit = *(float *) 1049456;
 	const float CsLimitDia = *(float *) 1049460;
 	const float CanlgesLimit = *(float *) 1049464;
@@ -412,9 +423,6 @@ void errorVelocity(void) {
 			if (enableSPID) {
 				C.s = (Sen.Kp * Se.error_now + Sen.Ki * Se.error_old
 						+ Sen.Kd * Se.error_delta) + (C_old.s - C_old2) * dt;
-
-				// C.s =	 (Sen.Kp * Se.error_delta / dt + Sen.Ki * Se.error_now)
-				// 		* dt + C_old.s;
 			}
 
 			if (C.s > CsLimit) {
@@ -457,7 +465,36 @@ void errorVelocity(void) {
 	} else {
 		Se.error_delta = Se.error_old = Se.before = 0;
 		Se2.error_delta = Se2.error_old = Se2.before = 0;
-		C.s = 0;
+
+		const char shusoku = (char) (*(float *) 1049532);
+		const char shusoku_dia = (char) (*(float *) 1049536);
+		const float shusoku_jerk = (*(float *) 1049540);
+		if (shusoku) {
+			if (ABS(lastC_s) < shusoku_jerk) {
+				C.s2 = 0;
+			} else {
+				if (lastC_s > 0) {
+					C.s = lastC_s - shusoku_jerk;
+				} else {
+					C.s = lastC_s + shusoku_jerk;
+				}
+			}
+		} else {
+			C.s = 0;
+		}
+		if (shusoku_dia) {
+			if (ABS(lastC_s2) < shusoku_jerk) {
+				C.s2 = 0;
+			} else {
+				if (lastC_s2 > 0) {
+					C.s2 = lastC_s2 - shusoku_jerk;
+				} else {
+					C.s2 = lastC_s2 + shusoku_jerk;
+				}
+			}
+		} else {
+			C.s = 0;
+		}
 		C_old.s = 0;
 	}
 	if (!enablePWM) {
@@ -679,11 +716,40 @@ float FB_calc_straight() {
 }
 
 float FB_calc_pararell() {
+	float tmpC_s = C.s;
+	float tmpC_s2 = C.s2;
+	const float rate_limit = (*(float *) 1049512);
+	const float rate_limit_dia = (*(float *) 1049516);
+	const char rate_limit_override = (char) (*(float *) 1049520);
+
+	const float rate_jerk = (*(float *) 1049524);
+	const float rate_jerk_dia = (*(float *) 1049528);
+
+	if (ABS(lastC_s - C.s) > rate_limit) {
+		tmpC_s = 0;
+		if (rate_limit_override) {
+			if ((C.s - lastC_s) > rate_limit) {
+				C.s = lastC_s + rate_jerk;
+			} else {
+				C.s = lastC_s - rate_jerk;
+			}
+		}
+	}
+	if (ABS(lastC_s2 - C.s2) > rate_limit_dia) {
+		tmpC_s2 = 0;
+		if (rate_limit_override) {
+			if ((C.s2 - lastC_s2) > rate_limit) {
+				C.s2 = lastC_s2 + rate_jerk_dia;
+			} else {
+				C.s2 = lastC_s2 - rate_jerk_dia;
+			}
+		}
+	}
 
 	if (gyroKeepZero) {
 		return C.s + C.s2;
 	}
-	return C.angles + C.g + C.s + C.s2;
+	return C.angles + C.g + tmpC_s + tmpC_s2;
 }
 
 void dutyCalcuration2(void) {

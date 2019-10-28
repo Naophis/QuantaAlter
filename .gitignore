@@ -7,3 +7,6 @@ QuantamAlter Release.launch
 Release/*
 makefile.init
 /Release/
+*.html
+matlab/*ert*
+matlab/slprj/*

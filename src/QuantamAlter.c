@@ -182,27 +182,30 @@ void mtu4_A() {
 		break;
 	case 4:
 		if (fanStart) {
+			const float minVoltage = *(float *)1049852;
+			float tmpBattery = max(battery, minVoltage);
+
 			if (fanMode == TestRun) {
-				GPT2.GTCCRA = (short) (myVacumeDuty / battery * FAN_CYCLE);
-				GPT2.GTCCRC = (short) (myVacumeDuty / battery * FAN_CYCLE);
+				GPT2.GTCCRA = (short) (myVacumeDuty / tmpBattery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (myVacumeDuty / tmpBattery * FAN_CYCLE);
 			} else if (fanMode == FastRun) {
-				GPT2.GTCCRA = (short) (FAN_AMP / battery * FAN_CYCLE);
-				GPT2.GTCCRC = (short) (FAN_AMP / battery * FAN_CYCLE);
+				GPT2.GTCCRA = (short) (FAN_AMP / tmpBattery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (FAN_AMP / tmpBattery * FAN_CYCLE);
 			} else if (fanMode == FastRun2) {
-				GPT2.GTCCRA = (short) (fastRunFanV2 / battery * FAN_CYCLE);
-				GPT2.GTCCRC = (short) (fastRunFanV2 / battery * FAN_CYCLE);
+				GPT2.GTCCRA = (short) (fastRunFanV2 / tmpBattery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (fastRunFanV2 / tmpBattery * FAN_CYCLE);
 			} else if (fanMode == SearchRun) {
-				GPT2.GTCCRA = (short) (FAN_AMP2 / battery * FAN_CYCLE);
-				GPT2.GTCCRC = (short) (FAN_AMP2 / battery * FAN_CYCLE);
+				GPT2.GTCCRA = (short) (FAN_AMP2 / tmpBattery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (FAN_AMP2 / tmpBattery * FAN_CYCLE);
 			} else if (fanMode == CtrlFan) {
-				GPT2.GTCCRA = (short) (FAN_AMP3 / battery * FAN_CYCLE);
-				GPT2.GTCCRC = (short) (FAN_AMP3 / battery * FAN_CYCLE);
+				GPT2.GTCCRA = (short) (FAN_AMP3 / tmpBattery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (FAN_AMP3 / tmpBattery * FAN_CYCLE);
 			} else if (fanMode == CtrlFan2) {
-				GPT2.GTCCRA = (short) (FAN_AMP4 / battery * FAN_CYCLE);
-				GPT2.GTCCRC = (short) (FAN_AMP4 / battery * FAN_CYCLE);
+				GPT2.GTCCRA = (short) (FAN_AMP4 / tmpBattery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (FAN_AMP4 / tmpBattery * FAN_CYCLE);
 			} else if (fanMode == CtrlFan3) {
-				GPT2.GTCCRA = (short) (FAN_AMP5 / battery * FAN_CYCLE);
-				GPT2.GTCCRC = (short) (FAN_AMP5 / battery * FAN_CYCLE);
+				GPT2.GTCCRA = (short) (FAN_AMP5 / tmpBattery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (FAN_AMP5 / tmpBattery * FAN_CYCLE);
 			}
 		} else {
 			GPT2.GTCCRA = GPT2.GTCCRC = 0;

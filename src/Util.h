@@ -535,23 +535,19 @@ char motionCheck() {
 
 float getZeroPoint() {
 	float tempData = 0;
-	int limit = 128;
+	int limit = 512;
 	float result = 0;
 	mpu = false;
 	for (int i = 0; i < limit; i++) {
 		signed short a = MPU6500_Read_2byte(0x47);
 		tempData += a;
 		cmt_wait(1);
-
-//		myprintf("%d\r\n", a);
 	}
 	mpu = true;
 	result = (float) tempData / limit;
 	tempData = 0;
 	tempGyro2 = result;
 	settlegyroData = result;
-
-//	myprintf("result = %f\r\n", result);
 	return result;
 }
 void gyroZeroCheck(char bool2) {
@@ -563,14 +559,12 @@ void gyroZeroCheck(char bool2) {
 	float tmpData = 0;
 	while (true) {
 		tmpData = getZeroPoint();
-//		myprintf("%f\r\n", tmpData);
 		if (ABS(tmpData) < 0.01) {
 			while (!setupMpu6500())
 				;
 		} else if (ABS(tmpData) < 70) {
 			break;
 		}
-//		break;
 	}
 	if (bool2) {
 		coin(100);
@@ -1035,7 +1029,7 @@ float turnVelocity(char a) {
 	if (a != Finish) {
 		return v_sla[a];
 	}
-	return 1500;
+	return 2000;
 }
 float turnVelocitySlow(char a) {
 	if (a != Finish) {

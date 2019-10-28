@@ -130,7 +130,11 @@ char running(float vmax, float ACC, float dist, char control) {
 	positionControlValueFlg = control;
 	V_max = vmax;
 	runFlg = 1;
-	while (ABS(distance) < ABS(dist)) {
+	while (true) {
+		if((ABS(distance) >= ABS(dist)){
+			distance -= dist;
+			break;
+		}
 		if (dia == 1) {
 			if (distance >= dist * 0.85) {
 				//	positionControlValueFlg = false;
@@ -471,6 +475,38 @@ char frontCtrl() {
 	}
 	return 1;
 }
+
+char frontCtrlDash(float v1, float ac) {
+	globalState = FRONT_ctrl;
+	distance = img_distance = 0;
+	char tmp = sensingMode;
+	distance = img_distance = 0;
+	if (Front_SEN.now > RF_WALL_EXIST2) {
+		acc = ac;
+		sensingMode = SearchMode;
+		while (Front_SEN.now < FRONT_CTRL_1) {
+			if (V_now >= v1) {
+				acc = 0;
+				V_now = v1;
+			}
+			if (distance >270){
+				break;
+			}
+		}
+		acc = ac;
+		sensingMode = tmp;
+		cmtMusic(D3_, 100);
+		distance = img_distance = 0;
+		Distance.error_now = 0;
+		Distance.error_old = 0;
+		Distance.error_delta = 0;
+	} else {
+		return 0;
+	}
+	acc = 0;
+	return 1;
+}
+
 float FRONT_CTRL = 1315;   //前壁補正
 float F_WALL_EXIST5 = 750; //前壁補正　開始
 char frontCtrl5() {
@@ -867,6 +903,8 @@ char orignalRunDia(float v1, float v2, float ac, float diac, float dist,
 
 	int flag = (int) (*(float *) 1049760);
 	int flag2 = true;
+	int diagonal_chopp_R = (int) (*(float *) 1050028);
+	int diagonal_chopp_L = (int) (*(float *) 1050032);
 	while (ABS(distance) < ABS(dist)) {
 		d2 = ABS((V_now + v2) * (V_now - v2) / (2.0 * diac));
 		if (!testRunMode) {
@@ -892,11 +930,11 @@ char orignalRunDia(float v1, float v2, float ac, float diac, float dist,
 			}
 		}
 		if (walloffMode == R) {
-			if (SEN_R > 1500) {
+			if (SEN_R > diagonal_chopp_R) {
 				walloffstate = 1;
 			}
 			if (walloffstate == 1 && (diaStrwallCount_r == 0 || flag)) {
-				if (SEN_R < 1500) {
+				if (SEN_R < diagonal_chopp_R) {
 					img_dist_r = 0;
 					walloffstate = 0;
 					temp_dist_r = distance;
@@ -904,12 +942,12 @@ char orignalRunDia(float v1, float v2, float ac, float diac, float dist,
 				}
 			}
 		} else if (walloffMode == L) {
-			if (SEN_L > 1500) {
+			if (SEN_L > diagonal_chopp_L) {
 				walloffstate = 1;
 			}
 
 			if (walloffstate == 1 && (diaStrwallCount_l == 0 || flag)) {
-				if (SEN_L < 1500) {
+				if (SEN_L < diagonal_chopp_L) {
 					img_dist_l = 0;
 					walloffstate = 0;
 					temp_dist_l = distance;
@@ -1485,8 +1523,8 @@ char runForWallOff(float vmax, float ACC, float dist, char control) {
 	V_max = vmax;
 //	G.th = gyroTh_R;
 	runFlg = 1;
-	char bool2 = RS_SEN2.now > search_wall_off_r; // checkSensorOff(R, false);
-	char bool3 = LS_SEN2.now > search_wall_off_l; // checkSensorOff(L, false);
+	char bool2 = (RS_SEN45.now > R_WALL_EXIST) && RS_SEN2.now > search_wall_off_r; // checkSensorOff(R, false);
+	char bool3 = (LS_SEN45.now > L_WALL_EXIST) && LS_SEN2.now > search_wall_off_l; // checkSensorOff(L, false);
 	char bool4 = bool2 | bool3;
 
 	resetAngleError();
