@@ -7,6 +7,29 @@
 
 #ifndef UTIL_H_
 #define UTIL_H_
+
+float calcLerp(float x0, float y0, float x1, float y1, float x) {
+	return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+}
+float getLerpValue(float dist, float *list, int list_size) {
+	int idx = (int) dist;
+
+	if (idx >= list_size) {
+		return list[list_size - 1];
+	}
+	if (dist < 0) {
+		return list[0];
+	}
+
+	float x0 = idx;
+	float y0 = list[idx];
+	float x1 = idx + 1;
+	float y1 = list[idx + 1];
+	float y = calcLerp(x0, y0, x1, y1, dist);
+
+	return y;
+}
+
 char eigherRightLeft() {
 	char res;
 	char flag = false;
@@ -336,7 +359,7 @@ void failCheck(float Dr, float Dl) {
 	float vOrder = *(float *) 1049484;
 	float wOrder = *(float *) 1049488;
 	float TIME_LIMIT = *(float *) 1049492;
-	
+
 	char checkR = 0;
 	char checkL = 0;
 	if (Front_SEN.now > conflictOrder) {
@@ -987,7 +1010,8 @@ void printRealPath() {
 		} else {
 			dist = 0.5 * path_s[i] - 1;
 		}
-		myprintf("path_s[%d]=%f(%d);path_t[%d]=%d;\r\n", i, dist, path_s[i], i,	path_t[i]);
+		myprintf("path_s[%d]=%f(%d);path_t[%d]=%d;\r\n", i, dist, path_s[i], i,
+				path_t[i]);
 		if (path_t[i] == 0xff || path_t[i] == 0) {
 			break;
 		}

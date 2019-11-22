@@ -15,16 +15,22 @@
 #define START_FILTER 4
 #define OTHERS_FILTER 5
 
+
 void cirquit();
 char realRun(float max, float ac, float diac, float dist, float sla,
 		char runtype) {
 	globalState = STRAIGHT;
 	sensingMode = (dia == 0) ? AtackStraight : AtackDia;
-
-	return (dia == 1) ?
-			orignalRunDia(max, sla, ac, diac, dist, runtype) :
-			orignalRun(max, sla, ac, diac, dist, runtype);
-
+	tmpfanMode = fanMode;
+	fanMode = CtrlFan4;
+	char res = true;
+	if (dia == 1) {
+		res = orignalRunDia(max, sla, ac, diac, dist, runtype);
+	} else {
+		res = orignalRun(max, sla, ac, diac, dist, runtype);
+	}
+	fanMode = tmpfanMode;
+	return res;
 }
 
 char runForPath(float max, float ac, float diac) {
@@ -98,12 +104,12 @@ char runForPath(float max, float ac, float diac) {
 				if (tmpAccel > ac) {
 					tmpAccel += 1000;
 					res = realRun(max, tmpAccel, tmpAccel, tmpDist, slaVel,
-						START_FILTER);
+					START_FILTER);
 				} else {
 					res = realRun(max, ac, diac, tmpDist, slaVel,
-						START_FILTER);
+					START_FILTER);
 				}
-				
+
 				globalSkipFront = true;
 			}
 		} else if (dist > 0 || i == 0) {
@@ -168,18 +174,18 @@ char runForPath(float max, float ac, float diac) {
 
 	mtu_stop2();
 	fastMode = 0;
-	gyroRollTest(R, 180, 60, 100);
-	back(-100, -1000, 65, 1);
+//	gyroRollTest(R, 180, 60, 100);
+//	back(-100, -1000, 65, 1);
 
-	if (now_dir == North) {
-		now_dir = South;
-	} else if (now_dir == East) {
-		now_dir = West;
-	} else if (now_dir == West) {
-		now_dir = East;
-	} else if (now_dir == South) {
-		now_dir = North;
-	}
+//	if (now_dir == North) {
+//		now_dir = South;
+//	} else if (now_dir == East) {
+//		now_dir = West;
+//	} else if (now_dir == West) {
+//		now_dir = East;
+//	} else if (now_dir == South) {
+//		now_dir = North;
+//	}
 	return 1;
 }
 
@@ -347,8 +353,8 @@ char runForKnownPath(float max, float ac, float diac) {
 				} else if (path_t[i] == 1 || path_t[i] == 2) {
 					if (tmp) {
 						// if (dist >= 1) {
-							check = realRun(max, ac, diac, dist * 180,
-									slaVelocity, NULL_FILTER);
+						check = realRun(max, ac, diac, dist * 180, slaVelocity,
+						NULL_FILTER);
 						// }
 						// check = runForWallOff(slaVelocity, ac, 90, 1);
 						tmp = false;

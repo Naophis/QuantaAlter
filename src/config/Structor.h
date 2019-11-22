@@ -56,7 +56,7 @@ typedef struct {
 	float Kd;
 } t_PID;
 volatile t_PID Vel_r, Vel_l, Gyro, Sen, Sen_Dia, Sen_Dia_Side, Vel, Omega,
-		Angles, Backs, FrontCtrl, FrontCtrlAngle, Dists;
+		Angles, Backs, FrontCtrl, FrontCtrlAngle, Dists, Dists2;
 typedef struct {
 	float r;
 	float l;
@@ -68,6 +68,8 @@ typedef struct {
 	float angles;
 	float s2;
 	float v;
+	float v2;
+	float w;
 } t_Control;
 volatile t_Control C, C_old;
 

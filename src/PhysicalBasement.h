@@ -118,9 +118,15 @@ float getAverageL() {
 }
 
 void enc_to_vel(void) {
+	float tmp_tire = TIRE;
 
-	vr = -(float) (PI * TIRE * enc_r * CMT_CYCLE / GEAR / 4096.0);
-	vl = -(float) (PI * TIRE * enc_l * CMT_CYCLE / GEAR / 4096.0);
+	if (fanStart == true) {
+		if (fanMode != SearchRun) {
+			tmp_tire = (*(float *) 1050060);
+		}
+	}
+	vr = -(float) (PI * tmp_tire * enc_r * CMT_CYCLE / GEAR / 4096.0);
+	vl = -(float) (PI * tmp_tire * enc_l * CMT_CYCLE / GEAR / 4096.0);
 
 	V_Enc.r = vr; // vr * 0.1 + vr2 * 0.9;
 	V_Enc.l = vl; // vl * 0.1 + vl2 * 0.9;
@@ -131,8 +137,8 @@ void enc_to_vel(void) {
 	rpmR_old = rpmR;
 	rpmL_old = rpmL;
 
-	rpmR = ((V_now - Tread * 500 * W_now) / (TIRE / 2)) * 60.0 / (2.0 * PI);
-	rpmL = ((V_now + Tread * 500 * W_now) / (TIRE / 2)) * 60.0 / (2.0 * PI);
+	rpmR = ((V_now - Tread * 500 * W_now) / (tmp_tire / 2)) * 60.0 / (2.0 * PI);
+	rpmL = ((V_now + Tread * 500 * W_now) / (tmp_tire / 2)) * 60.0 / (2.0 * PI);
 
 	Velocity.before = Velocity.error_now;
 	Velocity.error_now = V_now - (V_Enc.r + V_Enc.l) / 2;
@@ -178,6 +184,65 @@ char validateGyroReset() {
 	return false;
 }
 
+float check_sen_error_front(void) {
+	float error = 0;
+	char check = 0;
+	const float FRONT_EXIST = *(float *) 1049636;
+	const float FRONT_REF = *(float *) 1049632;
+	const float FRONT_DIFF = *(float *) 1049628;
+
+	if (Front_SEN.now > FRONT_EXIST) {
+
+		if (ABS(Front_SEN.now - FRONT_REF) > FRONT_DIFF) {
+			error += Front_SEN.now - FRONT_REF;
+			check++;
+		}
+	}
+
+	if (check == 0) {
+		V_now = 0;
+		SeFrnt.error_now = 0;
+		SeFrnt.error_old = 0;
+		Velocity.error_now = 0;
+		Velocity.error_old = 0;
+		Velocity.error_delta = 0;
+		C.v = 0;
+	}
+	return error;
+}
+
+float check_sen_error_frontSide(void) {
+	float error = 0;
+	char check = 0;
+
+	const float R_EXIST = *(float *) 1049944;
+	const float R_REF = *(float *) 1049948;
+
+	const float L_EXIST = *(float *) 1049952;
+	const float L_REF = *(float *) 1049956;
+
+	if (RS_SEN45.now > R_EXIST) {
+		error += RS_SEN45.now - R_REF;
+		check++;
+	}
+
+	if (LS_SEN45.now > L_EXIST) {
+		error -= LS_SEN45.now - L_REF;
+		check++;
+	}
+
+	if (check == 0) {
+		W_now = 0;
+		SeFrntAngle.error_now = 0;
+		SeFrntAngle.error_old = 0;
+		Gy.error_now = 0;
+		Gy.error_old = 0;
+		Gy.error_delta = 0;
+		C.w = 0;
+	}
+	return error;
+}
+
 float check_sen_error(void) {
 	float error = 0;
 	char check = 0;
@@ -215,7 +280,7 @@ float check_sen_error(void) {
 				&& globalState != WALL_OFF_WAIT_DIA) {
 			Gy.error_old = 0;
 			Angle.error_old = 0;
-			angle = ang = 0;
+			// angle = ang = 0;
 			C_old.g = 0;
 		}
 	}
@@ -296,8 +361,10 @@ float check_sen_error_dia_side_v2(void) {
 
 	char flag45 = false;
 	if (diaStrwallCount_r > 0) {
-		float tmpRightRef = sen_r_dia_img[(int) (img_dist_r)];
-		float tmpRightRef90 = sen_r90_dia[(int) (img_dist_r)];
+//		float tmpRightRef = sen_r_dia_img[(int) (img_dist_r)];
+//		float tmpRightRef90 = sen_r90_dia[(int) (img_dist_r)];
+		float tmpRightRef = getLerpValue(img_dist_r, sen_r_dia_img, sizeof(sen_r_dia_img));
+		float tmpRightRef90 = getLerpValue(img_dist_r, sen_r90_dia, sizeof(sen_r90_dia));
 		if (ABS(RS_SEN45.now - RS_SEN45.old) < diff
 				&& RS_SEN45.now > (tmpRightRef - diffthread)
 				&& validateImgIndex((int) img_dist_r)) {
@@ -314,8 +381,10 @@ float check_sen_error_dia_side_v2(void) {
 		}
 	}
 	if (diaStrwallCount_l > 0) {
-		float tmpLeftRef = sen_l_dia_img[(int) (img_dist_l)];
-		float tmpLeftRef90 = sen_l90_dia[(int) (img_dist_l)];
+//		float tmpLeftRef = sen_l_dia_img[(int) (img_dist_l)];
+//		float tmpLeftRef90 = sen_l90_dia[(int) (img_dist_l)];
+		float tmpLeftRef = getLerpValue(img_dist_l, sen_l_dia_img, sizeof(sen_l_dia_img));
+		float tmpLeftRef90 = getLerpValue(img_dist_l, sen_l90_dia, sizeof(sen_l90_dia));
 		if (ABS(LS_SEN45.now - LS_SEN45.old) < diff
 				&& LS_SEN45.now > (tmpLeftRef - diffthread)
 				&& validateImgIndex((int) img_dist_l)) {
@@ -337,7 +406,7 @@ float check_sen_error_dia_side_v2(void) {
 		if (!testRunMode && gyroErrResetEnable && validateGyroReset()) {
 			Gy.error_old = 0;
 			Angle.error_old = 0;
-			angle = ang = 0;
+			// angle = ang = 0;
 			C_old.g = 0;
 		}
 	}
@@ -391,6 +460,7 @@ float k2 = 10370;
 float P = 100;
 float lastC_s = 0;
 float lastC_s2 = 0;
+
 void errorVelocity(void) {
 	lastC_s = C.s;
 	lastC_s2 = C.s2;
@@ -403,7 +473,52 @@ void errorVelocity(void) {
 	const float CgLimit = *(float *) 1049468;
 
 	if (positionControlValueFlg == 1) {
-		if (dia == 0) {
+		if (frontwall_ctrl == 1) {
+			// V_nowを変更する
+			SeFrnt.error_now = check_sen_error_front();
+			SeFrnt.error_old += SeFrnt.error_now;
+			Dists.Kp = *(float *) 1049400;
+			Dists.Ki = *(float *) 1049404;
+			float limit = *(float *) 1050048;
+
+			C.v2 = Dists.Kp * SeFrnt.error_now + Dists.Ki * SeFrnt.error_old;
+			if (ABS(C.v2) > limit) {
+				if (C.v2 > 0) {
+					V_now = V_now + limit;
+				} else {
+					V_now = V_now - limit;
+				}
+			} else {
+				V_now = V_now + C.v2;
+			}
+
+//			if (SeFrnt.error_now != 0) {
+//				SeFrntAngle.error_now = check_sen_error_frontSide();
+//				SeFrntAngle.error_old += SeFrntAngle.error_now;
+//
+//				Dists2.Kp = *(float *) 1050056;
+//				// Dists2.Ki = *(float *) 1049404;
+//
+//				float limit2 = *(float *) 1050052;
+//
+//				C.w = Dists2.Kp * SeFrntAngle.error_now;
+//				//  + Dists2.Ki * SeFrntAngle.error_old;
+//
+//				if (ABS(C.w) > limit2) {
+//					if (C.w > 0) {
+//						W_now = W_now + limit2;
+//					} else {
+//						W_now = W_now - limit2;
+//					}
+//				} else {
+//					W_now = W_now + C.w;
+//				}
+//			} else {
+//				SeFrntAngle.error_now = 0;
+//				SeFrntAngle.error_old = 0;
+//			}
+
+		} else if (dia == 0) {
 			Se.before = Se.error_now;
 			Se.error_now = check_sen_error();
 
@@ -605,33 +720,66 @@ float getRpm(char RorL) {
 }
 
 float feadforward(char RorL) {
-	return Mass * acc * WHEEL * Resist / (GEAR * Km * 1000);
+	float tmp_wheel = WHEEL;
+
+	if (fanStart == true) {
+		if (fanMode != SearchRun) {
+			tmp_wheel = (*(float *) 1050060) / 2000;
+		}
+	}
+
+	return Mass * acc * tmp_wheel * Resist / (GEAR * Km * 1000);
 }
 float feadforward_para(char RorL) {
-	if (RorL == R) {
-		return Lm * (-alpha) * WHEEL * Resist / (GEAR * Km) / Tread;
+	float tmp_wheel = WHEEL;
+
+	if (fanStart == true) {
+		if (fanMode != SearchRun) {
+			tmp_wheel = (*(float *) 1050060) / 2000;
+		}
 	}
-	return Lm * (alpha) * WHEEL * Resist / (GEAR * Km) / Tread;
+	if (RorL == R) {
+		return Lm * (-alpha) * tmp_wheel * Resist / (GEAR * Km) / Tread;
+	}
+	return Lm * (alpha) * tmp_wheel * Resist / (GEAR * Km) / Tread;
 }
 
 float wheel_lm(char RorL) {
-	if (RorL == R) {
-		return (rpmR - rpmR_old) / dt / 2 * Mass * WHEEL * WHEEL * Resist / Km;
+	float tmp_wheel = WHEEL;
+
+	if (fanStart == true) {
+		if (fanMode != SearchRun) {
+			tmp_wheel = (*(float *) 1050060) / 2000;
+		}
 	}
-	return (rpmL - rpmL_old) / dt / 2 * Mass * WHEEL * WHEEL * Resist / Km;
+	if (RorL == R) {
+		return (rpmR - rpmR_old) / dt / 2 * Mass * tmp_wheel * tmp_wheel
+				* Resist / Km;
+	}
+	return (rpmL - rpmL_old) / dt / 2 * Mass * tmp_wheel * tmp_wheel * Resist
+			/ Km;
 }
 
 float FF_calc(char RorL, float w, float al) {
 	// return 0;
+
+	float tmp_tire = TIRE;
+
+	if (fanStart == true) {
+		if (fanMode != SearchRun) {
+			tmp_tire = (*(float *) 1050060);
+		}
+	}
+
 	float rpm = getRpm(RorL);
 	float resist_str = 0;  //friction_str ? Resist * friction / Km : 0;
 	float resist_roll = friction_roll ? (Resist * friction2 / Km) : 0;
 	float whrlm = 0;
 
 	if (RorL == R) {
-		rpm = (V_now / 1000 - Tread / 2 * W_now) / (60 * TIRE / 2) * 1000;
+		rpm = (V_now / 1000 - Tread / 2 * W_now) / (60 * tmp_tire / 2) * 1000;
 	} else {
-		rpm = (V_now / 1000 + Tread / 2 * W_now) / (60 * TIRE / 2) * 1000;
+		rpm = (V_now / 1000 + Tread / 2 * W_now) / (60 * tmp_tire / 2) * 1000;
 	}
 
 	float counterV = (Ke + friction) * rpm;

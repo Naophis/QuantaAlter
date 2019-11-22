@@ -438,6 +438,96 @@ void save2() {
 	}
 }
 
+void save3() {
+	vs3[Normal][0] = pNormal.targetAngle;
+	vs3[Normal][1] = pNormal.radius;
+	vs3[Normal][2] = pNormal.front1;
+	vs3[Normal][3] = pNormal.back1;
+	vs3[Normal][6] = pNormal.time;
+	vs3[Normal][7] = pNormal.n;
+	vs3[Normal][8] = pNormal.velocity;
+
+	vs3[Normal][9] = pNormal.frontLeft1;
+	vs3[Normal][10] = pNormal.frontLeft2;
+	vs3[Large][0] = pLarge.targetAngle;
+	vs3[Large][1] = pLarge.radius;
+	vs3[Large][2] = pLarge.front1;
+	vs3[Large][3] = pLarge.back1;
+	vs3[Large][6] = pLarge.time;
+	vs3[Large][7] = pLarge.n;
+	vs3[Large][8] = pLarge.velocity;
+	vs3[Large][9] = pLarge.frontLeft1;
+	vs3[Large][10] = pLarge.frontLeft2;
+	vs3[Large][11] = pLarge.firstFront;
+
+	vs3[Orval][0] = pOrval.targetAngle;
+	vs3[Orval][1] = pOrval.radius;
+	vs3[Orval][2] = pOrval.front1;
+	vs3[Orval][3] = pOrval.back1;
+	vs3[Orval][4] = pOrval.front2;
+	vs3[Orval][5] = pOrval.back2;
+	vs3[Orval][6] = pOrval.time;
+	vs3[Orval][7] = pOrval.n;
+	vs3[Orval][8] = pOrval.velocity;
+	vs3[Orval][9] = pOrval.frontLeft1;
+	vs3[Orval][10] = pOrval.frontLeft2;
+	vs3[Orval][11] = pOrval.firstFront;
+
+	vs3[Dia45][0] = pD45.targetAngle;
+	vs3[Dia45][1] = pD45.radius;
+	vs3[Dia45][2] = pD45.front1;
+	vs3[Dia45][3] = pD45.back1;
+	vs3[Dia45][4] = pD45.front2;
+	vs3[Dia45][5] = pD45.back2;
+	vs3[Dia45][6] = pD45.time;
+	vs3[Dia45][7] = pD45.n;
+	vs3[Dia45][8] = pD45.velocity;
+	vs3[Dia45][9] = pD45.frontLeft1;
+	vs3[Dia45][10] = pD45.frontLeft2;
+	vs3[Dia45][11] = pD45.firstFront;
+
+	vs3[Dia135][0] = pD135.targetAngle;
+	vs3[Dia135][1] = pD135.radius;
+	vs3[Dia135][2] = pD135.front1;
+	vs3[Dia135][3] = pD135.back1;
+	vs3[Dia135][4] = pD135.front2;
+	vs3[Dia135][5] = pD135.back2;
+	vs3[Dia135][6] = pD135.time;
+	vs3[Dia135][7] = pD135.n;
+	vs3[Dia135][8] = pD135.velocity;
+	vs3[Dia135][9] = pD135.frontLeft1;
+	vs3[Dia135][10] = pD135.frontLeft2;
+	vs3[Dia135][11] = pD135.firstFront;
+
+	vs3[Dia90][0] = pD90.targetAngle;
+	vs3[Dia90][1] = pD90.radius;
+	vs3[Dia90][2] = pD90.front1;
+	vs3[Dia90][3] = pD90.back1;
+	vs3[Dia90][6] = pD90.time;
+	vs3[Dia90][7] = pD90.n;
+	vs3[Dia90][8] = pD90.velocity;
+	vs3[Dia90][9] = pD90.frontLeft1;
+	vs3[Dia90][10] = pD90.frontLeft2;
+
+	vs3[Kojima][0] = pKojima.targetAngle;
+	vs3[Kojima][1] = pKojima.radius;
+	vs3[Kojima][2] = pKojima.front1;
+	vs3[Kojima][3] = pKojima.back1;
+	vs3[Kojima][6] = pKojima.time;
+	vs3[Kojima][7] = pKojima.n;
+	vs3[Kojima][8] = pKojima.velocity;
+	vs3[Kojima][9] = pKojima.frontLeft1;
+	vs3[Kojima][10] = pKojima.frontLeft2;
+
+	for (int i = 0; i <= Kojima; i++) {
+		myprintf("%d", i);
+		for (int j = 0; j < 12; j++) {
+			myprintf("	%f", vs3[i][j]);
+		}
+		myprintf("\r\n");
+	}
+}
+
 float getTargetAngle(char type) {
 	switch (type) {
 	case Normal:

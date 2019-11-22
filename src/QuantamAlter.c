@@ -45,7 +45,7 @@
 
 #include "config/Setting.h"
 //#include "Mram.h"
-
+#include "Action.h"
 #include "OperationSystem.h"
 #include "config/SerialMapper.h"
 
@@ -206,6 +206,9 @@ void mtu4_A() {
 			} else if (fanMode == CtrlFan3) {
 				GPT2.GTCCRA = (short) (FAN_AMP5 / tmpBattery * FAN_CYCLE);
 				GPT2.GTCCRC = (short) (FAN_AMP5 / tmpBattery * FAN_CYCLE);
+			}else if (fanMode == CtrlFan4) {
+				GPT2.GTCCRA = (short) (FAN_AMP6 / tmpBattery * FAN_CYCLE);
+				GPT2.GTCCRC = (short) (FAN_AMP6 / tmpBattery * FAN_CYCLE);
 			}
 		} else {
 			GPT2.GTCCRA = GPT2.GTCCRC = 0;

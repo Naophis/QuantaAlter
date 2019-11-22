@@ -766,7 +766,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 						updateDist(GoalX, GoalY, 0, isFull);
 						if (GoalX == 0 && GoalY == 0) {
 							lock = true;
-//							break;
+							break; // スタート地点に戻らず、終了する。
 							continue;
 						}
 					}
@@ -855,8 +855,8 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 		}
 
 		char tmp = setNewPositionDummy(x, y, nextDirection);
-		tmp = 0;
-		// known =false;
+		 tmp = 0;
+		 known =false;
 		if (!goaled && tmp && nextMotion != Back) {
 			known = true;
 			if (p == 0 && path_s[0] == 0) {
@@ -918,6 +918,7 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 					fanMode = CtrlFan2;
 					frontCtrl();
 					realRun(velocity, acc, diac, 100, 100, NULL_FILTER);
+					fanMode = CtrlFan2;
 					mtu_stop();
 					gyroRollTest(L, 180, 60, 100);
 					if (isStepped(firstGoalX, firstGoalY)) {
@@ -986,13 +987,13 @@ char Adachi2(int GoalX, int GoalY, char Zen, char isFull, char Mode) {
 	frontCtrl3();
 	mtu_stop();
 
-	const int frontCtrlMode = (int) (*(float *) 1049988);
-	if (frontCtrlMode) {
-		calibrateRun(R);
-	} else {
-		gyroRollTest(L, 180, 60, 100);
-		back(-100, -diac / 500, 30, 1);
-	}
+//	const int frontCtrlMode = (int) (*(float *) 1049988);
+//	if (frontCtrlMode) {
+//		calibrateRun(R);
+//	} else {
+//		gyroRollTest(L, 180, 60, 100);
+//		back(-100, -diac / 500, 30, 1);
+//	}
 
 	V_now = 0;
 	cmt_wait(500);

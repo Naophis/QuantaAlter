@@ -1,53 +1,5 @@
 #ifndef CONFIG_PARAMUARTIMPORTER_H_
 #define CONFIG_PARAMUARTIMPORTER_H_
-void setNormalParam150() {
-	float p[12];
-	for (char i = 0; i < 12; i++) {
-		p[i] = *(float *) (1050048 + 4 * i);
-	}
-	setPrms(Normal, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
-	setPrms3(Normal, p[9], p[10], p[11]);
-}
-void setLargeParam150() {
-	float p[12];
-	for (char i = 0; i < 12; i++) {
-		p[i] = *(float *) (1050112 + 4 * i);
-	}
-	setPrms(Large, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
-	setPrms3(Large, p[9], p[10], p[11]);
-}
-void setOrvalParam150() {
-	float p[12];
-	for (char i = 0; i < 12; i++) {
-		p[i] = *(float *) (1050176 + 4 * i);
-	}
-	setPrms(Orval, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
-	setPrms3(Orval, p[9], p[10], p[11]);
-}
-void setDia45Param150() {
-	float p[12];
-	for (char i = 0; i < 12; i++) {
-		p[i] = *(float *) (1050240 + 4 * i);
-	}
-	setPrms(Dia45, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
-	setPrms3(Dia45, p[9], p[10], p[11]);
-}
-void setDia135Param150() {
-	float p[12];
-	for (char i = 0; i < 12; i++) {
-		p[i] = *(float *) (1050304 + 4 * i);
-	}
-	setPrms(Dia135, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
-	setPrms3(Dia135, p[9], p[10], p[11]);
-}
-void setDia90Param150() {
-	float p[12];
-	for (char i = 0; i < 12; i++) {
-		p[i] = *(float *) (1050368 + 4 * i);
-	}
-	setPrms(Dia90, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8]);
-	setPrms3(Dia90, p[9], p[10], p[11]);
-}
 void setNormalParam500() {
 	float p[12];
 	for (char i = 0; i < 12; i++) {

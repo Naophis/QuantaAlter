@@ -131,8 +131,8 @@ char running(float vmax, float ACC, float dist, char control) {
 	V_max = vmax;
 	runFlg = 1;
 	while (true) {
-		if((ABS(distance) >= ABS(dist)){
-			distance -= dist;
+		if (ABS(distance) >= ABS(dist)) {
+			// distance -= dist;
 			break;
 		}
 		if (dia == 1) {
@@ -489,7 +489,7 @@ char frontCtrlDash(float v1, float ac) {
 				acc = 0;
 				V_now = v1;
 			}
-			if (distance >270){
+			if (distance > 270) {
 				break;
 			}
 		}
@@ -905,7 +905,11 @@ char orignalRunDia(float v1, float v2, float ac, float diac, float dist,
 	int flag2 = true;
 	int diagonal_chopp_R = (int) (*(float *) 1050028);
 	int diagonal_chopp_L = (int) (*(float *) 1050032);
-	while (ABS(distance) < ABS(dist)) {
+	while (true) {
+		if ((ABS(distance) >= ABS(dist))) {
+			// distance -= dist;
+			break;
+		}
 		d2 = ABS((V_now + v2) * (V_now - v2) / (2.0 * diac));
 		if (!testRunMode) {
 			if (gyroErrResetEnable && (dist - distance) < 90) {
@@ -996,6 +1000,7 @@ char orignalRunDia(float v1, float v2, float ac, float diac, float dist,
 			}
 			break;
 		case DIACCELE:
+			fanMode = tmpfanMode;
 			tmpDiac = 0;
 			originalDiaMode = false;
 			if (V_now <= v2) {
@@ -1072,8 +1077,15 @@ char orignalRun(float v1, float v2, float ac, float diac, float dist,
 	char bool2 = RS_SEN2.now > search_wall_off_r; // checkSensorOff(R, false);
 	char bool3 = LS_SEN2.now > search_wall_off_l; // checkSensorOff(L, false);
 	char bool4 = bool2 | bool3;
+	const float accelMode = *(float *) 1050040;
+	const float accelModechangeVelcoity = *(float *) 1050044;
+	const float exrp = *(float *) 1049544;
 
-	while (ABS(distance) < ABS(dist)) {
+	while (true) {
+		if ((ABS(distance) >= ABS(dist))) {
+			// distance -= dist;
+			break;
+		}
 		if (!testRunMode) {
 			if (gyroErrResetEnable && (dist - distance) < 90) {
 				gyroErrResetEnable = false;
@@ -1098,28 +1110,44 @@ char orignalRun(float v1, float v2, float ac, float diac, float dist,
 				acc = 0;
 				V_now = v1;
 			} else {
-				if (V_now > 5100) {
-					acc = ac * 1 / 8;
-				} else if (V_now > 5000) {
-					acc = ac * 2 / 8;
-				} else if (V_now > 4800) {
-					acc = ac * 3 / 8;
-				} else if (V_now > 4700) {
-					acc = ac * 4 / 8;
-				} else if (V_now > 4600) {
-					acc = ac * 5 / 8;
-				} else if (V_now > 4500) {
-					acc = ac * 6 / 8;
-				} else if (V_now > 4250) {
-					acc = ac * 7 / 8;
-				} else {
-					acc = ac;
+				if (accelMode == 0) {
+					if (V_now > 5100) {
+						acc = ac * 1 / 8;
+					} else if (V_now > 5000) {
+						acc = ac * 2 / 8;
+					} else if (V_now > 4800) {
+						acc = ac * 3 / 8;
+					} else if (V_now > 4700) {
+						acc = ac * 4 / 8;
+					} else if (V_now > 4600) {
+						acc = ac * 5 / 8;
+					} else if (V_now > 4500) {
+						acc = ac * 6 / 8;
+					} else if (V_now > 4250) {
+						acc = ac * 7 / 8;
+					} else {
+						acc = ac;
+					}
+				} else if (accelMode == 1) {
+					if (V_now >= accelModechangeVelcoity) {
+						acc = ac * (1 - powf((V_now / v1), exrp));
+					} else {
+						acc = ac;
+					}
+				} else if (accelMode == 2) {
+					if (V_now >= accelModechangeVelcoity) {
+						acc = ac * (1 - expf(1 - powf((V_now / v1), exrp)))
+								/ (1 - expf(1));
+					} else {
+						acc = ac;
+					}
 				}
 			}
 			if (sequence != DIACCELE) {
 				break;
 			}
 		case DIACCELE:
+			fanMode = tmpfanMode;
 			tmpDiac = 0;
 			originalDiaMode = false;
 			if (V_now <= v2) {
@@ -1446,50 +1474,6 @@ void back(float v1, float ac, float dist, char control) {
 	gyroErrResetEnable = false;
 	mtu_stop();
 }
-char goStraight(float vmax, float term, float dist, char bool2, char control) {
-	float delta_V = vmax - V_now;
-//readGyroParam();
-	resetGyroParam();
-	if (!gyroOn) {
-		resetGyroParam();
-	} else {
-//		readGyroParam();
-		readGyroParamP();
-	}
-	rotate_r = rotate_l = true;
-
-	distance = 0;
-	alpha = 0;
-	W_now = 0;
-	W_now2 = 0;
-//	ang = 0;
-//	angle = 0;
-	C.g = 0;
-//	Gy.error_old = 0;
-	Gy.error_delta = 0;
-	sinCount = 0;
-	positionControlValueFlg = control;
-//	G.th = gyroTh_R;
-	while (dist > distance) {
-		if (delta_V > 0) {
-			if (vmax > V_now) {
-				acc = delta_V * Et2(dt * sinCount, term, 2);
-			}
-		} else {
-			if (vmax < V_now) {
-				acc = -delta_V * Et2(dt * sinCount, term, 2);
-			}
-		}
-		if (!fail) {
-			positionControlValueFlg = 0;
-			return 0;
-		}
-	}
-	alpha = 0;
-	acc = 0;
-	positionControlValueFlg = 0;
-	return 1;
-}
 
 char runForWallOff(float vmax, float ACC, float dist, char control) {
 	globalState = SLA_AFTER;
@@ -1523,8 +1507,10 @@ char runForWallOff(float vmax, float ACC, float dist, char control) {
 	V_max = vmax;
 //	G.th = gyroTh_R;
 	runFlg = 1;
-	char bool2 = (RS_SEN45.now > R_WALL_EXIST) && RS_SEN2.now > search_wall_off_r; // checkSensorOff(R, false);
-	char bool3 = (LS_SEN45.now > L_WALL_EXIST) && LS_SEN2.now > search_wall_off_l; // checkSensorOff(L, false);
+	char bool2 = (RS_SEN45.now > R_WALL_EXIST)
+			&& RS_SEN2.now > search_wall_off_r; // checkSensorOff(R, false);
+	char bool3 = (LS_SEN45.now > L_WALL_EXIST)
+			&& LS_SEN2.now > search_wall_off_l; // checkSensorOff(L, false);
 	char bool4 = bool2 | bool3;
 
 	resetAngleError();
@@ -1532,8 +1518,11 @@ char runForWallOff(float vmax, float ACC, float dist, char control) {
 
 	char validate1 = dist >= 90;
 
-	while (distance < dist) {
-
+	while (true) {
+		if ((ABS(distance) >= ABS(dist))) {
+			// distance -= dist;
+			break;
+		}
 		if (gyroErrResetEnable && (dist - distance) < 100) {
 			gyroErrResetEnable = false;
 		}
@@ -1642,7 +1631,11 @@ char runForWallforNormalOff(float vmax, float ACC, float dist, char control) {
 	resetAngleError();
 	gyroErrResetEnable = dist >= 180;
 
-	while ((distance < dist)/* && (Front_SEN.now < FRONT_CTRL_1)*/) {
+	while (true) {
+		if ((ABS(distance) >= ABS(dist))) {
+			// distance -= dist;
+			break;
+		}
 		if (gyroErrResetEnable && (dist - distance) < 100) {
 			gyroErrResetEnable = false;
 		}
@@ -1736,7 +1729,11 @@ char runForWallOff2(float vmax, float ACC, float dist, char control, char type,
 
 //	resetAngleError();
 
-	while (distance < dist) {
+	while (true) {
+		if ((ABS(distance) >= ABS(dist))) {
+			// distance -= dist;
+			break;
+		}
 		if (ACC > 0) {
 			if (V_now < V_max) {
 			} else if (V_now >= V_max) {
@@ -1765,6 +1762,31 @@ char runForWallOff2(float vmax, float ACC, float dist, char control, char type,
 	W_now = 0;
 	runFlg = 0;
 	return 1;
+}
+
+char frontctrl_pos() {
+	positionControlValueFlg = 1;
+	frontwall_ctrl = 1;
+	mtu_start();
+	alpha = 0;
+	acc = 0;
+	w_now = 0;
+	V_now = 0;
+	ang = 0;
+	W_now = 0;
+	W_now2 = 0;
+	readGyroParam();
+	readAngleParam();
+	C.angles = 0;
+	C.g = 0;
+	while (true) {
+
+	}
+	mtu_stop2();
+
+	frontwall_ctrl = 0;
+	positionControlValueFlg = 0;
+	return true;
 }
 
 char pararelMove(float v2, float diff, float length, char mode) {

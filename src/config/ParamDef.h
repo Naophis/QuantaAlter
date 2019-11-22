@@ -247,7 +247,7 @@ void importFromDataFlash() {
 	FRONT_CTRL_1 = *(float *) 1049724;
 	myprintf("FRONT_CTRL_1	%f	%d\r\n", FRONT_CTRL_1, 1049724);
 	RF_WALL_EXIST2 = *(float *) 1049728;
-	myprintf("RF_WALL_EXIST2	%f	%d\r\n", RF_WALL_EXIST2, 1049728);
+	myprintf("		%f	%d\r\n", RF_WALL_EXIST2, 1049728);
 
 	float fastRunFan, seachFan, seachFanLow;
 	R_WALL_OFF = *(float *) 1049856;
@@ -312,6 +312,7 @@ void importFromDataFlash() {
 	FAN_AMP2 = seachFan;
 	FAN_AMP4 = seachFanLow;
 	FAN_AMP5 = *(float *) 1050016;
+	FAN_AMP6 = *(float *) 1050036;
 	myprintf("fastRunFanV2	%f	%d\r\n", fastRunFanV2, 1049984);
 
 }
