@@ -238,6 +238,26 @@ void getPrm2(char type) {
 	inputParameters2(type, frontleft1, frontleft2);
 	setFirstFrontDistance(type, firstFront);
 }
+void getPrm3(char type) {
+	float targetAngle = vs3[type][0];
+	float radius = vs3[type][1];
+	float front1 = vs3[type][2];
+	float back1 = vs3[type][3];
+	float front2 = vs3[type][4];
+	float back2 = vs3[type][5];
+	float time = vs3[type][6];
+	float n = vs3[type][7];
+	float v = vs3[type][8];
+	float frontleft1 = vs3[type][9];
+	float frontleft2 = vs3[type][10];
+	float firstFront = vs3[type][11];
+	v_sla[type] = v;
+//	myprintf("%d	%f\r\n", type, v);
+	inputParameters(type, targetAngle, radius, front1, back1, front2, back2,
+			time, n, v);
+	inputParameters2(type, frontleft1, frontleft2);
+	setFirstFrontDistance(type, firstFront);
+}
 void getAllPram() {
 	getPrm(Normal);
 	getPrm(Large);
@@ -256,8 +276,17 @@ void getAllPram2() {
 	getPrm2(Dia90);
 	getPrm2(Kojima);
 }
+void getAllPram3() {
+	getPrm3(Normal);
+	getPrm3(Large);
+	getPrm3(Orval);
+	getPrm3(Dia45);
+	getPrm3(Dia135);
+	getPrm3(Dia90);
+	getPrm3(Kojima);
+}
 
-void save() {
+void save_high_param() {
 	vs[Normal][0] = pNormal.targetAngle;
 	vs[Normal][1] = pNormal.radius;
 	vs[Normal][2] = pNormal.front1;
@@ -348,7 +377,7 @@ void save() {
 		myprintf("\r\n");
 	}
 }
-void save2() {
+void save_low_param() {
 	vs2[Normal][0] = pNormal.targetAngle;
 	vs2[Normal][1] = pNormal.radius;
 	vs2[Normal][2] = pNormal.front1;
@@ -438,7 +467,7 @@ void save2() {
 	}
 }
 
-void save3() {
+void save_transam_param() {
 	vs3[Normal][0] = pNormal.targetAngle;
 	vs3[Normal][1] = pNormal.radius;
 	vs3[Normal][2] = pNormal.front1;

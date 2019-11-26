@@ -212,7 +212,7 @@ int checkQ[checkQlength];
 unsigned char checkMap[16][16];
 unsigned char checkTurningPoint = false;
 char checkPoint = false;
-char transam = false;
+char activate_TRANS_AM = false;
 #define MAX 1023
 
 char globalSkipFront = false;

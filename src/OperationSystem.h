@@ -50,6 +50,14 @@ void testRun() {
 		startVacume2(99);
 		cmt_wait(200);
 	}
+
+	if (activate_TRANS_AM) {
+		RS_SEN45.ref = *(float *) 1049944;
+		LS_SEN45.ref = *(float *) 1049948;
+		R_WALL_OFF = *(float *) 1049952;
+		FRONT_WALL_ON = *(float *) 1049956;
+	}
+
 	cc = 1;
 	gyroOn = 1;
 	V_now = 0;
@@ -162,14 +170,14 @@ void inputNaiperTurnAll1900() {
 	setOrvalParam1900();
 	setDia45Param1900();
 	setDia135Param1900();
-	setDia90Param1800();
+	setDia90Param1900();
 }
 void inputNaiperTurnAll1950() {
 	setLargeParam1950();
 	setOrvalParam1950();
 	setDia45Param1950();
 	setDia135Param1950();
-	setDia90Param1800();
+	setDia90Param1900();
 }
 void inputNaiperTurnAll2000() {
 	inputNaiperTurnAll1950();
@@ -177,7 +185,7 @@ void inputNaiperTurnAll2000() {
 	setOrvalParam2000();
 	setDia45Param2000();
 	setDia135Param2000();
-	setDia90Param1950();
+	setDia90Param1900();
 }
 void inputNaiperTurnAll2050() {
 	inputNaiperTurnAll2000();
@@ -185,7 +193,7 @@ void inputNaiperTurnAll2050() {
 	setOrvalParam2050();
 	setDia45Param2000();
 	setDia135Param2000();
-	setDia90Param1950();
+	setDia90Param1900();
 }
 void inputNaiperTurnAll2100() {
 	inputNaiperTurnAll2050();
@@ -363,22 +371,18 @@ void testSlalom3() {
 	float diaccele = *(float *) 1049268;
 
 	char test_dia = (char) (*(float *) 1049276);
-	if (transam) {
-//		callParamForCircit(vMax);
+	float start_offset = *(float *) 1049496;
+	if (activate_TRANS_AM) {
 		RS_SEN45.ref = *(float *) 1049944;
-		myprintf("RS_SEN45.ref2	%f	%d\r\n", RS_SEN45.ref, 1049944);
 		LS_SEN45.ref = *(float *) 1049948;
-		myprintf("LS_SEN45.ref2	%f	%d\r\n", LS_SEN45.ref, 1049948);
 		R_WALL_OFF = *(float *) 1049952;
-		myprintf("R_WALL_OFF3	%f	%d\r\n", R_WALL_OFF, 1049952);
 		FRONT_WALL_ON = *(float *) 1049956;
-		myprintf("FrontCtrl111	%f	%d\r\n", FRONT_WALL_ON, 1049956);
+		start_offset = *(float *) 1049548;
 	}
 	callParam(vMax);
 
 	char RorL = eigherRightLeft() == Right ? R : L;
 	float tempdist1 = *(float *) 1049960;
-	float start_offset = *(float *) 1049496;
 	myprintf("tempdist1	%f	%d\r\n", tempdist1, 1049960);
 	wall_off_limit = wall_off_limit_d = tempdist1;
 	motionCheck();
@@ -413,7 +417,7 @@ void testSlalom3() {
 
 //	dia = (char) test_dia == 1;
 
-	save();
+	save_high_param();
 
 	globalSkipFront = test_sla_scenario2;
 
@@ -435,7 +439,6 @@ void testSlalom3() {
 		}
 		testRunMode = false;
 	} else {
-		float start_offset = *(float *) 1049496;
 		realRun(vMax, accele, diaccele, 180.0 + start_offset, vMax,
 				NULL_FILTER);
 	}
@@ -526,7 +529,7 @@ void testNormalSlalom() {
 
 	ang = angle = Gy.error_old = 0;
 	mode_FF = 1;
-	save();
+	save_high_param();
 
 	testRunMode = true;
 
@@ -599,7 +602,7 @@ void testNormalSlalom2() {
 
 	ang = angle = Gy.error_old = 0;
 	mode_FF = 1;
-	save();
+	save_high_param();
 
 	testRunMode = true;
 
@@ -664,6 +667,13 @@ void testWallOff() {
 		startVacume2(70);
 	}
 
+	if (activate_TRANS_AM) {
+		RS_SEN45.ref = *(float *) 1049944;
+		LS_SEN45.ref = *(float *) 1049948;
+		R_WALL_OFF = *(float *) 1049952;
+		FRONT_WALL_ON = *(float *) 1049956;
+		// start_offset = *(float *) 1049548;
+	}
 	Sen_Dia_Side.Kp = Sen_Dia_Side.Ki = Sen_Dia_Side.Kd = 0.0;
 	ang = angle = Gy.error_old = 0;
 	mode_FF = 1;
@@ -1212,8 +1222,36 @@ void exportMap2() {
 	myprintf("]\r\n");
 }
 void checkMemory(int goalX, int goalY) {
+	int normal_music = (int) (*(float *) 1050064);
+	int transam_music = (int) (*(float *) 1050072);
+
+	float normal_music_time = (int) (*(float *) 1050068);
+	float transam_music_time = (int) (*(float *) 1050076);
+
+	float accele = (int) (*(float *) 1050064);
+
 	if (writeMap2(FLASH_DF_BLOCK_0)) {
-		startTransam(150);
+		if (activate_TRANS_AM) {
+			if (transam_music == ASH_LIKE_SNOW) {
+				ashLikeSnow(transam_music_time);
+			} else if (transam_music == QUARIA) {
+				quoria(transam_music_time);
+			} else if (transam_music == Ahead_Tears) {
+				aheadTears(transam_music_time);
+			} else if (transam_music == HAKANAKU) {
+				startTransam(transam_music_time);
+			}
+		} else {
+			if (normal_music == ASH_LIKE_SNOW) {
+				ashLikeSnow(normal_music_time);
+			} else if (normal_music == QUARIA) {
+				quoria(normal_music_time);
+			} else if (normal_music == Ahead_Tears) {
+				aheadTears(normal_music_time);
+			} else if (normal_music == HAKANAKU) {
+				startTransam(normal_music_time);
+			}
+		}
 //		quoria(400);
 	} else {
 //		coin(125);
@@ -1407,7 +1445,7 @@ void operation() {
 		printSensor();
 	}
 	if (!PushRight) {
-		transam = true;
+		activate_TRANS_AM = true;
 	}
 
 	enableSciUpdate = true;
@@ -1423,10 +1461,6 @@ void operation() {
 		enableSciUpdate = true;
 		while (PushBottom)
 			;
-	}
-
-	if (transam) {
-		ashLikeSnow(180);
 	}
 
 	resetAllData();

@@ -224,27 +224,32 @@ void startTransam(int tmp) {
 
 void quoria(int tmp2) {
 	double tmp = tmp2;
-	makeMusic(D2s_, tmp / 2 - 10);
+	makeMusic(D2_, tmp / 2 - 10);
 	cmt_wait(10);
-	makeMusic(C3_, 1.5 * tmp - 10);
+	makeMusic(B2_, 1.5 * tmp/2 - 10);
 	cmt_wait(10);
-	makeMusic(C3s_, tmp / 4 - 10);
+	makeMusic(C3_, tmp /2/2 - 10);
 	cmt_wait(10);
-	makeMusic(C3_, 3 * tmp - 10);
+	makeMusic(B2_, 3 * tmp - 10);
 	cmt_wait(10);
-	makeMusic(A2s_, tmp / 4 - 10);
+	makeMusic(A2_, tmp / 4 - 10);
 	cmt_wait(10);
-	makeMusic(G2s_, 3.0 * tmp / 4 - 10);
+	makeMusic(G2_, 1.5 * tmp / 2 - 10);
 	cmt_wait(10);
-	makeMusic(A3s_, 3.0 * tmp / 4 - 10);
+	makeMusic(A3_, 1.5 * tmp / 2 - 10);
 	cmt_wait(10);
-	makeMusic(G3s_, tmp / 2 - 10);
+	makeMusic(G3_, tmp / 2 - 10);
 	cmt_wait(10);
-	makeMusic(G3s_, tmp / 4 - 10);
+	makeMusic(G3_, tmp / 4 - 10);
 	cmt_wait(10);
-	makeMusic(G3s_, tmp / 2 - 10);
-	cmt_wait(10);
+	makeMusic(G3_, tmp / 4 - 10);
 }
+
+
+#define ASH_LIKE_SNOW 0
+#define QUARIA 1
+#define Ahead_Tears 2
+#define HAKANAKU 3
 
 void ashLikeSnow(int tmp) {
 	makeMusic(G3_, tmp - 10);

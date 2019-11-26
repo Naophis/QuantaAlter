@@ -20,7 +20,7 @@ void cirquit() {
 		path_t[i] = 5;
 		path_s[i + 1] = 4;
 		path_t[i + 1] = 5;
-		if(transam){
+		if(activate_TRANS_AM){
 			path_s[i] -= 0.25;
 			path_s[i + 1] -= 0.25;
 		}
@@ -43,7 +43,7 @@ void cirquitFull() {
 		path_t[i] = 5;
 		path_s[i + 1] = 28;
 		path_t[i + 1] = 5;
-		if(transam){
+		if(activate_TRANS_AM){
 			path_s[i] -= 0.25;
 			path_s[i + 1] -= 0.25;
 		}

@@ -1055,6 +1055,12 @@ float turnVelocity(char a) {
 	}
 	return 2000;
 }
+float turnVelocity_transam(char a) {
+	if (a != Finish) {
+		return vs[a][8];
+	}
+	return 2000;
+}
 float turnVelocitySlow(char a) {
 	if (a != Finish) {
 		return v_sla[a];

@@ -63,6 +63,32 @@ char runForPath(float max, float ac, float diac) {
 	time = 0;
 	cc = 1;
 	logs = 0;
+	char transam_running = false;
+
+	getAllPram2();
+
+	if (activate_TRANS_AM) {
+		float dist0 = 0.5 * (path_s[0] - 1) - 0.5;
+		float dist1 = 0.5 * (path_s[1] - 1) - 0.5;
+		char turn_type = turnVary(path_t[0]);
+
+		// if ((dist0 > 0 && dist1 > 0)
+		if ((dist0 > 0) && (turn_type == Large || turn_type == Orval)) {
+			float turnVelocity1 = vs[turn_type][8];
+			float turnVelocity2 = vs3[turn_type][8];
+			if (turnVelocity2 > turnVelocity1) {
+				RS_SEN45.ref = *(float *) 1049944;
+				LS_SEN45.ref = *(float *) 1049948;
+				R_WALL_OFF = *(float *) 1049952;
+				FRONT_WALL_ON = *(float *) 1049956;
+				transam_running = true;
+				start_offset = *(float *) 1049548;
+				getPrm3(Large);
+				getPrm3(Orval);
+			}
+		}
+
+	}
 
 	for (i = 0; i < pathLength; i++) {
 		if (i == 0) {
@@ -85,10 +111,16 @@ char runForPath(float max, float ac, float diac) {
 			slalomDist = slalomBackDistance;
 			slalomBackDistance = 0;
 		}
-		if (dist > 0 && !top) {
-			getAllPram();
-			top = true;
-			res = 1;
+		if (transam_running) {
+			if (dist > 0 && !top && i > 0) {
+				getAllPram();
+				top = true;
+			}
+		} else {
+			if (dist > 0 && !top) {
+				getAllPram();
+				top = true;
+			}
 		}
 		turnVarys = turnVary(path_t[i]);
 		slaVel = turnVelocity(turnVarys);
@@ -131,9 +163,16 @@ char runForPath(float max, float ac, float diac) {
 			break;
 		}
 		if (wallOff(RorL, true)) {
-			if (dist == 0) {
+			float next_dist = 0.5 * path_s[i + 1] - 1;
+			if (next_dist <= 0) {
+				next_dist = 0;
+			}
+			if (next_dist == 0) {
 				turnVarys2 = turnVary(path_t[i + 1]);
 				slaVel2 = turnVelocity(turnVarys2);
+				if (transam_running) {
+					slaVel2 = turnVelocity_transam(turnVarys2);
+				}
 				if (slaVel2 == slaVel) {
 					res = slalom(RorL, turnVarys, slaVel, slaVel2, ac * 0.8);
 				} else if (slaVel2 > slaVel) {
@@ -149,6 +188,20 @@ char runForPath(float max, float ac, float diac) {
 			fastMode = 0;
 			return 0;
 		}
+		// i>=1でトランザム終了
+		if (transam_running) {
+			RS_SEN45.ref = *(float *) 1049600;
+			LS_SEN45.ref = *(float *) 1049604;
+			R_WALL_OFF = *(float *) 1049856;
+			FRONT_WALL_ON = *(float *) 1049896;
+			transam_running = false;
+			getAllPram();
+		}
+		// RS_SEN45.ref = *(float *) 1049600;
+		// LS_SEN45.ref = *(float *) 1049604;
+		// R_WALL_OFF = *(float *) 1049856;
+		// FRONT_WALL_ON = *(float *) 1049896;
+		// transam_running = false;
 		globalSkipFront = false;
 
 		if (!res) {
@@ -189,111 +242,6 @@ char runForPath(float max, float ac, float diac) {
 	return 1;
 }
 
-char runForPath_v2(float max, float ac, float diac) {
-	int i = 0;
-	float dist = 0;
-	float slaVelocity = 0;
-	char RorL = 0;
-	char turnVarys = 0;
-	float slaVelocity2 = 0;
-	char turnVarys2 = 0;
-	char check = 0;
-	float slalomDist = 0;
-//	char oldTurnVary = 0;
-	float start_offset = *(float *) 1049496;
-	char top = false;
-	dia = 0;
-	tempVmax = max;
-	getAllPram2();
-	cmt_wait(100);
-//	back(-100, -1000, 50, 0);
-	gyroZeroCheck(true);
-	if (pLarge.velocity >= 1200) {
-		TRANSAM = true;
-//		LED_R = true;
-//		LED_L = true;
-		startVacume2(70);
-	}
-	turnVarys = turnVary(path_t[0]);
-	slaVelocity = turnVelocity(turnVarys);
-//	getAllPram();
-	mtu_start();
-	for (i = 0; i < pathLength; i++) {
-		if (i == 0) {
-			dist = 0.5 * (path_s[i] - 1) - 0.5;
-		} else {
-			dist = 0.5 * path_s[i] - 1;
-		}
-		if (dist <= 0) {
-			dist = 0;
-		}
-		if (i > 0) {
-			slalomDist = slalomBackDistance;
-			slalomBackDistance = 0;
-		}
-		if (dist > 0 && !top) {
-			getAllPram();
-			top = true;
-		}
-		turnVarys = turnVary(path_t[i]);
-		slaVelocity = turnVelocity(turnVarys);
-		RorL = turnRoL(path_t[i]);
-		if (dist > 0 || i == 0) {
-			if (dia == 0) {
-				if (i == 0) {
-					check = realRun(max, ac, diac, (dist) * 180 + start_offset,
-							slaVelocity, NULL_FILTER);
-				} else {
-					check = realRun(max, ac, diac, dist * 180 + slalomDist,
-							slaVelocity, NULL_FILTER);
-				}
-			} else {
-				check = realRun(max, ac * 0.8, diac * 0.8,
-						dist * ROOT2 * 180 + slalomDist, slaVelocity,
-						NULL_FILTER);
-			}
-		}
-		if (!check) {
-			mtu_stop();
-			fastMode = 0;
-			return 0;
-		}
-		if (path_t[i] == 255) {
-			break;
-		}
-		if (dist == 0) {
-			turnVarys2 = turnVary(path_t[i + 1]);
-			slaVelocity2 = turnVelocity(turnVarys2);
-			if (slaVelocity2 == slaVelocity) {
-				check = slalom(RorL, turnVarys, slaVelocity, slaVelocity2,
-						ac * 0.8);
-			} else if (slaVelocity2 > slaVelocity) {
-				check = slalom(RorL, turnVarys, slaVelocity, slaVelocity2,
-						ac * 0.8);
-			} else if (slaVelocity2 < slaVelocity) {
-				check = slalom(RorL, turnVarys, slaVelocity, slaVelocity2,
-						-diac * 0.8);
-			}
-		} else {
-			check = slalom(RorL, turnVarys, slaVelocity, slaVelocity, 0);
-		}
-		if (!check) {
-			mtu_stop();
-			fastMode = 0;
-			return 0;
-		}
-	}
-	running(150, -diac / 500, 120, 1);
-
-	if (!dia) {
-		frontCtrl2();
-		frontCtrl3();
-	}
-
-	mtu_stop2();
-	fastMode = 0;
-	return 1;
-}
 
 char runForKnownPath(float max, float ac, float diac) {
 	int i = 0;
