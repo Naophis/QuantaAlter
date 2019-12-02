@@ -27,6 +27,16 @@ char action(char mode, char goalX, char goalY, char fastMode) {
 	char isFull = isFullMaze(goalX, goalY);
 
 	wall_off_limit = wall_off_limit_d = 200;
+	
+	if (mode == SEARCH || mode ==SEARCH2) {
+		Sen.Kp = *(float *)1049376;
+		Sen.Ki = *(float *)1049380;
+		Sen.Kd = *(float *)1049384;
+	} else {
+		Sen.Kp = *(float *)1050080;
+		Sen.Ki = *(float *)1050084;
+		Sen.Kd = *(float *)1050088;
+	}
 	Sen.Kp = *(float *) 1049376;
 	Sen.Ki = *(float *) 1049380;
 	Sen.Kd = *(float *) 1049384;
