@@ -16,5 +16,6 @@
         "i2c3.h": "c",
         "tof.h": "c",
         "init.h": "c"
-    }
+    },
+    "C_Cpp.clang_format_style": "{ BasedOnStyle: LLVM, BreakBeforeBraces: Attach, SpaceBeforeParens: Never, IndentWidth: 4 }"
 }
